@@ -1,47 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout, update_user } from '../../api/endpoints';
 import styles from './styles/EditProfile.module.css'; // your CSS module
 
 const EditProfile = () => {
-  // Grab user data from localStorage
-  const storage = JSON.parse(localStorage.getItem('userData'));
-
-  // Controlled inputs state
-  const [username, setUsername] = useState(storage ? storage.username : '');
-  const [email, setEmail] = useState(storage ? storage.email : '');
-  const [firstName, setFirstName] = useState(storage ? storage.first_name : '');
-  const [lastName, setLastName] = useState(storage ? storage.last_name : '');
-  const [bio, setBio] = useState(storage ? storage.bio : '');
-  const [profileImage, setProfileImage] = useState(null);
-
-  const navigate = useNavigate();
-
-  // Handle form submission (profile update)
-  const handleUpdate = async () => {
-    try {
-      await update_user({
-        username,
-        profile_image: profileImage,
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        bio,
-      });
-
-      // Update localStorage for persistence
-      localStorage.setItem(
-        'userData',
-        JSON.stringify({ username, email, first_name: firstName, last_name: lastName, bio })
-      );
-
-      alert('Successfully updated details');
-      navigate(`/${username}`);
-    } catch (error) {
-      console.error('Update error:', error);
-      alert('Error updating details');
-    }
-  };
+  
 
   return (
     <div className={`container ${styles.settingsContainer} pt-5`}>
@@ -57,7 +19,6 @@ const EditProfile = () => {
             type="file"
             className="form-control"
             id="profileImage"
-            onChange={(e) => setProfileImage(e.target.files[0])}
           />
         </div>
 
@@ -70,8 +31,7 @@ const EditProfile = () => {
             type="text"
             className="form-control"
             id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value="username"
             placeholder="Enter your username"
           />
         </div>
@@ -85,8 +45,7 @@ const EditProfile = () => {
             type="email"
             className="form-control"
             id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value="email"
             placeholder="you@example.com"
           />
         </div>
@@ -100,8 +59,7 @@ const EditProfile = () => {
             type="text"
             className="form-control"
             id="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value="firstName"
             placeholder="First Name"
           />
         </div>
@@ -115,8 +73,7 @@ const EditProfile = () => {
             type="text"
             className="form-control"
             id="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value="lastName"
             placeholder="Last Name"
           />
         </div>
@@ -130,8 +87,7 @@ const EditProfile = () => {
             className="form-control"
             id="bio"
             rows="3"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
+            value="bio"
             placeholder="Tell us about yourself"
           ></textarea>
         </div>
@@ -139,7 +95,6 @@ const EditProfile = () => {
         <button
           type="button"
           className="btn btn-primary w-100 mb-3"
-          onClick={handleUpdate}
         >
           Save Changes
         </button>

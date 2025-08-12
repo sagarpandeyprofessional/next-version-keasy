@@ -1,36 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Register.module.css';
-import { register } from '../../../api/endpoints';
 
 const Register = () => {
-  
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-
-    const navigate = useNavigate();
-
-    const handleRegister = async () => {
-
-      event.preventDefault();  // Prevent default page refresh
-
-        if (password === confirmPassword) {
-            try{
-                const response = await register(username, email, firstName, lastName, password);
-                alert('successful registration')
-                navigate('/login')
-                
-            } catch {
-                alert('error registering');
-            }
-        } else {
-            alert('password & confirm password are not identical!')
-        }
-    }
 
 
   return (
@@ -50,7 +22,7 @@ const Register = () => {
 
         {/* Right Form */}
         <div className="col-12 col-md-6 d-flex justify-content-center align-items-center">
-          <form className="w-100" style={{ maxWidth: 400 }} noValidate onSubmit={handleRegister}>
+          <form className="w-100" style={{ maxWidth: 400 }} noValidate >
             <h2 className="mb-4">Create an account</h2>
 
             <div className="mb-3">
@@ -61,7 +33,6 @@ const Register = () => {
                 name="username"
                 autoComplete="username"
                 required
-                onChange={(e) => setUsername(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
               <small className="form-text text-muted">
@@ -77,7 +48,6 @@ const Register = () => {
                 name="email"
                 autoComplete="email"
                 required
-                onChange={(e) => setEmail(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
             </div>
@@ -91,7 +61,6 @@ const Register = () => {
                 name="firstName"
                 autoComplete="firstName"
                 required
-                onChange={(e) => setFirstName(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
             </div>
@@ -105,7 +74,6 @@ const Register = () => {
                 name="lastName"
                 autoComplete="lastName"
                 required
-                onChange={(e) => setLastName(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
             </div>
@@ -119,7 +87,6 @@ const Register = () => {
                 name="password"
                 autoComplete="new-password"
                 required
-                onChange={(e) => setPassword(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
               <small className="form-text text-muted">
@@ -135,7 +102,6 @@ const Register = () => {
                 name="confirmPassword"
                 autoComplete="new-password"
                 required
-                onChange={(e) => setConfirmPassword(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
             </div>

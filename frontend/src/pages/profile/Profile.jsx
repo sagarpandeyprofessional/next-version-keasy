@@ -1,28 +1,16 @@
 import { useEffect, useState } from 'react';
 import { get_user_profile_data } from '../../api/endpoints';
-import { SERVER_URL, MEDIA_SERVER_URL } from '../../api/constants';
-import styles from './styles/Profile.module.css';
-import { useNavigate, Link } from 'react-router-dom';
-import Button from 'react-bootstrap/Button';
+import { MEDIA_SERVER_URL } from '../../api/constants';
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
-    const get_username_from_url = () => {
-        const url_split = window.location.pathname.split('/');
-        return url_split[url_split.length-1]
-    }
-
-    const [username, setUsername] = useState(get_username_from_url())
-
-    useEffect(() => {
-        setUsername(get_username_from_url())
-    }, [])
 
     // Which tab is active? 'posts' or 'reels'
   const [activeTab, setActiveTab] = useState('posts');
 
   return (
     <div className="container my-4">
-      <ProfileHeader username={username}  />
+      <ProfileHeader   />
 
       {/* Tabs */}
       <div className="d-flex justify-content-center mt-4 border-bottom">
@@ -42,34 +30,13 @@ const Profile = () => {
 
       {/* Content */}
       <div className="mt-3">
-        {activeTab === 'posts' ? <UserPosts username={username} /> : <UserReels username={username} />}
+        {activeTab === 'posts' ? <UserPosts /> : <UserReels />}
       </div>
     </div>
   )
 }
 
-const ProfileHeader = ({username}) => {
-
-    const [loading, setLoading] = useState(true)
-    const [bio, setBio] = useState('')
-    const [profileImage, setProfileImage] = useState('')
-    const [isOurProfile, setIsOurProfile] = useState(false)
-    
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await get_user_profile_data(username)
-                setBio(data.bio)
-                setProfileImage(data.profile_image)
-                setIsOurProfile(data.is_our_profile)
-            } catch {
-                console.log('error')
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchData()
-    }, [])
+const ProfileHeader = () => {
 
     return (
         <div className="d-flex flex-column flex-sm-row align-items-center">
@@ -79,7 +46,7 @@ const ProfileHeader = ({username}) => {
                 style={{ width: 96, height: 96, overflow: 'hidden', position: 'relative' }}
             >
                 <img
-                    src={loading ? null : `${MEDIA_SERVER_URL}${profileImage}`}
+                    src=""
                     alt=''
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -87,20 +54,10 @@ const ProfileHeader = ({username}) => {
 
             {/* User Info */}
             <div className="text-center text-sm-start">
-                <h1 className="h3 mb-1">@{username}</h1>
-                <p className="mb-1 text-muted">{loading ? '-' : bio}</p>
-                {/* <p className="mb-1 text-muted">Followers: {loading ? '-' : followerCount}</p>
-                <p className="mb-0 text-muted small">Followings: {loading ? '-' : followingCount}</p> */}
+                <h1 className="h3 mb-1">@username</h1>
+                <p className="mb-1 text-muted">bio</p>
                 <div className="mt-3">
-                    {
-                        loading ?
-                        <></>/*to="/settings"*/
-                        :
-                            isOurProfile ?
                             <Link className='btn btn-dark btn-sm' to='/edit-profile/'>Edit Profile</Link>
-                            :
-                            <></>
-                    }
                 </div>
             </div>
         </div>
@@ -114,7 +71,7 @@ const ProfileHeader = ({username}) => {
 //   </div>
 // )
 
-const UserPosts = ({username}) => {
+const UserPosts = () => {
     // const [posts, setPosts] = useState([])
     // const [loading, setLoading] = useState(true)
 
@@ -140,15 +97,15 @@ const UserPosts = ({username}) => {
       {/* {posts.map(post => (
         <Post key={post.id} post={post} />
       ))} */}
-      <p>Posts coming soon for @{username}...</p>
+      <p>Posts coming soon for @username...</p>
     </div>
     )
 }
 
-const UserReels = ({username}) => {
+const UserReels = () => {
     return (
         <div>
-            <p>Reels coming soon for @{username}...</p>
+            <p>Reels coming soon for @username...</p>
             {/* You can add reel videos, autoplay, scroll etc here */}
         </div>
     )

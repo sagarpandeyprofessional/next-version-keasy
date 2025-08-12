@@ -31,7 +31,7 @@ const NavLinks = ({ onClick }) => {
  * Shows avatar initials, username, and menu with links + sign out button.
  * Also handles closing the dropdown when clicking outside the menu.
  */
-const AuthUserMenu = ({ username, userData, isOpen, toggleMenu, closeMenu }) => {
+const AuthUserMenu = () => {
   const userMenuRef = useRef(null);
 
   // Close dropdown if clicked outside menu
@@ -71,9 +71,9 @@ const AuthUserMenu = ({ username, userData, isOpen, toggleMenu, closeMenu }) => 
         aria-expanded={isOpen}
       >
         {/* Avatar circle with initials */}
-        <div className={`${styles.avatarFallback} rounded-circle`}>{getUserInitials()}</div>
+        <div className={`${styles.avatarFallback} rounded-circle`}>getUserInitials()</div>
         {/* Show username with '@' */}
-        <span>@{username}</span>
+        <span>@username</span>
         {/* Dropdown arrow icon */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +91,7 @@ const AuthUserMenu = ({ username, userData, isOpen, toggleMenu, closeMenu }) => 
       {isOpen && (
         <div className={`${styles.userMenu} shadow`}>
           {/* Links inside dropdown close the menu on click */}
-          <Link to={`/${username}`} className={styles.userMenuItem} onClick={closeMenu}>
+          <Link to={`/username`} className={styles.userMenuItem} onClick={closeMenu}>
             Your Profile
           </Link>
           <Link to="/marketplace/my" className={styles.userMenuItem} onClick={closeMenu}>
@@ -102,7 +102,7 @@ const AuthUserMenu = ({ username, userData, isOpen, toggleMenu, closeMenu }) => 
           </Link>
           {/* Sign out clears user data and reloads the page */}
           <button
-            onClick={handleLogout}
+            // onClick={handleLogout}
             className={styles.userMenuItemBtn}
           >
             Sign out
@@ -132,30 +132,30 @@ const GuestLinks = () => (
  * MobileMenu handles the navigation and user links when viewed on mobile devices.
  * It shows either user info + menu or guest links depending on auth state.
  */
-const MobileMenu = ({ isOpen, closeMenu, auth, authLoading, userData }) => {
-  // Same initials and display name helpers as desktop user menu
-  const getUserInitials = () => {
-    if (userData?.username) return userData.username.substring(0, 2).toUpperCase();
-    return 'U';
-  };
-  const getUserDisplayName = () => {
-    if (userData?.username) return `@${userData.username}`;
-    return 'User';
-  };
+const MobileMenu = () => {
+  // // Same initials and display name helpers as desktop user menu
+  // const getUserInitials = () => {
+  //   if (userData?.username) return userData.username.substring(0, 2).toUpperCase();
+  //   return 'U';
+  // };
+  // const getUserDisplayName = () => {
+  //   if (userData?.username) return `@${userData.username}`;
+  //   return 'User';
+  // };
 
-  // If mobile menu is closed, don't render anything
-  if (!isOpen) return null;
+  // // If mobile menu is closed, don't render anything
+  // if (!isOpen) return null;
 
   
-  const nav = useNavigate()
-  const handleLogout = async () => {
-        try {
-            await logout()
-            nav('/login')
-        } catch {
-            alert('error logging out')
-        }
-    }
+  // const nav = useNavigate()
+  // const handleLogout = async () => {
+  //       try {
+  //           await logout()
+  //           nav('/login')
+  //       } catch {
+  //           alert('error logging out')
+  //       }
+  //   }
 
   return (
     <div className={`d-md-none ${styles.mobileMenu}`}>
@@ -166,24 +166,24 @@ const MobileMenu = ({ isOpen, closeMenu, auth, authLoading, userData }) => {
         {/* Bottom auth section separated by border */}
         <div className="mt-3 border-top pt-3">
           {/* Show loading spinner while auth state is being checked */}
-          {authLoading ? (
+          {/* {authLoading ? ( */}
             <div className="d-flex align-items-center gap-2 px-3 py-2 text-muted">
               <div className={styles.spinner}></div>
               <span>Checking auth...</span>
             </div>
-          ) : auth ? (
+          {/* ) : auth ? ( */}
             <>
               {/* Show logged-in user's info */}
               <div className="d-flex align-items-center px-3 mb-2">
-                <div className={`${styles.avatarFallback} rounded-circle me-2`}>{getUserInitials()}</div>
+                <div className={`${styles.avatarFallback} rounded-circle me-2`}>getUserInitials()</div>
                 <div>
-                  <div className="fw-bold text-dark">{getUserDisplayName()}</div>
-                  <div className="text-muted">{userData?.email || 'No email available'}</div>
+                  <div className="fw-bold text-dark">getUserDisplayName()</div>
+                  <div className="text-muted">userData?.email</div>
                 </div>
               </div>
 
               {/* User-specific links */}
-              <Link to={`/${userData?.username}`} className={styles.mobileNavLink} onClick={closeMenu}>
+              <Link to={`/userData?.username`} className={styles.mobileNavLink} onClick={closeMenu}>
                 Your Profile
               </Link>
               <Link to="/marketplace/my" className={styles.mobileNavLink} onClick={closeMenu}>
@@ -194,13 +194,12 @@ const MobileMenu = ({ isOpen, closeMenu, auth, authLoading, userData }) => {
               </Link>
               {/* Sign out clears user data and reloads */}
               <button
-                onClick={handleLogout}
                 className={styles.mobileSignOutBtn}
               >
                 Sign out
               </button>
             </>
-          ) : (
+          {/* ) : ( */}
             // If user not logged in, show guest login/signup links
             <div className="d-flex flex-column gap-2 px-3">
               <Link to="/login" className={styles.mobileNavLink} onClick={closeMenu}>
@@ -210,7 +209,7 @@ const MobileMenu = ({ isOpen, closeMenu, auth, authLoading, userData }) => {
                 Sign up
               </Link>
             </div>
-          )}
+          {/* )} */}
         </div>
       </div>
     </div>
@@ -229,19 +228,19 @@ const Navbar = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   // Get auth info from global context
-  const { auth, authLoading } = useAuth();
+  // const { auth, authLoading } = useAuth();
 
   // Load user data from localStorage (saved on login)
-  const userData = JSON.parse(localStorage.getItem('userData')) || null;
+  // const userData = JSON.parse(localStorage.getItem('userData')) || null;
   // Use username or fallback to 'User'
-  const username = userData?.username || 'User';
+  // const username = userData?.username || 'User';
 
   // Toggles mobile menu open/close
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   // Toggles user dropdown open/close only if auth isn't loading
-  const toggleUserMenu = () => {
-    if (!authLoading) setIsUserMenuOpen(!isUserMenuOpen);
-  };
+  // const toggleUserMenu = () => {
+  //   if (!authLoading) setIsUserMenuOpen(!isUserMenuOpen);
+  // };
   // Close user dropdown menu
   const closeUserMenu = () => setIsUserMenuOpen(false);
   // Close mobile menu
@@ -265,24 +264,18 @@ const Navbar = () => {
         {/* Desktop authentication controls */}
         <div className="d-none d-md-flex align-items-center gap-3">
           {/* Show spinner if loading auth state */}
-          {authLoading ? (
+          {/* {authLoading ? ( */}
             <div className={`d-flex align-items-center gap-2 border rounded px-3 py-1 text-muted ${styles.loading}`}>
               <div className={styles.spinner}></div>
               <span>Checking auth...</span>
             </div>
-          ) : auth ? (
-            // Show user menu when authenticated
-            <AuthUserMenu
-              username={username}
-              userData={userData}
-              isOpen={isUserMenuOpen}
-              toggleMenu={toggleUserMenu}
-              closeMenu={closeUserMenu}
-            />
-          ) : (
-            // Show login/signup links when not authenticated
+          {/* // ) : auth ? ( */}
+            {/* // Show user menu when authenticated */}
+            {/* // <AuthUserMenu/> */}
+          {/* // ) : ( */}
+            {/* // Show login/signup links when not authenticated */}
             <GuestLinks />
-          )}
+          {/* // )} */}
         </div>
 
         {/* Mobile hamburger menu toggle button */}
@@ -325,13 +318,7 @@ const Navbar = () => {
       </div>
 
       {/* Mobile menu */}
-      <MobileMenu
-        isOpen={isMenuOpen}
-        closeMenu={closeMobileMenu}
-        auth={auth}
-        authLoading={authLoading}
-        userData={userData}
-      />
+      <MobileMenu/>
     </header>
   );
 };
