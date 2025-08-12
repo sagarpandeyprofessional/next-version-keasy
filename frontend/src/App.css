@@ -1,0 +1,25 @@
+/* Just some global base styles or reset */
+
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Inter', sans-serif; /* Or whatever font you want */
+  background-color: #fff;
+  color: #000;
+}
+
+/* Add scrollbar hide utility like your Tailwind original */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}

@@ -1,0 +1,27 @@
+.nearbyContainer {
+  max-width: 1140px;
+}
+
+.placeCard {
+  transition: box-shadow 0.3s ease;
+}
+
+.placeCard:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.cardHeader {
+  background-color: #f8f9fa;
+}
+
+.ratingBadge {
+  font-size: 0.9rem;
+}
+
+.guideCard {
+  transition: transform 0.2s ease;
+}
+
+.guideCard:hover {
+  transform: translateY(-5px);
+}

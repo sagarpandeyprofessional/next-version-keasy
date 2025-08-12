@@ -1,0 +1,11 @@
+/* replicate flex min-h-screen flex-col */
+.appWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* main grows to fill space */
+.mainContent {
+  flex-grow: 1;
+}

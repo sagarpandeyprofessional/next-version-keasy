@@ -1,0 +1,56 @@
+.heroImage {
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  opacity: 0.2;
+  z-index: 0;
+}
+
+.carouselWrapper {
+  position: relative;
+}
+
+.carouselContainer {
+  scroll-snap-type: x mandatory;
+  scroll-padding: 1rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.carouselContainer::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.carouselContainer > * {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+  margin-right: 1rem;
+}
+
+.festival-card:hover {
+  transform: translateY(-5px);
+  transition: transform 0.3s ease;
+}
+
+.festival-card {
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  transition: transform 0.3s ease;
+}
+
+.chatbotButton {
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.object-fit-cover {
+  object-fit: cover;
+}
