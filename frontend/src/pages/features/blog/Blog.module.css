@@ -1,0 +1,29 @@
+/* BlogPage.module.css */
+
+.readMoreBtn {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.readMoreBtn:hover {
+  color: #2563eb; /* Tailwind's blue-600 */
+}
+
+.noPostsMessage {
+  font-style: italic;
+  text-align: center;
+  padding: 2rem 0;
+  color: #9ca3af; /* Tailwind gray-400 */
+}
+
+.postTitle {
+  /* If you want a special font or letter spacing */
+  letter-spacing: 0.02em;
+  font-family: 'Georgia', serif;
+}
+
+.postExcerpt {
+  line-height: 1.6;
+  font-size: 1rem;
+  color: #374151; /* Tailwind gray-700 */
+}

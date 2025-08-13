@@ -1,0 +1,59 @@
+.marketplaceItem {
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.imageWrapper {
+  position: relative;
+}
+
+.itemImage {
+  height: 200px;
+  object-fit: cover;
+}
+
+.conditionBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.conditionBadge.new {
+  background-color: #28a745;
+}
+
+.conditionBadge.used {
+  background-color: #ffc107;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.price {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.viewBtn {
+  width: 100%;
+}

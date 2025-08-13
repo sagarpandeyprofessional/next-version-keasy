@@ -1,0 +1,27 @@
+/* Custom spacing and colors */
+.container {
+  max-width: 960px;
+}
+
+/* Card tweaks */
+.card {
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+.cardHeader {
+  background-color: #f8f9fa; /* Light gray bootstrap */
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+}
+
+/* Info list */
+.infoList li {
+  margin-bottom: 0.3rem;
+}

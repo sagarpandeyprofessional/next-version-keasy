@@ -1,0 +1,21 @@
+.communityContainer {
+  max-width: 1140px;
+}
+
+.groupCard {
+  transition: box-shadow 0.3s ease;
+}
+
+.groupCard:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.cardHeader {
+  background-color: #f8f9fa;
+}
+
+.categoryBadge {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
