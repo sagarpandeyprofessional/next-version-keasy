@@ -1,0 +1,21 @@
+.editCard {
+  background-color: #fff;
+  border-radius: 12px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  text-decoration: none;
+  color: #000;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.iconLarge {
+  font-size: 3rem;
+  color: #6c757d;
+}

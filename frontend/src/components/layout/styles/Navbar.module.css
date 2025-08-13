@@ -1,0 +1,273 @@
+/* Base navbar */
+.navbar {
+  background-color: var(--bs-body-bg, #fff);
+  padding: 0.75rem 1.5rem; /* more vertical and horizontal breathing room */
+}
+
+/* Brand text */
+.brand {
+  font-weight: 700;
+  font-size: 1.5rem; /* bumped up from 1.25rem */
+  color: var(--bs-body-color, #000);
+  text-decoration: none;
+  padding: 0.25rem 0;
+}
+
+.brand:hover {
+  text-decoration: underline;
+}
+
+/* Nav links desktop */
+.navLink {
+  font-weight: 600; /* a bit bolder */
+  color: var(--bs-body-color, #000);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-size: 1.125rem; /* 18px, bigger than default */
+  padding: 0.5rem 0.75rem; /* vertical and horizontal padding */
+}
+
+.navLink:hover {
+  text-decoration: underline;
+  color: var(--bs-primary, #0d6efd);
+}
+
+/* Auth buttons desktop */
+.authLink {
+  padding: 0.5rem 1.25rem; /* bigger click area */
+  font-weight: 600;
+  color: var(--bs-body-color, #000);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 1.125rem; /* larger text */
+  transition: background-color 0.2s ease;
+}
+
+.authLink:hover {
+  background-color: #f8f9fa;
+  text-decoration: underline;
+}
+
+.signupBtn {
+  background-color: #000;
+  color: #fff;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1.125rem;
+  transition: background-color 0.2s ease;
+}
+
+.signupBtn:hover {
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* User button */
+.userButton {
+  background: transparent;
+  border: 1.5px solid #ced4da; /* thicker border for emphasis */
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: var(--bs-body-color, #000);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.userButton:hover {
+  background-color: #f8f9fa;
+}
+
+/* Avatar fallback initials */
+.avatarFallback {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem; /* slightly bigger */
+  width: 32px; /* bigger avatar */
+  height: 32px;
+  user-select: none;
+}
+
+/* Dropdown arrow */
+.dropdownIcon {
+  width: 18px; /* a bit bigger */
+  height: 18px;
+  margin-left: 0.3rem;
+}
+
+/* User menu dropdown */
+.userMenu {
+  position: absolute;
+  right: 0;
+  margin-top: 0.5rem;
+  width: 14rem; /* wider dropdown */
+  background-color: var(--bs-body-bg, #fff);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  padding: 0.5rem 0;
+}
+
+/* User menu items */
+.userMenuItem,
+.userMenuItemBtn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.25rem; /* more comfy click target */
+  font-size: 1rem; /* larger text */
+  color: var(--bs-body-color, #000);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.userMenuItem:hover,
+.userMenuItemBtn:hover {
+  background-color: #f8f9fa;
+}
+
+/* Mobile menu */
+.mobileMenu {
+  background-color: var(--bs-body-bg, #fff);
+  border-top: 1px solid #dee2e6;
+  padding-bottom: 1rem;
+  z-index: 1050;
+}
+
+/* Mobile nav links */
+.mobileNavLink {
+  display: block;
+  padding: 0.75rem 1.25rem; /* bigger tappable area */
+  font-size: 1.25rem; /* bigger text for touch */
+  font-weight: 600;
+  color: var(--bs-body-color, #000);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.mobileNavLink:hover {
+  background-color: #f8f9fa;
+  text-decoration: underline;
+}
+
+/* Mobile sign out button */
+.mobileSignOutBtn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--bs-body-color, #000);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.mobileSignOutBtn:hover {
+  background-color: #f8f9fa;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 2.5px solid #f3f3f3; /* thicker for bigger spinner */
+  border-top: 2.5px solid #000;
+  border-radius: 50%;
+  width: 20px; /* bigger spinner */
+  height: 20px;
+  animation: spin 0.75s linear infinite;
+}
+
+/* Spin animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .navLink {
+    font-size: 1rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .authLink,
+  .signupBtn,
+  .userButton {
+    font-size: 1rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .avatarFallback {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .dropdownIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .userMenu {
+    width: 12rem;
+  }
+
+  .userMenuItem,
+  .userMenuItemBtn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .mobileNavLink,
+  .mobileSignOutBtn {
+    font-size: 1.125rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+
+  .brand {
+    font-size: 1.25rem;
+  }
+}
+
+/* Dark mode overrides */
+:root.dark & {
+  --bs-body-bg: #1a1a1a;
+  --bs-body-color: #eee;
+}
+
+:root.dark .avatarFallback {
+  background-color: #444;
+  color: #ddd;
+}
+
+:root.dark .userButton:hover,
+:root.dark .userMenuItem:hover,
+:root.dark .mobileNavLink:hover,
+:root.dark .mobileSignOutBtn:hover {
+  background-color: #333;
+  color: #eee;
+}

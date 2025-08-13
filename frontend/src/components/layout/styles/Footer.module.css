@@ -1,0 +1,79 @@
+.footer {
+  background-color: #000;
+  color: #fff;
+}
+
+/* Instagram carousel */
+.instaCarousel {
+  background-color: #1a1a1a;
+  overflow: hidden;
+}
+
+.instaPost {
+  flex-shrink: 0;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 0.5rem;
+  background-color: #2a2a2a;
+}
+
+/* Section Titles */
+.sectionTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+/* Links */
+.link {
+  color: #ccc;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link:hover,
+.link:focus {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Light text */
+.textLight {
+  color: #bbb;
+  font-size: 0.9rem;
+}
+
+/* Bottom copyright text */
+.bottom {
+  border-color: #222;
+}
+
+.textMuted {
+  color: #777;
+  font-size: 0.8rem;
+}
+
+/* Dark mode - you can toggle .dark class on body or root */
+:root.dark & {
+  background-color: #000;
+}
+
+:root.dark .instaCarousel {
+  background-color: #111;
+}
+
+:root.dark .instaPost {
+  background-color: #222;
+}
+
+:root.dark .link {
+  color: #bbb;
+}
+
+:root.dark .link:hover {
+  color: #fff;
+}
