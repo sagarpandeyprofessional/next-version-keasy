@@ -5,6 +5,17 @@ import { useAuth } from '../../../context/useAuth'
 
 export default function Login() {
   
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const navigate = useNavigate();
+
+  const { auth_login } = useAuth();
+
+  const handleLogin = async () => {
+    event.preventDefault();  // Prevent default page refresh
+    auth_login(username, password)
+  }
 
   return (
     <div className={`d-flex flex-column min-vh-100 justify-content-center align-items-center p-3`}>
@@ -23,7 +34,7 @@ export default function Login() {
 
         {/* Right form */}
         <div className="col-12 col-md-6 d-flex justify-content-center align-items-center">
-          <form className="w-100" style={{ maxWidth: 400 }} noValidate>
+          <form className="w-100" style={{ maxWidth: 400 }} onSubmit={handleLogin} noValidate>
             <h2 className="mb-4">Log in to your account</h2>
 
             
@@ -38,7 +49,8 @@ export default function Login() {
                 name="username"
                 autoComplete="username"
                 required
-                value="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
             </div>
@@ -60,7 +72,8 @@ export default function Login() {
               name="password"
               autoComplete="current-password"
               required
-              value="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className={`form-control ${styles.input}`}
             />
 

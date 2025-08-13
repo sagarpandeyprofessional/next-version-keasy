@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
 
 // context
-// import { AuthProvider } from './context/useAuth'
+import { AuthProvider } from './context/useAuth'
 
 // components
 import Layout from './components/layout/Layout'
