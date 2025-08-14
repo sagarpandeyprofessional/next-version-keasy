@@ -34,6 +34,16 @@ export const AuthProvider = ({ children }) => {
           email: data.session.user.email,
         };
         localStorage.setItem("userData", JSON.stringify(userData));
+
+        const { data: usernameData, error } = await supabase
+        .from("users")
+        .select("username, email")
+        .eq("email", userData.email)
+        .single();
+
+        if(usernameData){
+          localStorage.setItem("username", JSON.stringify(usernameData.username));
+        }
       }
     } catch (error) {
       console.error("Error fetching session:", error);
