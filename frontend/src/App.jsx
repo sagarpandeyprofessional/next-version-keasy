@@ -33,6 +33,7 @@ import MarketplaceItemEdit from './pages/features/marketplace/MarketplaceItemEdi
 
 
 function App() {
+
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -42,7 +43,7 @@ function App() {
           <Route element={<Layout><SignIn/></Layout>} path="/sign-in" />
           <Route element={<Layout><SignUp/></Layout>} path="/sign-up" />
           <Route element={<Layout><Home/></Layout>} path="/" />
-          <Route element={<Layout><PrivateRoute><Profile/></PrivateRoute></Layout>} path="/:username" />
+          <Route element={<Layout><PrivateRoute><Profile/></PrivateRoute></Layout>} path=":username" />
           <Route element={<Layout><PrivateRoute><EditProfile/></PrivateRoute></Layout>} path="/edit-profile" />
 
           {/* Static Pages */}

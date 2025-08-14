@@ -52,6 +52,7 @@ export const AuthProvider = ({ children }) => {
       await supabase.auth.signOut();
       setAuth(false);
       localStorage.removeItem("userData"); // remove stored user data
+      localStorage.removeItem("username"); // remove stored username
     } catch (error) {
       console.error("Error logging out:", error);
     }

@@ -72,11 +72,11 @@ const AuthUserMenu = ({ username, userData, isOpen, toggleMenu, closeMenu, logou
 };
 
 // Mobile menu
-const MobileMenu = ({ isOpen, closeMenu, auth, authLoading, userData, logout }) => {
+const MobileMenu = ({ isOpen, closeMenu, auth, authLoading, userData, logout,username }) => {
   if (!isOpen) return null;
 
-  const getUserInitials = () => userData?.username?.substring(0, 2).toUpperCase() || 'U';
-  const getUserDisplayName = () => `@${userData?.username || 'User'}`;
+  const getUserInitials = () => username?.toUpperCase() || 'U';
+  const getUserDisplayName = () => `@${username || 'User'}`;
 
   return (
     <div className={`d-md-none ${styles.mobileMenu}`}>
@@ -121,7 +121,7 @@ const Navbar = () => {
 
   const { auth, authLoading, logout } = useAuth();
   const userData = JSON.parse(localStorage.getItem('userData')) || null;
-  const username = userData?.username || 'User';
+  const username = localStorage.getItem('username') || 'User';
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleUserMenu = () => !authLoading && setIsUserMenuOpen(!isUserMenuOpen);
@@ -175,7 +175,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      <MobileMenu isOpen={isMenuOpen} closeMenu={closeMobileMenu} auth={auth} authLoading={authLoading} userData={userData} logout={logout} />
+      <MobileMenu isOpen={isMenuOpen} closeMenu={closeMobileMenu} auth={auth} authLoading={authLoading} userData={userData} logout={logout} username={username} />
     </header>
   );
 };
