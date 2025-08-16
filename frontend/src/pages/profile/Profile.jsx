@@ -1,53 +1,43 @@
-import { useEffect, useState } from 'react';
-import styles from './styles/Profile.module.css';
-import { useNavigate, Link } from 'react-router-dom';
-import { useParams } from "react-router-dom";
-import { supabase } from '../../api/supabase-client';
+import { useEffect, useState } from "react"
+import styles from './styles/Profile.module.css'
+import { useNavigate, Link, useParams } from "react-router-dom"
+import { supabase } from "../../api/supabase-client"
 
 const Profile = () => {
 
-  const { username: usernameFromUrl } = useParams();
-  const [userExists, setUserExists] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { username: usernameFromUrl } = useParams()
+  const [ userExist, setUserExist ] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    
     const checkUser = async () => {
-      //Fetch user with their username from database
-      const { data, error } = await supabase
-      .from("users")
-      .select("username, email")
-      .eq("username", usernameFromUrl)
-      .single();
+      //Fetch user with username from database
+      const { data, error } = await supabase.from('profiles').select('username').eq('username', usernameFromUrl).single();
 
-      if(error) {
-        setUserExists(false)
-      } else {
-        setUserExists(true)
+      if(error){
+        setUserExist(false)
       }
+      else {
+        setUserExist(true)
 
-      setLoading(false);
+      }
+      setLoading(false)
     };
 
-    if(usernameFromUrl) {
-      checkUser();
+    if(usernameFromUrl){
+      checkUser()
     }
+  }, [usernameFromUrl])
 
-  }, [usernameFromUrl]);
-
-
-    // Which tab is active? 'posts' or 'reels'
-  const [activeTab, setActiveTab] = useState('posts');
-
-  
-  if(loading) return <p>Loading...</p>
+  //Which tab is active? 'posts' or 'reels'
+  const [activeTab, setActiveTab] = useState('posts')
 
   return (
     <>
-      {!userExists && <p>User not found</p>}
-      {userExists && (
+      {!userExist && <p>User not found</p>}
+      {userExist && (
         <div className="container my-4">
-        <ProfileHeader usernameFromUrl={usernameFromUrl}  />
+        <ProfileHeader usernameFromUrl={usernameFromUrl} />
 
         {/* Tabs */}
         <div className="d-flex justify-content-center mt-4 border-bottom">
@@ -85,8 +75,8 @@ useEffect(() => {
   // Get profile
   const getProfile = async () => {
     const { data, error } = await supabase
-      .from("users")
-      .select("email, first_name, last_name, pfp_url, bio, role, plan")
+      .from("profiles")
+      .select("user_id, username, first_name, last_name, pfp_url, bio")
       .eq("username", usernameFromUrl)
       .single();
 
@@ -109,8 +99,8 @@ useEffect(() => {
 
 // Separate effect to check ownership
 useEffect(() => {
-  if (session?.user?.email && profile?.email) {
-    setIsOurProfile(session.user.email === profile.email);
+  if (session?.user?.id && profile?.user_id) {
+    setIsOurProfile(session.user.id === profile.user_id);
   }
 }, [session, profile]);
 
@@ -128,7 +118,7 @@ useEffect(() => {
             >
                 <img
                     src={profile?.pfp_url || ""}
-                    alt={`${usernameFromUrl}`}
+                    alt={`${profile?.username}`}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
             </div>
@@ -150,6 +140,9 @@ useEffect(() => {
         </div>
     );
 }
+
+
+
 
 // const Post = ({post}) => (
 //     <div className="border rounded mb-4 p-3 bg-white shadow-sm">

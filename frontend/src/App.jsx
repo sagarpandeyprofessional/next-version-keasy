@@ -1,26 +1,31 @@
-import { BrowserRouter, Route, Routes } from 'react-router'
+// lib
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+
+// css
 import './App.css'
 
 // context
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
+
+// private route
+import PrivateRoute from './components/privateRoute/PrivateRoute'
 
 // components
 import Layout from './components/layout/Layout'
-import PrivateRoute from './components/privateRoute/PrivateRoute'
 
-// main pages
+// pages
 import Home from './pages/home/Home'
 import SignIn from './pages/auth/SignIn'
 import SignUp from './pages/auth/SignUp'
 import Profile from './pages/profile/Profile'
 import EditProfile from './pages/profile/EditProfile'
 
-// static Pages
+// static pages
 import About from './pages/static/about/About'
 import Contact from './pages/static/contact/Contact'
 import FAQ from './pages/static/faq/FAQ'
 
-// features pages
+//features pages
 import Nearby from './pages/features/nearby/Nearby'
 import Community from './pages/features/community/Community'
 import Blog from './pages/features/blog/Blog'
@@ -31,19 +36,16 @@ import MyListingPage from './pages/features/marketplace/MyListing'
 import MarketplaceItemPage from './pages/features/marketplace/MarketplaceItem'
 import MarketplaceItemEdit from './pages/features/marketplace/MarketplaceItemEdit'
 
-
 function App() {
-
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      <Router>
         <Routes>
-
-          {/* Main Pages */}
-          <Route element={<Layout><SignIn/></Layout>} path="/sign-in" />
-          <Route element={<Layout><SignUp/></Layout>} path="/sign-up" />
+           {/* Main Pages */}
+          <Route element={<Layout><SignIn/></Layout>} path="/signin" />
+          <Route element={<Layout><SignUp/></Layout>} path="/signup" />
           <Route element={<Layout><Home/></Layout>} path="/" />
-          <Route element={<Layout><PrivateRoute><Profile/></PrivateRoute></Layout>} path=":username" />
+          <Route element={<Layout><PrivateRoute><Profile/></PrivateRoute></Layout>} path="/profile/:username" />
           <Route element={<Layout><PrivateRoute><EditProfile/></PrivateRoute></Layout>} path="/edit-profile" />
 
           {/* Static Pages */}
@@ -66,8 +68,8 @@ function App() {
           <Route element={<Layout><MarketplaceItemPage /></Layout>} path='/marketplace/1' />
           <Route element={<Layout><MarketplaceItemEdit /></Layout>} path='/marketplace/1/edit' />
         </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+      </Router>
+    </AuthProvider>
   )
 }
 

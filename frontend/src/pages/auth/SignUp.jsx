@@ -1,115 +1,27 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from './styles/SignUp.module.css';
-import { supabase } from '../../api/supabase-client';
+// src/pages/SignUp.jsx
+import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import styles from './styles/SignUp.module.css'
 
 const SignUp = () => {
-  //  Username state
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
-  const [usernameAvailable, setUsernameAvailable] = useState(null);
-
-  // Existing states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [passwordMatch, setPasswordMatch] = useState(true);
 
-  const navigate = useNavigate();
-
-  // Real-time username availability check (debounced)
-  useEffect(() => {
-    // If username is empty, reset availability status
-    if (!username.trim()) {
-      setUsernameAvailable(null);
-      return;
-    }
-
-    // Wait 500ms after last keystroke before checking DB
-    const delayDebounce = setTimeout(async () => {
-      // Query the "profiles" table for a matching username
-      const { data, error } = await supabase
-        .from("users")
-        .select("username")
-        .eq("username", username.trim())
-        .maybeSingle();
-
-      if (error) {
-        console.error(error);
-        setUsernameAvailable(null);
-        return;
-      }
-
-      // If no data found => username is available
-      setUsernameAvailable(!data);
-    }, 500);
-
-    // Cleanup timeout if user types again before 500ms
-    return () => clearTimeout(delayDebounce);
-  }, [username]);
-
-  // Existing: Real-time password validation
-  useEffect(() => {
-    if (password && password.length < 8) {
-      setPasswordError("Password must be at least 8 characters long.");
-    } else {
-      setPasswordError("");
-    }
-    setPasswordMatch(password === confirmPassword);
-  }, [password, confirmPassword]);
-
-  // Handle registration
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Username availability check
-    if (!usernameAvailable) {
-      alert("Username is already taken.");
-      return;
+    try {
+      await signUp({ username, email, password });
+      alert("Account created! Please sign in.");
+      navigate("/signin");
+    } catch (err) {
+      alert(err.message);
     }
-
-    // Password validation
-    if (passwordError || !passwordMatch) {
-      alert("Please fix password issues before signing up!");
-      return;
-    }
-
-    // 1 Create the Auth account in Supabase
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error("Error signing up: ", error.message);
-      return;
-    }
-
-    // 2️ Insert user details into your public.users table
-    const authUser = data.user; // This comes from Supabase Auth
-    if (authUser) {
-      const { error: insertError } = await supabase.from("users").insert([
-        {
-          username: username.trim(),
-          email: email.trim(), // store email in your table too
-          first_name: null,
-          last_name: null,
-          pfp_url: null,
-        },
-      ]);
-
-      if (insertError) {
-        console.error("Error inserting user into public.users:", insertError.message);
-        return;
-      }
-    }
-
-    localStorage.setItem("username", username);
-
-    // 3️ Redirect after successful registration
-    alert("Check your Email for Verification!")
   };
-
 
   return (
     <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center p-3">
@@ -129,7 +41,7 @@ const SignUp = () => {
 
         {/* Right Form */}
         <div className="col-12 col-md-6 d-flex justify-content-center align-items-center">
-          <form className="w-100" style={{ maxWidth: 400 }} noValidate onSubmit={handleRegister}>
+          <form className="w-100" style={{ maxWidth: 400 }} noValidate onSubmit={handleSubmit}>
             <h2 className="mb-4">Create an account</h2>
 
             {/* Username input */}
@@ -140,17 +52,19 @@ const SignUp = () => {
                 id="username"
                 name="username"
                 autoComplete="username"
+                placeholder="Username"
+                value={username}
                 required
                 onChange={(e) => setUsername(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
               {/* Show real-time username check messages */}
-              {username && usernameAvailable === false && (
+              {/* {username && usernameAvailable === false && (
                 <p className="text-danger mt-1">Username is already taken</p>
               )}
               {username && usernameAvailable === true && (
                 <p className="text-success mt-1">Username is available</p>
-              )}
+              )} */}
             </div>
 
             {/* Existing Email input */}
@@ -161,6 +75,8 @@ const SignUp = () => {
                 id="email"
                 name="email"
                 autoComplete="email"
+                placeholder="Email"
+                value={email}
                 required
                 onChange={(e) => setEmail(e.target.value)}
                 className={`form-control ${styles.input}`}
@@ -175,6 +91,8 @@ const SignUp = () => {
                 id="password"
                 name="password"
                 autoComplete="new-password"
+                placeholder="Password"
+                value={password}
                 required
                 onChange={(e) => setPassword(e.target.value)}
                 className={`form-control ${styles.input}`}
@@ -182,7 +100,7 @@ const SignUp = () => {
               <small className="form-text text-muted">
                 Password must be at least 8 characters long.
               </small>
-              {passwordError && <p className="text-danger mt-1">{passwordError}</p>}
+              {/* {passwordError && <p className="text-danger mt-1">{passwordError}</p>} */}
             </div>
 
             {/* Existing Confirm Password input */}
@@ -197,12 +115,12 @@ const SignUp = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className={`form-control ${styles.input}`}
               />
-              {!passwordMatch && confirmPassword && (
+              {/* {!passwordMatch && confirmPassword && (
                 <p className="text-danger mt-1">Passwords do not match</p>
               )}
               {passwordMatch && confirmPassword && !passwordError && (
                 <p className="text-success mt-1">Passwords match!</p>
-              )}
+              )} */}
             </div>
 
             {/* Submit button */}
@@ -223,6 +141,7 @@ const SignUp = () => {
         </div>
       </div>
     </div>
+
   );
 };
 

@@ -1,28 +1,27 @@
-import { Link, useNavigate } from 'react-router-dom';
+// src/pages/SignIn.jsx
+import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 import styles from './styles/SignIn.module.css';
-import { useState } from 'react';
-import { supabase } from '../../api/supabase-client';
 
 const SignIn = () => {
-    
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const navigate = useNavigate();
-
-    const handleLogin = async (e) => {
-        e.preventDefault()
-
-        const { error } = await supabase.auth.signInWithPassword({email, password,})
-        if(error) {
-            alert(`Error signing in: ${error.message}`)
-            return;
-        } else {
-            navigate('/')
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await signIn({ email, password });
+      navigate("/profile");
+    } catch (err) {
+      alert(err.message);
     }
-    return (
-        <div className={`d-flex flex-column min-vh-100 justify-content-center align-items-center p-3`}>
+  };
+
+  return (
+    <div className={`d-flex flex-column min-vh-100 justify-content-center align-items-center p-3`}>
         <div className="row w-100 max-w-1000 mx-auto">
             {/* Left image - hidden on small */}
             <div className="d-none d-md-flex col-md-6 justify-content-center align-items-center">
@@ -38,7 +37,7 @@ const SignIn = () => {
 
             {/* Right form */}
             <div className="col-12 col-md-6 d-flex justify-content-center align-items-center">
-            <form className="w-100" style={{ maxWidth: 400 }} onSubmit={handleLogin} noValidate>
+            <form className="w-100" style={{ maxWidth: 400 }} onSubmit={handleSubmit} noValidate>
                 <h2 className="mb-4">Sign in to your account</h2>
 
                 
@@ -48,10 +47,11 @@ const SignIn = () => {
                     Email
                 </label>
                 <input
-                    type="text"
+                    type="email"
                     id="email"
                     name="email"
                     autoComplete="email"
+                    placeholder="Email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -75,6 +75,7 @@ const SignIn = () => {
                 id="password"
                 name="password"
                 autoComplete="current-password"
+                placeholder="Password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -103,7 +104,7 @@ const SignIn = () => {
             </div>
         </div>
         </div>
-    )
-}
+  );
+};
 
-export default SignIn
+export default SignIn;
