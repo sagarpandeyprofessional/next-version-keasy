@@ -1,155 +1,157 @@
-import { useEffect, useState } from "react";
-import { useNavigate, Link, useParams } from "react-router-dom";
-import { supabase } from "../../api/supabase-client";
+import { useEffect, useState } from 'react';
+import { get_user_profile_data } from '../../api/endpoints';
+import { SERVER_URL, MEDIA_SERVER_URL } from '../../api/constants';
+import styles from './styles/Profile.module.css';
+import { useNavigate, Link } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
 
 const Profile = () => {
-  const { username: usernameFromUrl } = useParams();
-  const [userExist, setUserExist] = useState(false);
-  const [loading, setLoading] = useState(true);
+    const get_username_from_url = () => {
+        const url_split = window.location.pathname.split('/');
+        return url_split[url_split.length-1]
+    }
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("username", usernameFromUrl)
-        .single();
+    const [username, setUsername] = useState(get_username_from_url())
 
-      if (error) setUserExist(false);
-      else setUserExist(true);
+    useEffect(() => {
+        setUsername(get_username_from_url())
+    }, [])
 
-      setLoading(false);
-    };
-
-    if (usernameFromUrl) checkUser();
-  }, [usernameFromUrl]);
-
-  const [activeTab, setActiveTab] = useState("posts");
-
-  if (loading) return <p className="text-center mt-12 text-gray-500">Loading...</p>;
-  if (!userExist) return <p className="text-center mt-12 text-red-500">User not found</p>;
+    // Which tab is active? 'posts' or 'reels'
+  const [activeTab, setActiveTab] = useState('posts');
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <ProfileHeader usernameFromUrl={usernameFromUrl} />
+    <div className="container my-4">
+      <ProfileHeader username={username}  />
 
       {/* Tabs */}
-      <div className="flex justify-center mt-8 border-b border-gray-300 dark:border-gray-700">
-        {["posts", "reels"].map((tab) => (
-          <button
-            key={tab}
-            className={`px-4 py-2 -mb-px font-medium ${
-              activeTab === tab
-                ? "border-b-2 border-black dark:border-white text-black dark:text-white"
-                : "text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+      <div className="d-flex justify-content-center mt-4 border-bottom">
+        <button
+          className={`btn btn-link ${activeTab === 'posts' ? 'fw-bold text-dark' : 'text-muted'}`}
+          onClick={() => setActiveTab('posts')}
+        >
+          Posts
+        </button>
+        <button
+          className={`btn btn-link ${activeTab === 'reels' ? 'fw-bold text-dark' : 'text-muted'}`}
+          onClick={() => setActiveTab('reels')}
+        >
+          Reels
+        </button>
       </div>
 
-      {/* Tab Content */}
-      <div className="mt-6">
-        {activeTab === "posts" ? (
-          <UserPosts usernameFromUrl={usernameFromUrl} />
-        ) : (
-          <UserReels usernameFromUrl={usernameFromUrl} />
-        )}
+      {/* Content */}
+      <div className="mt-3">
+        {activeTab === 'posts' ? <UserPosts username={username} /> : <UserReels username={username} />}
       </div>
     </div>
-  );
-};
+  )
+}
 
-const ProfileHeader = ({ usernameFromUrl }) => {
-  const [profile, setProfile] = useState(null);
-  const [isOurProfile, setIsOurProfile] = useState(false);
-  const [session, setSession] = useState(null);
+const ProfileHeader = ({username}) => {
 
-  useEffect(() => {
-    const getProfile = async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("user_id, username, first_name, last_name, pfp_url, bio")
-        .eq("username", usernameFromUrl)
-        .single();
+    const [loading, setLoading] = useState(true)
+    const [bio, setBio] = useState('')
+    const [profileImage, setProfileImage] = useState('')
+    const [isOurProfile, setIsOurProfile] = useState(false)
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await get_user_profile_data(username)
+                setBio(data.bio)
+                setProfileImage(data.profile_image)
+                setIsOurProfile(data.is_our_profile)
+            } catch {
+                console.log('error')
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchData()
+    }, [])
 
-      if (!error) setProfile(data);
-    };
-    getProfile();
-
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-    };
-    getSession();
-  }, [usernameFromUrl]);
-
-  useEffect(() => {
-    if (session?.user?.id && profile?.user_id) {
-      setIsOurProfile(session.user.id === profile.user_id);
-    }
-  }, [session, profile]);
-
-  return (
-    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
-      {/* Avatar */}
-      <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
-        {profile?.pfp_url ? (
-          <img
-            src={profile.pfp_url}
-            alt={profile.username}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="flex items-center justify-center w-full h-full text-2xl font-bold text-gray-500 dark:text-gray-300">
-            {profile?.username?.charAt(0).toUpperCase() || "U"}
-          </span>
-        )}
-      </div>
-
-      {/* User Info */}
-      <div className="text-center sm:text-left">
-        <h1 className="text-2xl font-bold">@{usernameFromUrl}</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {profile?.first_name} {profile?.last_name}
-        </p>
-        <p className="mt-2 text-gray-700 dark:text-gray-300">{profile?.bio}</p>
-
-        {isOurProfile && (
-          <div className="mt-4">
-            <Link
-              to="/edit-profile/"
-              className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition"
+    return (
+        <div className="d-flex flex-column flex-sm-row align-items-center">
+            {/* Avatar */}
+            <div
+                className="rounded-circle bg-dark text-white d-flex justify-content-center align-items-center fw-bold fs-3 me-sm-4 mb-3 mb-sm-0"
+                style={{ width: 96, height: 96, overflow: 'hidden', position: 'relative' }}
             >
-              Edit Profile
-            </Link>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+                <img
+                    src={loading ? null : `${MEDIA_SERVER_URL}${profileImage}`}
+                    alt=''
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+            </div>
 
-const UserPosts = ({ usernameFromUrl }) => {
-  return (
-    <div className="space-y-4">
-      <div className="p-6 border rounded-lg bg-white dark:bg-gray-800 shadow-sm text-gray-700 dark:text-gray-200">
-        <p>Posts coming soon for @{usernameFromUrl}...</p>
-      </div>
-    </div>
-  );
-};
+            {/* User Info */}
+            <div className="text-center text-sm-start">
+                <h1 className="h3 mb-1">@{username}</h1>
+                <p className="mb-1 text-muted">{loading ? '-' : bio}</p>
+                {/* <p className="mb-1 text-muted">Followers: {loading ? '-' : followerCount}</p>
+                <p className="mb-0 text-muted small">Followings: {loading ? '-' : followingCount}</p> */}
+                <div className="mt-3">
+                    {
+                        loading ?
+                        <></>/*to="/settings"*/
+                        :
+                            isOurProfile ?
+                            <Link className='btn btn-dark btn-sm' to='/edit-profile/'>Edit Profile</Link>
+                            :
+                            <></>
+                    }
+                </div>
+            </div>
+        </div>
+    );
+}
 
-const UserReels = ({ usernameFromUrl }) => {
-  return (
-    <div className="space-y-4">
-      <div className="p-6 border rounded-lg bg-white dark:bg-gray-800 shadow-sm text-gray-700 dark:text-gray-200">
-        <p>Reels coming soon for @{usernameFromUrl}...</p>
-      </div>
-    </div>
-  );
-};
+// const Post = ({post}) => (
+//     <div className="border rounded mb-4 p-3 bg-white shadow-sm">
+//     <p>{post.description}</p>
+//     {/* Here you can add images, likes, comments count, etc */}
+//   </div>
+// )
 
-export default Profile;
+const UserPosts = ({username}) => {
+    // const [posts, setPosts] = useState([])
+    // const [loading, setLoading] = useState(true)
+
+    // useEffect(() => {
+
+    //     const fetchPosts = async () => {
+    //         try {
+    //             const posts = await get_users_posts(username)
+    //             setPosts(posts)
+    //         } catch {
+    //             alert('error getting users posts')
+    //         } finally {
+    //             setLoading(false)
+    //         }
+    //     }
+
+    //     fetchPosts()
+
+    // }, [username])
+
+    return (
+    <div>
+      {/* {posts.map(post => (
+        <Post key={post.id} post={post} />
+      ))} */}
+      <p>Posts coming soon for @{username}...</p>
+    </div>
+    )
+}
+
+const UserReels = ({username}) => {
+    return (
+        <div>
+            <p>Reels coming soon for @{username}...</p>
+            {/* You can add reel videos, autoplay, scroll etc here */}
+        </div>
+    )
+}
+
+export default Profile

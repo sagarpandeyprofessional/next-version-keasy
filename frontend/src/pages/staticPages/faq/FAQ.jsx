@@ -1,6 +1,7 @@
-import React from 'react'
+import React from 'react';
+import styles from './FAQ.module.css';
 
-const FAQ = () => {
+export default function FAQ() {
   const faqs = [
     {
       question: "What is KEasy?",
@@ -40,18 +41,36 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="mb-8 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">Frequently Asked Questions</h1>
-      <div className="space-y-6">
-        {faqs.map((faq, index) => (
-          <div key={index} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <h3 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">{faq.question}</h3>
-            <p className="text-gray-700 dark:text-gray-300">{faq.answer}</p>
+    <div className={`container py-5 ${styles.faqContainer}`}>
+      <h1 className="mb-4 display-4 text-dark">Frequently Asked Questions</h1>
+      <div className="accordion" id="faqAccordion">
+        {faqs.map((faq, idx) => (
+          <div key={idx} className={`accordion-item ${styles.accordionItem}`}>
+            <h2 className="accordion-header" id={`heading${idx}`}>
+              <button
+                className={`accordion-button collapsed ${styles.accordionButton}`}
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target={`#collapse${idx}`}
+                aria-expanded="false"
+                aria-controls={`collapse${idx}`}
+              >
+                {faq.question}
+              </button>
+            </h2>
+            <div
+              id={`collapse${idx}`}
+              className="accordion-collapse collapse"
+              aria-labelledby={`heading${idx}`}
+              data-bs-parent="#faqAccordion"
+            >
+              <div className={`accordion-body ${styles.accordionBody}`}>
+                {faq.answer}
+              </div>
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
 }
-
-export default FAQ
