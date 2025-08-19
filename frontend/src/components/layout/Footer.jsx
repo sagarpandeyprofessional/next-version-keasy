@@ -1,78 +1,105 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import styles from './styles/Footer.module.css';
 
 const Footer = () => {
   return (
-    <footer className={`${styles.footer} py-5 text-white`}>
+    <footer className="bg-black py-8 text-white dark:bg-black">
       <div className="container">
         {/* Instagram carousel placeholder */}
-        <div className={`${styles.instaCarousel} mb-4 p-3 rounded shadow-sm`}>
-          <h3 className="mb-3 h5">Follow us on Instagram</h3>
-          <div className="d-flex gap-3 overflow-auto pb-2">
+        <div className="mb-8 overflow-hidden rounded-lg bg-gray-900 p-4 shadow-sm">
+          <h3 className="mb-4 text-lg font-semibold text-white">Follow us on Instagram</h3>
+          <div className="flex space-x-4 overflow-x-auto pb-2">
             {[1, 2, 3, 4, 5].map((item) => (
               <div
                 key={item}
-                className={styles.instaPost}
+                className="h-32 w-32 flex-shrink-0 rounded-md bg-gray-800"
                 aria-label="Instagram post"
               />
             ))}
           </div>
         </div>
 
-        <div className="row gy-4">
-          {/* About */}
-          <div className="col-12 col-md-3">
-            <h3 className={styles.sectionTitle}>About KEasy</h3>
-            <p className={styles.textLight}>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+          {/* Column 1: About */}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">About KEasy</h3>
+            <p className="text-sm text-gray-300">
               KEasy is a platform designed to help foreigners navigate life in South Korea, providing resources, community, and services.
             </p>
           </div>
 
-          {/* Quick Links */}
-          <div className="col-12 col-md-3">
-            <h3 className={styles.sectionTitle}>Quick Links</h3>
-            <ul className="list-unstyled">
+          {/* Column 2: Quick Links */}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">Quick Links</h3>
+            <ul className="space-y-2">
               <li>
-                <Link to="/about" className={styles.link}>About Us</Link>
+                <Link to="/about" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  About Us
+                </Link>
               </li>
               <li>
-                <Link to="/faq" className={styles.link}>FAQ</Link>
+                <Link to="/faq" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  FAQ
+                </Link>
               </li>
               <li>
-                <Link to="/contact" className={styles.link}>Contact</Link>
+                <Link to="/contact" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Contact
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Features */}
-          <div className="col-12 col-md-3">
-            <h3 className={styles.sectionTitle}>Features</h3>
-            <ul className="list-unstyled">
-              {['/marketplace', '/events', '/blog', '/community', '/nearby'].map((path) => {
-                const label = path.replace('/', '').replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
-                return (
-                  <li key={path}>
-                    <Link to={path} className={styles.link}>{label}</Link>
-                  </li>
-                );
-              })}
+          {/* Column 3: Features */}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">Features</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/marketplace" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Marketplace
+                </Link>
+              </li>
+              <li>
+                <Link to="/events" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link to="/blog" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link to="/community" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Community
+                </Link>
+              </li>
+              <li>
+                <Link to="/nearby" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Nearby Places
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Contact */}
-          <div className="col-12 col-md-3">
-            <h3 className={styles.sectionTitle}>Contact Us</h3>
-            <ul className={`${styles.textLight} list-unstyled`}>
+          {/* Column 4: Contact */}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">Contact Us</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
               <li>Seoul, South Korea</li>
               <li>
-                <a href="mailto:info@keasy.com" className={styles.link}>info@keasy.com</a>
+                <a href="mailto:info@keasy.com" className="hover:text-white hover:underline">
+                  info@keasy.com
+                </a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className={`${styles.bottom} mt-4 pt-3 border-top text-center`}>
-          <p className={styles.textMuted}>&copy; {new Date().getFullYear()} KEasy. All rights reserved.</p>
+        <div className="mt-8 border-t border-gray-800 pt-8">
+          <p className="text-center text-sm text-gray-400">
+            &copy; {new Date().getFullYear()} KEasy. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

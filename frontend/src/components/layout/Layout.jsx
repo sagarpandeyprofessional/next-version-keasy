@@ -1,12 +1,11 @@
 import Navbar from './Navbar';
 import Footer from './Footer';
-import styles from './styles/Layout.module.css';
 
 const Layout = ({ children }) => {
   return (
-    <div className={styles.appWrapper}>
+    <div className="flex min-h-screen flex-col">
         <Navbar />
-        <main className={styles.mainContent}>{children}</main>
+        <main className="flex-grow">{children}</main>
         <Footer />
     </div>
   )

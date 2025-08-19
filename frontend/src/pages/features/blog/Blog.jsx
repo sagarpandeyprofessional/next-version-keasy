@@ -1,8 +1,6 @@
-import { useState } from 'react';
-import styles from './Blog.module.css';
+import React, { useState } from "react";
 
-
-export default function Blog() {
+const Blog = () => {
   const posts = [
     {
       id: 1,
@@ -33,8 +31,8 @@ export default function Blog() {
     },
     {
       id: 4,
-      title: "Expat-Friendly Neighborhoods in Seoul",
-      excerpt: "A comprehensive guide to Seoul's most popular neighborhoods for foreigners, including housing prices, amenities, and community.",
+      title: 'Expat-Friendly Neighborhoods in Seoul',
+      excerpt: 'A comprehensive guide to Seoul\'s most popular neighborhoods for foreigners, including housing prices, amenities, and community.',
       date: 'April 28, 2023',
       author: 'Michael Cho',
       tags: ['Housing', 'Seoul', 'Neighborhoods'],
@@ -52,12 +50,11 @@ export default function Blog() {
   ];
 
   const allTags = ['All', 'Documentation', 'Language', 'Healthcare', 'Housing', 'Work', 'Culture', 'Food', 'Travel'];
-
-  const [activeTag, setActiveTag] = useState('All');
+  const [activeTag, setActiveTag] = useState("All");
 
   // Filter posts based on active tag
   const filteredPosts =
-    activeTag === 'All'
+    activeTag === "All"
       ? posts
       : posts.filter((post) => post.tags.includes(activeTag));
 
@@ -74,52 +71,49 @@ export default function Blog() {
           <button
             key={tag}
             onClick={() => setActiveTag(tag)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              activeTag === tag
-                ? 'bg-primary-600 text-white dark:bg-primary-500'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-            }`}
-          >
+            className={`rounded-full px-4 py-2 text-sm font-medium 
+                        ${activeTag === tag 
+                            ? "bg-black text-white dark:bg-white dark:text-black" 
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                        }`}
+            >
             {tag}
-          </button>
+            </button>
+
         ))}
       </div>
 
       {/* Blog Posts */}
       <div className="space-y-10">
-        {filteredPosts.length > 0 ? (
-          filteredPosts.map((post) => (
-            <article key={post.id} className="border-b border-gray-200 pb-10 dark:border-gray-700">
-              <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <span>{post.date}</span>
-                <span>•</span>
-                <span>{post.readTime}</span>
-                <span>•</span>
-                <span>By {post.author}</span>
-              </div>
-              <h2 className={`mb-3 text-2xl font-bold text-gray-900 dark:text-white ${styles.postTitle}`}>{post.title}</h2>
-              <p className={`mb-4 text-gray-700 dark:text-gray-300 ${styles.postExcerpt}`}>{post.excerpt}</p>
-              <div className="mb-4 flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-                <button className={`font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 ${styles.readMoreBtn}`}>
-                Read more &rarr;
-                </button>
-            </article>
-          ))
-        ) : (
-          <p className={`text-gray-700 dark:text-gray-300 text-center ${styles.noPostsMessage}`}>No articles found for the tag "{activeTag}".</p>
-        )}
+        {filteredPosts.map((post) => (
+          <article key={post.id} className="border-b border-gray-200 pb-10 dark:border-gray-700">
+            <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <span>{post.date}</span>
+              <span>•</span>
+              <span>{post.readTime}</span>
+              <span>•</span>
+              <span>By {post.author}</span>
+            </div>
+            <h2 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{post.title}</h2>
+            <p className="mb-4 text-gray-700 dark:text-gray-300">{post.excerpt}</p>
+            <div className="mb-4 flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <button className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+              Read more &rarr;
+            </button>
+          </article>
+        ))}
       </div>
 
-      {/* Pagination (Static, no logic yet) */}
+      {/* Pagination */}
       <div className="mt-10 flex justify-center">
         <nav className="inline-flex">
           <button className="rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
@@ -141,4 +135,6 @@ export default function Blog() {
       </div>
     </div>
   );
-}
+};
+
+export default Blog;
