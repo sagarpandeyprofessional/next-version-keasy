@@ -3,24 +3,47 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
+// Email & password validation
+const emailRules = (email) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const noSpace = /^\S*$/;
+  return regex.test(email) && noSpace.test(email);
+};
+
+const passwordRules = (password) => {
+  const noSpace = /^\S*$/;
+  return noSpace.test(password); // only no spaces
+};
+
 const SignIn = () => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (!emailRules(email)) {
+      return setError("❌ Please enter a valid email without spaces.");
+    }
+
+    if (!passwordRules(password)) {
+      return setError("❌ Password cannot contain spaces.");
+    }
+
     try {
       await signIn({ email, password });
       navigate("/");
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-white dark:bg-black text-black dark:text-white">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-2">
         {/* Left column - Image */}
         <div className="hidden md:flex items-center justify-center">
@@ -41,12 +64,10 @@ const SignIn = () => {
               Sign in to your account
             </h2>
 
-            {/* Email */}
+            {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
+
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Email address
               </label>
               <input
@@ -57,18 +78,12 @@ const SignIn = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm
-                  focus:border-black focus:outline-none focus:ring-1 focus:ring-black
-                  dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
               />
             </div>
 
-            {/* Password */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Password
               </label>
               <input
@@ -79,28 +94,20 @@ const SignIn = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm
-                  focus:border-black focus:outline-none focus:ring-1 focus:ring-black
-                  dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
               />
             </div>
 
-            {/* Submit button */}
             <button
               type="submit"
-              className="w-full rounded-md bg-black px-4 py-2 text-white hover:bg-gray-800
-                dark:bg-white dark:text-black dark:hover:bg-gray-200"
+              className="w-full rounded-md bg-black px-4 py-2 text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
               Sign in
             </button>
 
-            {/* Sign up link */}
             <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{" "}
-              <Link
-                to="/signup"
-                className="font-medium text-black hover:underline dark:text-white"
-              >
+              <Link to="/signup" className="font-medium text-black hover:underline dark:text-white">
                 Sign up
               </Link>
             </p>
