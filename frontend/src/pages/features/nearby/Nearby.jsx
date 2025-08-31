@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import { supabase } from "../../../api/supabase-client";
 
 export default function Nearby() {
   const [activeTab, setActiveTab] = useState('places');
@@ -73,37 +74,31 @@ export default function Nearby() {
   ];
   
   // Placeholder guides data
-  const guides = [
-    {
-      id: 1,
-      title: 'Navigating Public Transportation in Seoul',
-      author: 'John Smith',
-      excerpt: 'A comprehensive guide to using Seoul\'s subway, bus, and taxi systems efficiently.',
-      readTime: '10 min read',
-    },
-    {
-      id: 2,
-      title: 'Best Areas for Expat Housing in Korea',
-      author: 'Emma Lee',
-      excerpt: 'Find the perfect neighborhood based on your preferences, budget, and lifestyle.',
-      readTime: '15 min read',
-    },
-    {
-      id: 3,
-      title: 'Banking for Foreigners in Korea',
-      author: 'Michael Park',
-      excerpt: 'Everything you need to know about opening bank accounts and managing finances in Korea.',
-      readTime: '12 min read',
-    },
-    {
-      id: 4,
-      title: 'Essential Korean Apps for Expats',
-      author: 'Sarah Kim',
-      excerpt: 'Must-have mobile applications that will make your life in Korea much easier.',
-      readTime: '8 min read',
-    },
-  ];
   
+
+  const [guides, setGuides] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Mock fetching guides data
+  useEffect(() => {
+    const fetchGuides = async () => {
+      setLoading(true);
+
+      const { data, error } = await supabase
+      .from('guides')
+      .select('id, created_at, name, description, tags, img_url, app_android, app_ios, app_mac, app_windows, created_by');
+      
+      if (error) {
+        console.error('Error fetching guides:', error.message);
+      } else {
+        setGuides(data || []);
+      }
+    }
+
+    fetchGuides();
+  }, []);
+  
+
   const filteredPlaces = activeCategory === 'all' 
     ? places 
     : places.filter(place => place.category === activeCategory);
@@ -222,20 +217,35 @@ export default function Nearby() {
       
       {activeTab === 'guides' && (
         <div className="space-y-6">
-          {guides.map((guide) => (
-            <div key={guide.id} className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
-              <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">{guide.title}</h3>
-              <div className="mb-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
-                <span>By {guide.author}</span>
-                <span className="mx-2">•</span>
-                <span>{guide.readTime}</span>
-              </div>
-              <p className="mb-4 text-gray-700 dark:text-gray-300">{guide.excerpt}</p>
-              <button className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
-                Read full guide &rarr;
-              </button>
-            </div>
-          ))}
+          {guides.map((guide) => {
+  const shortDescription = guide.description
+    ? guide.description.split(" ").slice(0, 10).join(" ") + "..."
+    : "";
+
+  const createdDate = new Date(guide.created_at).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  return (
+    <div key={guide.id} className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+      <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+        {guide.name}
+      </h3>
+      <div className="mb-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
+        <span>By {guide.created_by}</span>
+        <span className="mx-2">•</span>
+        <span>{createdDate}</span>
+      </div>
+      <p className="mb-4 text-gray-700 dark:text-gray-300">{shortDescription}</p>
+      <button className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+        Read full guide &rarr;
+      </button>
+    </div>
+  );
+})}
+
         </div>
       )}
     </div>
