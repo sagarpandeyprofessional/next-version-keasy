@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../api/supabase-client";
+import { Link } from "react-router";
 
 export default function Nearby() {
   const [activeTab, setActiveTab] = useState('places');
@@ -85,8 +86,8 @@ export default function Nearby() {
       setLoading(true);
 
       const { data, error } = await supabase
-      .from('guides')
-      .select('id, created_at, name, description, tags, img_url, app_android, app_ios, app_mac, app_windows, created_by');
+      .from('guide')
+      .select('id, created_at, name, description, img_url, created_by');
       
       if (error) {
         console.error('Error fetching guides:', error.message);
@@ -218,33 +219,33 @@ export default function Nearby() {
       {activeTab === 'guides' && (
         <div className="space-y-6">
           {guides.map((guide) => {
-  const shortDescription = guide.description
-    ? guide.description.split(" ").slice(0, 10).join(" ") + "..."
-    : "";
+            const shortDescription = guide.description
+              ? guide.description.split(" ").slice(0, 10).join(" ") + "..."
+              : "";
 
-  const createdDate = new Date(guide.created_at).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+            const createdDate = new Date(guide.created_at).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            });
 
-  return (
-    <div key={guide.id} className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
-      <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-        {guide.name}
-      </h3>
-      <div className="mb-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
-        <span>By {guide.created_by}</span>
-        <span className="mx-2">•</span>
-        <span>{createdDate}</span>
-      </div>
-      <p className="mb-4 text-gray-700 dark:text-gray-300">{shortDescription}</p>
-      <button className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
-        Read full guide &rarr;
-      </button>
-    </div>
-  );
-})}
+            return (
+              <div key={guide.id} className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+                <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+                  {guide.name}
+                </h3>
+                <div className="mb-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                  <span>By {guide.created_by}</span>
+                  <span className="mx-2">•</span>
+                  <span>{createdDate}</span>
+                </div>
+                <p className="mb-4 text-gray-700 dark:text-gray-300">{shortDescription}</p>
+                <Link to={`guide/${guide.id}`} className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+                  Read full guide &rarr;
+                </Link>
+              </div>
+            );
+          })}
 
         </div>
       )}
