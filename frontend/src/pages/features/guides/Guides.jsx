@@ -165,6 +165,7 @@ const Carousel = ({
       </div>
 
       {/* Scroll container */}
+
       <div
         className="flex -mx-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
         ref={scrollContainerRef}
@@ -186,7 +187,7 @@ const ExploreCard = ({ id, name, description, img_url, created_by, category }) =
       : img_url;
 
   return (
-    <div className="snap-start px-4 flex-shrink-0 w-64 sm:w-72 md:w-80">
+    <div className="snap-start px-4 flex-shrink-0 w-full sm:w-72 md:w-80">
       <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1">
         <div className="relative h-48 w-full">
           <img
