@@ -186,6 +186,26 @@ const ExploreCard = ({ id, name, description, img_url, created_by, category }) =
       ? getPlaceholderImage(category)
       : img_url;
 
+  const [author, setAuthor] = useState('');
+
+  // Fetch author
+  useEffect(() => {
+    const fetchAuthor = async () => {
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', created_by);
+
+      if (userError) {
+        console.error('Error fetching author:', userError.message);
+      } else if (userData && userData.length > 0) {
+        setAuthor(userData[0].username);
+      }
+    };
+
+    fetchAuthor();
+  }, [created_by]);
+
   return (
     <div className="snap-start px-4 flex-shrink-0 w-full sm:w-72 md:w-80">
       <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1">
@@ -199,7 +219,7 @@ const ExploreCard = ({ id, name, description, img_url, created_by, category }) =
         </div>
         <div className="p-4">
           <div className="mb-1 flex items-center text-sm text-gray-500">
-            {created_by}
+            by {author}
           </div>
           <h3 className="mb-2 text-lg font-semibold">{name}</h3>
           <p className="mb-4 text-sm text-gray-600">{description}</p>

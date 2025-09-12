@@ -44,7 +44,7 @@ const Navbar = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center">
               <span className="text-xl font-bold text-black dark:text-white">keasy</span>
             </Link>
           </div>
