@@ -272,7 +272,7 @@ const GuidesCard = ({ id, name, description, img_url, created_by, category }) =>
           <div className="mb-1 flex items-center text-sm text-gray-500">
             by {author}
           </div>
-          <h3 className="mb-2 text-lg font-semibold">{name}</h3>
+          <h3 className="mb-2 text-lg font-semibold text-black">{name}</h3>
           <p className="mb-4 text-sm text-gray-600">{description}</p>
         </div>
       </div>
