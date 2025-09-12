@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router';
 import { supabase } from "../../api/supabase-client";
 
-
 /* Utility function for placeholder images */
 const getPlaceholderImage = (id, type) =>
   `https://picsum.photos/400/300?random=${id}`; // using Picsum instead of via.placeholder
@@ -157,7 +156,7 @@ const FeatureCard = ({ title, description, icon, href, linkText }) => {
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">
       <div className="mb-4">{icon}</div>
-      <h3 className="mb-2 text-xl font-semibold">{title}</h3>
+      <h3 className="mb-2 text-xl font-semibold text-black" >{title}</h3>
       <p className="mb-4 text-gray-600">{description}</p>
       <a href={href} className="font-medium text-blue-600 hover:underline">
         {linkText} &rarr;
@@ -166,12 +165,8 @@ const FeatureCard = ({ title, description, icon, href, linkText }) => {
   );
 };
 
-
-const GuidesCarousel = ({
-  title,
-  children,
-  className = ""
-}) => {
+/* GuidesCarousel Component */
+const GuidesCarousel = ({ title, children, className = "" }) => {
   const scrollContainerRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -190,24 +185,21 @@ const GuidesCarousel = ({
     container.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
   };
 
-  // Attach scroll listener on mount
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (scrollContainer) {
       scrollContainer.addEventListener("scroll", handleScroll);
-      handleScroll(); // check arrows on mount
+      handleScroll();
       return () => scrollContainer.removeEventListener("scroll", handleScroll);
     }
   }, []);
 
-  // Recalculate arrow visibility when guides (children) or category change
   useEffect(() => {
     handleScroll();
   }, [children]);
 
   return (
     <div className={className}>
-      {/* Title + Arrows */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold text-black md:text-3xl">{title}</h2>
         <div className="flex space-x-2">
@@ -231,9 +223,6 @@ const GuidesCarousel = ({
           </button>
         </div>
       </div>
-
-      {/* Scroll container */}
-
       <div
         className="flex -mx-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
         ref={scrollContainerRef}
@@ -244,16 +233,13 @@ const GuidesCarousel = ({
   );
 };
 
+/* GuidesCard Component */
 const GuidesCard = ({ id, name, description, img_url, created_by, category }) => {
   const [imageError, setImageError] = useState(false);
-  const imageUrl =
-    imageError || !img_url
-      ? getPlaceholderImage(category)
-      : img_url;
+  const imageUrl = imageError || !img_url ? getPlaceholderImage(category) : img_url;
 
   const [author, setAuthor] = useState('');
 
-  // Fetch author
   useEffect(() => {
     const fetchAuthor = async () => {
       const { data: userData, error: userError } = await supabase
@@ -288,14 +274,13 @@ const GuidesCard = ({ id, name, description, img_url, created_by, category }) =>
           </div>
           <h3 className="mb-2 text-lg font-semibold">{name}</h3>
           <p className="mb-4 text-sm text-gray-600">{description}</p>
-          
         </div>
       </div>
     </div>
   );
 };
 
-//buttons imports
+// Buttons imports
 import { RiShoppingBag2Fill } from "react-icons/ri";
 import { BiParty } from "react-icons/bi";
 import { LuMessageCircleMore } from "react-icons/lu";
@@ -311,30 +296,29 @@ export default function Home() {
   ];
 
   const [guides, setGuides] = useState([]);
-  
-    // Fetch guides
-    useEffect(() => {
-      const fetchGuides = async () => {
-        const { data, error } = await supabase
-          .from('guide')
-          .select('id, created_at, name, description, img_url, created_by, category')
-          .range(0, 4);;
-  
-        if (error) {
-          console.error('Error fetching guides:', error.message);
-        } else {
-          setGuides(data || []);
-        }
-      };
-      fetchGuides();
-    }, []);
+
+  useEffect(() => {
+    const fetchGuides = async () => {
+      const { data, error } = await supabase
+        .from('guide')
+        .select('id, created_at, name, description, img_url, created_by, category')
+        .range(0, 4);
+
+      if (error) {
+        console.error('Error fetching guides:', error.message);
+      } else {
+        setGuides(data || []);
+      }
+    };
+    fetchGuides();
+  }, []);
 
   return (
     <div>
       {/* Hero Section */}
       <section className="relative bg-black py-24 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl">Welcome to KEasy</h1>
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl text-white">Welcome to keasy</h1>
           <p className="mx-auto mb-8 max-w-2xl text-xl">Making life in South Korea easier for foreigners</p>
           <div className="flex flex-wrap justify-center gap-4">
             <a href="#" className="rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
@@ -351,7 +335,7 @@ export default function Home() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="mb-12 text-center text-3xl font-bold">Our Features</h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 text-black">
             {features.map((feature, index) => (
               <FeatureCard key={index} {...feature} />
             ))}
@@ -359,7 +343,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Explore Korea Carousel */}
+      {/* Explore Guides Carousel */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
           <GuidesCarousel title="Explore Guides">
@@ -367,7 +351,6 @@ export default function Home() {
               <GuidesCard key={guide.id} {...guide} />
             ))}
           </GuidesCarousel>
-          {/* Centered "View More Guides" button directly under the carousel cards */}
           <div className="mt-4 flex justify-center">
             <Link
               to={`/guides`}
@@ -378,17 +361,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Festival Carousel */}
-      {/* <section className="py-16">
-        <div className="container mx-auto px-4">
-          <Carousel title="Upcoming Festivals">
-            {festivalData.map((item) => (
-              <FestivalCard key={item.id} {...item} />
-            ))}
-          </Carousel>
-        </div>
-      </section> */}
 
       {/* CTA Section */}
       <section className="bg-black py-16 text-white">
@@ -402,11 +374,11 @@ export default function Home() {
       </section>
 
       {/* Chatbot Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* <div className="fixed bottom-6 right-6 z-50">
         <button className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-lg hover:bg-gray-800">
           💬
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

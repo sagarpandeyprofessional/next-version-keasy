@@ -4,16 +4,16 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
+    background-color: white;
+
   }
   
-  .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-  }
   
   body {
     @apply bg-white text-black dark:bg-black dark:text-white;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: white;
+
   }
   
   a {

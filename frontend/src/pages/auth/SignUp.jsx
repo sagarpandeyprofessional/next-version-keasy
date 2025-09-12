@@ -125,25 +125,15 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-white">
       <div className="grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-2">
 
-        {/* Left Illustration */}
-        <div className="hidden md:flex items-center justify-center">
-          <div className="relative h-full w-full max-w-md overflow-hidden rounded-lg">
-            <img
-              src="/images/auth-illustration.jpg"
-              alt="Authentication illustration"
-              className="object-cover w-full h-full"
-              loading="eager"
-            />
-          </div>
-        </div>
+        
 
         {/* Right Form */}
         <div className="flex items-center justify-center">
           <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4" noValidate>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-semibold text-gray-900">
               Create an account
             </h2>
 
@@ -151,7 +141,7 @@ const SignUp = () => {
 
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 Username
               </label>
               <input
@@ -162,7 +152,7 @@ const SignUp = () => {
                 required
                 value={username}
                 onChange={handleUsernameChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
               />
               {username && (
                 <p className="mt-1 text-xs">
@@ -175,7 +165,7 @@ const SignUp = () => {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
               <input
@@ -186,13 +176,13 @@ const SignUp = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
               />
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
@@ -203,13 +193,13 @@ const SignUp = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
               />
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                 Confirm Password
               </label>
               <input
@@ -220,7 +210,7 @@ const SignUp = () => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
               />
               {confirmPassword && (
                 <p className="mt-1 text-xs">
@@ -232,19 +222,31 @@ const SignUp = () => {
 
             <button
               type="submit"
-              className="w-full rounded-md bg-black px-4 py-2 text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+              className="w-full rounded-md bg-black px-4 py-2 text-white hover:bg-gray-800"
               disabled={isCheckingUsername}
             >
               Sign up
             </button>
 
-            <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-4 text-center text-sm text-gray-600">
               Already have an account?{" "}
-              <Link to="/signin" className="font-medium text-black hover:underline dark:text-white">
+              <Link to="/signin" className="font-medium text-black hover:underline ">
                 Sign in
               </Link>
             </p>
           </form>
+        </div>
+
+        {/* Left Illustration */}
+        <div className="hidden md:flex items-center justify-center">
+          <div className="relative h-full w-full max-w-md overflow-hidden rounded-lg">
+            <img
+              src="https://flexible.img.hani.co.kr/flexible/normal/800/503/imgdb/original/2024/0110/2317048732994007.jpg"
+              alt="Authentication illustration"
+              className="object-cover w-full h-full"
+              loading="eager"
+            />
+          </div>
         </div>
       </div>
     </div>

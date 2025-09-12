@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <footer className="bg-black py-8 text-white dark:bg-black">
+    <footer className="bg-black py-8 text-white">
       <div className="container">
         {/* Instagram carousel placeholder
         <div className="mb-8 overflow-hidden rounded-lg bg-gray-900 p-4 shadow-sm">
