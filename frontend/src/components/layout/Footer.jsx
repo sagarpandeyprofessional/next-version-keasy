@@ -24,7 +24,7 @@ const Footer = () => {
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">About KEasy</h3>
             <p className="text-sm text-gray-300">
-              KEasy is a platform designed to help foreigners navigate life in South Korea, providing resources, community, and services.
+              Keasy is a platform designed to help foreigners navigate life in South Korea, providing resources, community, and services.
             </p>
           </div>
 
@@ -94,7 +94,7 @@ const Footer = () => {
               <li>Daejeon, South Korea</li>
               <li>
                 <a href="mailto:info@keasy.com" className="hover:text-white hover:underline">
-                  keasy.montemflumen@gmail.com
+                  keasy.contact@gmail.com
                 </a>
               </li>
             </ul>

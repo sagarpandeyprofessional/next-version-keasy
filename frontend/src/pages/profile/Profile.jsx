@@ -34,14 +34,14 @@ const Profile = () => {
       <ProfileHeader usernameFromUrl={usernameFromUrl} />
 
       {/* Tabs */}
-      <div className="flex justify-center mt-8 border-b border-gray-300 dark:border-gray-700">
-        {["posts", "reels"].map((tab) => (
+      <div className="flex justify-center mt-8 border-b border-gray-300">
+        {["posts", "events"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 -mb-px font-medium ${
               activeTab === tab
-                ? "border-b-2 border-black dark:border-white text-black dark:text-white"
-                : "text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
+                ? "border-b-2 border-black text-black"
+                : "text-gray-500 hover:text-black"
             }`}
             onClick={() => setActiveTab(tab)}
           >
@@ -95,7 +95,7 @@ const ProfileHeader = ({ usernameFromUrl }) => {
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
       {/* Avatar */}
-      <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
+      <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
         {profile?.pfp_url ? (
           <img
             src={profile.pfp_url}
@@ -103,7 +103,7 @@ const ProfileHeader = ({ usernameFromUrl }) => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="flex items-center justify-center w-full h-full text-2xl font-bold text-gray-500 dark:text-gray-300">
+          <span className="flex items-center justify-center w-full h-full text-2xl font-bold text-gray-500">
             {profile?.username?.charAt(0).toUpperCase() || "U"}
           </span>
         )}
@@ -111,17 +111,17 @@ const ProfileHeader = ({ usernameFromUrl }) => {
 
       {/* User Info */}
       <div className="text-center sm:text-left">
-        <h1 className="text-2xl font-bold">@{usernameFromUrl}</h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <h1 className="text-2xl font-bold text-black">@{usernameFromUrl}</h1>
+        <p className="text-gray-600">
           {profile?.first_name} {profile?.last_name}
         </p>
-        <p className="mt-2 text-gray-700 dark:text-gray-300">{profile?.bio}</p>
+        <p className="mt-2 text-gray-700">{profile?.bio}</p>
 
         {isOurProfile && (
           <div className="mt-4">
             <Link
               to="/edit-profile/"
-              className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition"
+              className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
             >
               Edit Profile
             </Link>
@@ -135,7 +135,7 @@ const ProfileHeader = ({ usernameFromUrl }) => {
 const UserPosts = ({ usernameFromUrl }) => {
   return (
     <div className="space-y-4">
-      <div className="p-6 border rounded-lg bg-white dark:bg-gray-800 shadow-sm text-gray-700 dark:text-gray-200">
+      <div className="p-6 border rounded-lg bg-white shadow-sm text-gray-700">
         <p>Posts coming soon for @{usernameFromUrl}...</p>
       </div>
     </div>
@@ -145,8 +145,8 @@ const UserPosts = ({ usernameFromUrl }) => {
 const UserReels = ({ usernameFromUrl }) => {
   return (
     <div className="space-y-4">
-      <div className="p-6 border rounded-lg bg-white dark:bg-gray-800 shadow-sm text-gray-700 dark:text-gray-200">
-        <p>Reels coming soon for @{usernameFromUrl}...</p>
+      <div className="p-6 border rounded-lg bg-white shadow-sm text-gray-700">
+        <p>Events coming soon for @{usernameFromUrl}...</p>
       </div>
     </div>
   );
