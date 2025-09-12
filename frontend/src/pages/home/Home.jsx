@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router';
+import { supabase } from "../../api/supabase-client";
+
 
 /* Utility function for placeholder images */
 const getPlaceholderImage = (id, type) =>
@@ -163,14 +166,168 @@ const FeatureCard = ({ title, description, icon, href, linkText }) => {
   );
 };
 
+
+const GuidesCarousel = ({
+  title,
+  children,
+  className = ""
+}) => {
+  const scrollContainerRef = useRef(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    setShowLeftArrow(scrollLeft > 10);
+    setShowRightArrow(scrollLeft + clientWidth < scrollWidth - 10);
+  };
+
+  const scroll = (direction) => {
+    if (!scrollContainerRef.current) return;
+    const container = scrollContainerRef.current;
+    const scrollAmount = container.clientWidth * 0.8;
+    container.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+  };
+
+  // Attach scroll listener on mount
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
+      handleScroll(); // check arrows on mount
+      return () => scrollContainer.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
+  // Recalculate arrow visibility when guides (children) or category change
+  useEffect(() => {
+    handleScroll();
+  }, [children]);
+
+  return (
+    <div className={className}>
+      {/* Title + Arrows */}
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-black md:text-3xl">{title}</h2>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => scroll("left")}
+            disabled={!showLeftArrow}
+            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
+              showLeftArrow ? "text-black hover:bg-gray-100" : "cursor-default text-gray-300"
+            }`}
+          >
+            &#8592;
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            disabled={!showRightArrow}
+            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
+              showRightArrow ? "text-black hover:bg-gray-100" : "cursor-default text-gray-300"
+            }`}
+          >
+            &#8594;
+          </button>
+        </div>
+      </div>
+
+      {/* Scroll container */}
+
+      <div
+        className="flex -mx-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
+        ref={scrollContainerRef}
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const GuidesCard = ({ id, name, description, img_url, created_by, category }) => {
+  const [imageError, setImageError] = useState(false);
+  const imageUrl =
+    imageError || !img_url
+      ? getPlaceholderImage(category)
+      : img_url;
+
+  const [author, setAuthor] = useState('');
+
+  // Fetch author
+  useEffect(() => {
+    const fetchAuthor = async () => {
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', created_by);
+
+      if (userError) {
+        console.error('Error fetching author:', userError.message);
+      } else if (userData && userData.length > 0) {
+        setAuthor(userData[0].username);
+      }
+    };
+
+    fetchAuthor();
+  }, [created_by]);
+
+  return (
+    <div className="snap-start px-4 flex-shrink-0 w-full sm:w-72 md:w-80">
+      <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1">
+        <div className="relative h-48 w-full">
+          <img
+            src={imageUrl}
+            alt={name}
+            className="object-cover w-full h-full"
+            onError={() => setImageError(true)}
+          />
+        </div>
+        <div className="p-4">
+          <div className="mb-1 flex items-center text-sm text-gray-500">
+            by {author}
+          </div>
+          <h3 className="mb-2 text-lg font-semibold">{name}</h3>
+          <p className="mb-4 text-sm text-gray-600">{description}</p>
+          
+        </div>
+      </div>
+    </div>
+  );
+};
+
+//buttons imports
+import { RiShoppingBag2Fill } from "react-icons/ri";
+import { BiParty } from "react-icons/bi";
+import { LuMessageCircleMore } from "react-icons/lu";
+import { MdOutlineExplore } from "react-icons/md";
+
 /* Home Component */
 export default function Home() {
   const features = [
-    { title: 'Marketplace', description: 'Buy, sell, or give away items within the expat community.', icon: <span>🛒</span>, href: '#', linkText: 'Visit Marketplace' },
-    { title: 'Events', description: 'Discover local events, meetups, and activities for expats.', icon: <span>🎉</span>, href: '#', linkText: 'Find Events' },
-    { title: 'Community', description: 'Join groups and connect with other expats.', icon: <span>💬</span>, href: '#', linkText: 'Join Community' },
-    { title: 'Nearby Places', description: 'Find expat-friendly locations and services in your area.', icon: <span>📍</span>, href: '#', linkText: 'Discover Nearby' },
+    { title: 'Marketplace', description: 'Buy, sell, or give away items within the expat community.', icon: <RiShoppingBag2Fill />, href: '/marketplace', linkText: 'Visit Marketplace' },
+    { title: 'Events', description: 'Discover local events, meetups, and activities for expats.', icon: <BiParty />, href: '/events', linkText: 'Find Events' },
+    { title: 'Community', description: 'Join groups and connect with other expats.', icon: <LuMessageCircleMore />, href: '/community', linkText: 'Join Community' },
+    { title: 'Nearby Places', description: 'Find expat-friendly locations and services in your area.', icon: <MdOutlineExplore />, href: '/nearby', linkText: 'Discover Nearby' },
   ];
+
+  const [guides, setGuides] = useState([]);
+  
+    // Fetch guides
+    useEffect(() => {
+      const fetchGuides = async () => {
+        const { data, error } = await supabase
+          .from('guide')
+          .select('id, created_at, name, description, img_url, created_by, category')
+          .range(0, 4);;
+  
+        if (error) {
+          console.error('Error fetching guides:', error.message);
+        } else {
+          setGuides(data || []);
+        }
+      };
+      fetchGuides();
+    }, []);
 
   return (
     <div>
@@ -205,16 +362,25 @@ export default function Home() {
       {/* Explore Korea Carousel */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
-          <Carousel title="Explore Korea">
-            {exploreKoreaData.map((item) => (
-              <ExploreCard key={item.id} {...item} />
+          <GuidesCarousel title="Explore Guides">
+            {guides.map((guide) => (
+              <GuidesCard key={guide.id} {...guide} />
             ))}
-          </Carousel>
+          </GuidesCarousel>
+          {/* Centered "View More Guides" button directly under the carousel cards */}
+          <div className="mt-4 flex justify-center">
+            <Link
+              to={`/guides`}
+              className="inline-block rounded-md bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800"
+            >
+              View More Guides &rarr;
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Festival Carousel */}
-      <section className="py-16">
+      {/* <section className="py-16">
         <div className="container mx-auto px-4">
           <Carousel title="Upcoming Festivals">
             {festivalData.map((item) => (
@@ -222,7 +388,7 @@ export default function Home() {
             ))}
           </Carousel>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="bg-black py-16 text-white">

@@ -35,11 +35,27 @@ import MyListingsPage from './pages/features/marketplace/MyListings'
 import SettingsPage from './pages/Settings'
 import GuideDetail from './pages/features/guides/GuideDetail'
 import Guides from './pages/features/guides/Guides'
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', // or 'auto' if you want instant scroll
+    });
+  }, [pathname]);
+
+  return null;
+};
 
 function App() {
+  
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
           <Routes>
             {/* Main Pages */}
             <Route element={<Layout><Home/></Layout>} path="/" />
