@@ -51,7 +51,7 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <nav className="hidden md:flex md:space-x-8">
-            <Link to="/" className="font-medium text-black hover:underline dark:text-white">Home</Link>
+            <Link to="/guides" className="font-medium text-black hover:underline dark:text-white">Guide</Link>
             <Link to="/marketplace" className="font-medium text-black hover:underline dark:text-white">Marketplace</Link>
             <Link to="/events" className="font-medium text-black hover:underline dark:text-white">Events</Link>
             <Link to="/blog" className="font-medium text-black hover:underline dark:text-white">Blog</Link>
@@ -177,12 +177,12 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden mt-2">
             <div className="space-y-1 px-2 pt-2 pb-3">
-              <Link to="/" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Home</Link>
-              <Link to="/marketplace" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Marketplace</Link>
-              <Link to="/events" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Events</Link>
-              <Link to="/blog" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Blog</Link>
-              <Link to="/community" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Community</Link>
-              <Link to="/nearby" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Nearby</Link>
+              <Link to="/guides"  onClick={() => setIsMenuOpen(false)} className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Guide</Link>
+              <Link to="/marketplace"  onClick={() => setIsMenuOpen(false)} className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Marketplace</Link>
+              <Link to="/events"  onClick={() => setIsMenuOpen(false)} className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Events</Link>
+              <Link to="/blog"  onClick={() => setIsMenuOpen(false)} className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Blog</Link>
+              <Link to="/community"  onClick={() => setIsMenuOpen(false)} className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Community</Link>
+              <Link to="/nearby"  onClick={() => setIsMenuOpen(false)} className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Nearby</Link>
 
               {/* Mobile Auth */}
               <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
@@ -236,8 +236,8 @@ const Navbar = () => {
                   </div>
                 ) : (
                   <>
-                    <Link to="/signin" className="block rounded-md px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800">Sign in</Link>
-                    <Link to="/signup" className="block rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">Sign Up</Link>
+                    <Link to="/signin"  onClick={() => setIsMenuOpen(false)} className="block rounded-md px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800">Sign in</Link>
+                    <Link to="/signup"  onClick={() => setIsMenuOpen(false)} className="block rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">Sign Up</Link>
                   </>
                 )}
               </div>

@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { supabase } from "../../../../api/supabase-client";
+import { supabase } from "../../../api/supabase-client";
 import { FaL } from "react-icons/fa6";
 
 export default function GuideDetail() {
@@ -100,7 +100,7 @@ export default function GuideDetail() {
     <div className="container mx-auto px-4 py-12">
       {/* Back button */}
       <Link
-        to="/nearby"
+        to="/guides"
         className="mb-6 inline-block text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
       >
         ← Back to Guides

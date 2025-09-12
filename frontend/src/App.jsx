@@ -33,7 +33,8 @@ import EditMarketplaceItemPage from './pages/features/marketplace/MarketplaceIte
 import PostMarketplaceItem from './pages/features/marketplace/MarketplacePost'
 import MyListingsPage from './pages/features/marketplace/MyListings'
 import SettingsPage from './pages/Settings'
-import GuideDetail from './pages/features/nearby/guides/guideDetail'
+import GuideDetail from './pages/features/guides/GuideDetail'
+import Guides from './pages/features/guides/Guides'
 
 function App() {
   return (
@@ -57,7 +58,9 @@ function App() {
             
             
             <Route element={<Layout><Nearby/></Layout>} path="/nearby" />
-            <Route element={<Layout><GuideDetail/></Layout>} path="/nearby/guide/:id" />
+
+            <Route element={<Layout><Guides/></Layout>} path="/guides" />
+            <Route element={<Layout><GuideDetail/></Layout>} path="/guides/guide/:id" />
             
             <Route element={<Layout><Community/></Layout>} path="/community" />
             <Route element={<Layout><Events /></Layout>} path='/events' />

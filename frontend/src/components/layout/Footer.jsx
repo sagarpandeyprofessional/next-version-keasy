@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="bg-black py-8 text-white dark:bg-black">
       <div className="container">
-        {/* Instagram carousel placeholder */}
+        {/* Instagram carousel placeholder
         <div className="mb-8 overflow-hidden rounded-lg bg-gray-900 p-4 shadow-sm">
           <h3 className="mb-4 text-lg font-semibold text-white">Follow us on Instagram</h3>
           <div className="flex space-x-4 overflow-x-auto pb-2">
@@ -17,7 +17,7 @@ const Footer = () => {
               />
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Column 1: About */}
@@ -55,6 +55,11 @@ const Footer = () => {
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">Features</h3>
             <ul className="space-y-2">
               <li>
+                <Link to="/guides" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Guide
+                </Link>
+              </li>
+              <li>
                 <Link to="/marketplace" className="text-sm text-gray-300 hover:text-white hover:underline">
                   Marketplace
                 </Link>
@@ -86,10 +91,10 @@ const Footer = () => {
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">Contact Us</h3>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li>Seoul, South Korea</li>
+              <li>Daejeon, South Korea</li>
               <li>
                 <a href="mailto:info@keasy.com" className="hover:text-white hover:underline">
-                  info@keasy.com
+                  keasy.montemflumen@gmail.com
                 </a>
               </li>
             </ul>
