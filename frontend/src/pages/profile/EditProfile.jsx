@@ -116,11 +116,12 @@ const EditProfile = () => {
             type="text"
             id="username"
             name="username"
+            disabled="true"
             value={formData.username || ""}
             onChange={handleChange}
             placeholder="Enter your username"
             className="w-full px-4 py-2 border rounded-lg border-gray-300
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                       focus:outline-none focus:ring-2 focus:ring-blue-500 text-black disabled:opacity-50"
           />
         </div>
 
