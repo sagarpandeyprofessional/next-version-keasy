@@ -2,11 +2,14 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../api/supabase-client";
 import { FaL } from "react-icons/fa6";
+import { BiLogoPlayStore } from "react-icons/bi";
+import { FaAppStoreIos } from "react-icons/fa";
 
 export default function GuideDetail() {
   const { id } = useParams();
   const [guide, setGuide] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [author, setAuthor] = useState('');
 
   useEffect(() => {
     const fetchGuide = async () => {
@@ -29,6 +32,26 @@ export default function GuideDetail() {
     fetchGuide();
   }, [id]);
 
+  useEffect(() => {
+    const fetchAuthor = async () => {
+      setLoading(true);
+      const { data:userData, error:userError } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("user_id", guide.created_by)
+        .single();
+
+      if(userError){
+        console.error("Error fetching author:", userError.message);
+        setLoading(false);
+      } else {
+        setAuthor(userData.username);
+        setLoading(false);
+      }
+    }
+    fetchAuthor();
+  }, [guide?.created_by]);
+
   if (loading) {
     return <p className="p-6 text-gray-600 dark:text-gray-300">Loading guide...</p>;
   }
@@ -50,9 +73,11 @@ export default function GuideDetail() {
     switch (section.type) {
       case "text":
         return (
-          <p key={index} className="mb-4 text-lg text-gray-700">
-            {section.body}
-          </p>
+        <div className="mb-8 flex justify-center text-center">
+          <p key={index} className="py-15 text-lg text-gray-700 ">
+              {section.body}
+            </p>
+          </div>
         );
       case "image":
         return (
@@ -66,19 +91,17 @@ export default function GuideDetail() {
                 alt={section.caption || "Guide image"}
                 className="w-full object-cover transition-transform duration-300 hover:scale-105"
               />
-              {section.caption && (
+              {/* {section.caption && (
                 <p className="mt-2 px-4 py-2 text-center text-sm text-gray-500 ">
                   {section.caption}
                 </p>
-              )}
+              )} */}
             </div>
           </div>
         );
-
-
       case "links":
         return (
-          <ul key={index} className="mb-6 space-y-2">
+          <ul key={index} className="mb-8 flex justify-center">
             {section.items.map((link, idx) => (
               <li key={idx}>
                 <a
@@ -93,6 +116,53 @@ export default function GuideDetail() {
             ))}
           </ul>
         );
+      case "app_links":
+      return (
+        <div>
+          <h4 className="mb-4 text-2xl font-semibold text-gray-900 text-center">Get the App on </h4>
+          <br/>
+          <ul key={index} className="mb-8 flex justify-center gap-4">
+            {section.items.map((link, idx) => (
+              <li key={idx} className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100" >
+                {link.label === "Play Store" && (
+                 
+                  <div className=" items-center text-blue-500 hover:bg-gray-100 min-w-35">
+                    <Link 
+                      to={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[#34A853] flex items-center flex-nowrap">
+                        <BiLogoPlayStore size={50} className="" />
+                        <span className="px-3 font-bold">{link.label}</span>
+                      </Link>
+                  </div>
+                )}
+                {link.label === "App Store" && (
+                  <div className=" items-center text-blue-500 hover:bg-gray-100 min-w-35">
+                    <Link 
+                      to={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-500 flex items-center flex-nowrap">
+                        <FaAppStoreIos size={50} className=""/>
+                        <span className="px-3 font-bold">{link.label}</span>
+                      </Link>
+                  </div>
+                )}
+                {/* <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black hover:underline"
+                >
+                  {link.label}
+                </a> */}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+        
       default:
         return null;
     }
@@ -103,7 +173,7 @@ export default function GuideDetail() {
       {/* Back button */}
       <Link
         to="/guides"
-        className="mb-6 inline-block text-sm font-medium text-black-600 hover:underline"
+        className="mb-6 inline-block text-sm font-medium text-black-600 hover:underline px-3 py-1"
       >
         ← Back to Guides
       </Link>
@@ -113,7 +183,7 @@ export default function GuideDetail() {
         {guide.name}
       </h1>
       <div className="mb-6 text-sm text-gray-500 ">
-        <span>By {guide.created_by}</span>
+        <span>By {author}</span>
         <span className="mx-2">•</span>
         <span>{createdDate}</span>
       </div>
@@ -129,21 +199,25 @@ export default function GuideDetail() {
         </div>
       )}
 
-      {/* Description */}
-      <p className="mb-6 text-lg text-gray-700">
-        {guide.description}
-      </p>
-
       {/* Content sections */}
-      {guide.content?.sections?.map((section, idx) => renderSection(section, idx))}
+      {guide.content?.sections?.length > 0 && (guide.content?.sections || [])?.map((section, idx) => renderSection(section, idx))}
+      {guide.content?.sections?.length === 0 && (
+        <p className="text-gray-600 dark:text-gray-300">No content available for this guide.</p>
+      )}
+      
+      {/* Description */}
+      {/* <p className="mb-6 text-lg text-gray-700">
+        {guide.description}
+      </p> */}
+
 
       {/* Tags */}
       {Array.isArray(guide.content?.tags) && guide.content.tags.length > 0 && (
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-8 flex flex-wrap gap-2 justify-center text-center">
           {guide.content.tags.map((tag, idx) => (
             <span
               key={idx}
-              className="rounded-full bg-gray-50 px-3 py-1 text-sm text-black"
+              className="px-3 py-1 text-sm text-black"
             >
               #{tag}
             </span>
