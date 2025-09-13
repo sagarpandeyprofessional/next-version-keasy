@@ -26,6 +26,12 @@ const Footer = () => {
             <p className="text-sm text-gray-300">
               Keasy is a platform designed to help foreigners navigate life in South Korea, providing resources, community, and services.
             </p>
+
+              <div className="mt-6 space-x-4 text-sm">
+                <p className='mb-1 max-w-80'>MontemFlumen Inc.</p>
+                <p className='mb-1 max-w-80'>Business Registration Number: 280-81-04090</p>
+                <p className='mb-1 max-w-80'>CEO & Founder: Sagar Panday</p>
+            </div>
           </div>
 
           {/* Column 2: Quick Links */}
@@ -89,11 +95,19 @@ const Footer = () => {
 
           {/* Column 4: Contact */}
           <div>
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">Contact Us</h3>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">About us</h3>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li>Daejeon, South Korea</li>
-              <li>
-                <a href="mailto:info@keasy.com" className="hover:text-white hover:underline">
+              <li className=''>Address: </li>
+              <li className='mb-4 max-w-60'>66-24 Jayang-dong Dong-gu Daejeon, 34644, Republic of Korea</li>
+              <li className='gap-10 max-w-60'>
+                <span>Phone: </span>
+                <a href="callto:1096959805" className="hover:text-white hover:underline">
+                  +82 10-96959805
+                </a>
+              </li>
+              <li className='gap-10 max-w-60'>
+                <span>Email: </span>
+                <a href="mailto:easy.contact@gmail.com" className="hover:text-white hover:underline">
                   keasy.contact@gmail.com
                 </a>
               </li>
