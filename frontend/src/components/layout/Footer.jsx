@@ -107,7 +107,7 @@ const Footer = () => {
               </li>
               <li className='gap-10 max-w-60'>
                 <span>Email: </span>
-                <a href="mailto:easy.contact@gmail.com" className="hover:text-white hover:underline">
+                <a href="mailto:keasy.contact@gmail.com" className="hover:text-white hover:underline">
                   keasy.contact@gmail.com
                 </a>
               </li>
