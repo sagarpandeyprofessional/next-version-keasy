@@ -56,11 +56,24 @@ const Guides = () => {
       : guides.filter((guide) => guide.category === activeCategory);
 
   return (
+  // <div className="container mx-auto px-4 py-12">
+  //   {/* Explore Korea Carousel */}
+  //   <section className="py-16">
+  //     <div className="container mx-auto px-4">
+  //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  //         {filteredGuides.map((guide) => (
+  //           <ExploreCard key={guide.id} {...guide} />
+  //         ))}
+  //       </div>
+  //     </div>
+  //   </section>
+  // </div>
+
     <div className="container mx-auto px-4 py-12">
       {/* Explore Korea Carousel */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <Carousel
+          <ExploreSection
             title="Explore Guides"
             setActiveCategory={setActiveCategory}
             activeCategory={activeCategory}
@@ -68,9 +81,9 @@ const Guides = () => {
             categories={categories}
           >
             {filteredGuides.map((guide) => (
-              <ExploreCard key={guide.id} {...guide} />
+              <ExploreCard key={guide.id} {...guide} className="flex"/>
             ))}
-          </Carousel>
+          </ExploreSection>
         </div>
       </section>
     </div>
@@ -192,6 +205,46 @@ const Carousel = ({
         className="flex -mx-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
         ref={scrollContainerRef}
       >
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const ExploreSection = ({
+  title,
+  children,
+  className = "",
+  setActiveCategory,
+  activeCategory,
+  categories,
+}) => {
+  return (
+    <div className={className}>
+      {/* Categories filter buttons */}
+      <div className="mb-8 flex flex-wrap gap-2">
+        {categories.map((category) => (
+          <button
+            key={category.id || category.name}
+            onClick={() => setActiveCategory(category.name)}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              activeCategory === category.name
+                ? "bg-black text-white hover:bg-gray-800"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            {category.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Title */}
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-black md:text-3xl">{title}</h2>
+      </div>
+
+      {/* Cards grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {children}
       </div>
     </div>
