@@ -286,6 +286,166 @@ import { BiParty } from "react-icons/bi";
 import { LuMessageCircleMore } from "react-icons/lu";
 import { MdOutlineExplore } from "react-icons/md";
 
+import { motion, AnimatePresence } from "framer-motion";
+
+const HeroCarousel = () => {
+  const slides = [
+    {
+    id: 1,
+    image: "https://picsum.photos/id/1018/1600/900",
+    heading: "Welcome to Keasy",
+    description: "Making life in South Korea easier for foreigners",
+    buttonText1: "Explore Marketplace",
+    buttonLink1: "/marketplace",
+    buttonText2: "Find Events",
+    buttonLink2: "/events",
+  },
+  {
+    id: 2,
+    image: "https://picsum.photos/id/1025/1600/900",
+    heading: "Discover Local Stores",
+    description: "Find the best deals nearby",
+    buttonText1: "Shop Now",
+    buttonLink1: "/marketplace",
+    buttonText2: "View Guides",
+    buttonLink2: "/guides",
+  },
+  {
+    id: 3,
+    image: "https://picsum.photos/id/1037/1600/900",
+    heading: "Connect with Community",
+    description: "Meet and share with other expats",
+    buttonText1: "Join Groups",
+    buttonLink1: "/community",
+    buttonText2: "Attend Events",
+    buttonLink2: "/events",
+  },
+  {
+    id: 4,
+    image: "https://picsum.photos/id/1043/1600/900",
+    heading: "Learn & Grow",
+    description: "Access guides, tips, and resources",
+    buttonText1: "Read Guides",
+    buttonLink1: "/guides",
+    buttonText2: "Watch Tutorials",
+    buttonLink2: "/guides",
+  },
+  {
+    id: 5,
+    image: "https://picsum.photos/id/1050/1600/900",
+    heading: "Your Life Made Easier",
+    description: "Simplify everything with Keasy",
+    buttonText1: "Get Started",
+    buttonLink1: "/guides",
+    buttonText2: "Contact Us",
+    buttonLink2: "/contact",
+  }
+  ];
+
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(0); // 1 = next, -1 = prev
+
+  // Auto-slide every 5s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [current]);
+
+  const nextSlide = () => {
+    setDirection(1);
+    setCurrent((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setDirection(-1);
+    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  const variants = {
+    enter: (dir) => ({ x: dir > 0 ? 300 : -300, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir) => ({ x: dir < 0 ? 300 : -300, opacity: 0 }),
+  };
+
+  return (
+    <div className="relative w-full h-[80vh] overflow-hidden">
+      <AnimatePresence initial={false} custom={direction}>
+        <motion.div
+          key={slides[current].id}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.8 }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragEnd={(e, { offset, velocity }) => {
+            if (offset.x < -100) nextSlide();
+            else if (offset.x > 100) prevSlide();
+          }}
+          className="absolute top-0 left-0 w-full h-full"
+          style={{
+            backgroundImage: `url(${slides[current].image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* Black glass overlay */}
+          <div className="absolute inset-0 bg-black/60"></div>
+
+          {/* Slide Content */}
+          <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+              {slides[current].heading}
+            </h1>
+            <p className="text-xl max-w-2xl mb-8">{slides[current].description}</p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href={slides[current].buttonLink1}
+                className="rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100"
+              >
+                {slides[current].buttonText1}
+              </a>
+              <a
+                href={slides[current].buttonLink2}
+                className="rounded-lg border border-white bg-transparent px-6 py-3 font-medium text-white hover:bg-white/10"
+              >
+                {slides[current].buttonText2}
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Navigation dots */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
+        {slides.map((slide, index) => (
+          <button
+            key={slide.id}
+            className={`h-3 w-3 rounded-full transition-all ${
+              current === index ? "bg-white scale-125" : "bg-gray-400"
+            }`}
+            onClick={() => setCurrent(index)}
+          ></button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
+
+
 /* Home Component */
 export default function Home() {
   const features = [
@@ -315,8 +475,9 @@ export default function Home() {
 
   return (
     <div>
+      <HeroCarousel />
       {/* Hero Section */}
-      <section className="relative bg-black py-24 text-white">
+      {/* <section className="relative bg-black py-24 text-white">
         <div className="container mx-auto px-4 text-center">
           <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl text-white">Welcome to keasy</h1>
           <p className="mx-auto mb-8 max-w-2xl text-xl">Making life in South Korea easier for foreigners</p>
@@ -329,7 +490,7 @@ export default function Home() {
             </a>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Features Section */}
       <section className="py-16">
