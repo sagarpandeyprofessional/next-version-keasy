@@ -6,6 +6,7 @@ import { BiLogoPlayStore } from "react-icons/bi";
 import { FaAppStoreIos } from "react-icons/fa";
 import { MdOutlinePlace } from "react-icons/md";
 import { MdOutlineTipsAndUpdates } from "react-icons/md";
+import { FaInstagram } from "react-icons/fa6";
 
 export default function GuideDetail() {
   const { id } = useParams();
@@ -115,7 +116,7 @@ export default function GuideDetail() {
                     className="text-black flex hover:bg-gray-100 min-w-35 text-center"
                   >
                     <MdOutlinePlace size={30} className="" />
-                    <span className="px-3 font-bold">{link.name}</span>
+                    <span className="px-3 font-bold text-black">{link.name}</span>
                   </Link>
                 </li>
               ))}
@@ -176,6 +177,27 @@ export default function GuideDetail() {
               <h1 className="mb-2 text-2xl font-bold text-gray-800">Tip</h1>
             </div>
             <h3 className="mb-2 text-lg font-semibold text-gray-800">{section.body}</h3>
+          </div>
+          );
+        case "social_links":
+          return (
+            <div>
+            <h3 className="mb-4 text-2xl font-semibold text-gray-900 text-center">Our Instagram Page</h3>
+            <ul key={index} className="mb-8 flex justify-center gap-5 flex-wrap">
+              {section.items.map((social_link, idx) => (
+                <li key={idx} className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
+                  <Link
+                    to={social_link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-black flex hover:bg-gray-100 min-w-35 text-center"
+                  >
+                    <FaInstagram size={30} className="text-pink-500 text-3xl" />
+                    <span className="px-3 font-bold text-black">{social_link.name}</span>
+                  </Link>
+                </li>
+              ))}
+          </ul>
           </div>
           );
         
