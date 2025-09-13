@@ -1,8 +1,19 @@
 {
-  "name": "frontend",
+  "name": "koreaeasy", 
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "A community platform that helps foreigners in South Korea with marketplace, events, and guides.",
+  "keywords": [
+    "React",
+    "Supabase",
+    "Marketplace",
+    "Events",
+    "South Korea",
+    "Community"
+  ],
+  "author": "Francue Werner",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
