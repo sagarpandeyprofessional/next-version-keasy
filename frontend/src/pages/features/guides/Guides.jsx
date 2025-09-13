@@ -102,16 +102,35 @@ const Carousel = ({
     if (!scrollContainerRef.current) return;
     const container = scrollContainerRef.current;
     const scrollAmount = container.clientWidth * 0.8;
-    container.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
   };
 
-  // Attach scroll listener on mount
+  // Attach scroll + wheel listener
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (scrollContainer) {
       scrollContainer.addEventListener("scroll", handleScroll);
       handleScroll(); // check arrows on mount
-      return () => scrollContainer.removeEventListener("scroll", handleScroll);
+
+      // mouse wheel → horizontal scroll
+      const handleWheel = (e) => {
+        if (e.deltaY === 0) return; // only vertical wheel input
+        e.preventDefault();
+        scrollContainer.scrollBy({
+          left: e.deltaY < 0 ? -100 : 100, // adjust scroll speed
+          behavior: "smooth",
+        });
+      };
+
+      scrollContainer.addEventListener("wheel", handleWheel, { passive: false });
+
+      return () => {
+        scrollContainer.removeEventListener("scroll", handleScroll);
+        scrollContainer.removeEventListener("wheel", handleWheel);
+      };
     }
   }, []);
 
@@ -147,7 +166,9 @@ const Carousel = ({
             onClick={() => scroll("left")}
             disabled={!showLeftArrow}
             className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
-              showLeftArrow ? "text-black hover:bg-gray-100" : "cursor-default text-gray-300"
+              showLeftArrow
+                ? "text-black hover:bg-gray-100"
+                : "cursor-default text-gray-300"
             }`}
           >
             &#8592;
@@ -156,7 +177,9 @@ const Carousel = ({
             onClick={() => scroll("right")}
             disabled={!showRightArrow}
             className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
-              showRightArrow ? "text-black hover:bg-gray-100" : "cursor-default text-gray-300"
+              showRightArrow
+                ? "text-black hover:bg-gray-100"
+                : "cursor-default text-gray-300"
             }`}
           >
             &#8594;
@@ -174,6 +197,7 @@ const Carousel = ({
     </div>
   );
 };
+
 
 /* ExploreCard Component */
 const ExploreCard = ({ id, name, description, img_url, created_by, category }) => {
