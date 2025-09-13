@@ -4,6 +4,7 @@ import { supabase } from "../../../api/supabase-client";
 import { FaL } from "react-icons/fa6";
 import { BiLogoPlayStore } from "react-icons/bi";
 import { FaAppStoreIos } from "react-icons/fa";
+import { MdOutlinePlace } from "react-icons/md";
 
 export default function GuideDetail() {
   const { id } = useParams();
@@ -49,7 +50,7 @@ export default function GuideDetail() {
         setLoading(false);
       }
     }
-    fetchAuthor();
+    if(guide?.created_by) fetchAuthor();
   }, [guide?.created_by]);
 
   if (loading) {
@@ -101,17 +102,18 @@ export default function GuideDetail() {
         );
       case "links":
         return (
-          <ul key={index} className="mb-8 flex justify-center">
+          <ul key={index} className="mb-8 flex justify-center gap-5">
             {section.items.map((link, idx) => (
-              <li key={idx}>
-                <a
-                  href={link.url}
+              <li key={idx} className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
+                <Link
+                  to={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-black hover:underline"
+                  className="text-black flex hover:bg-gray-100 min-w-35 text-center"
                 >
-                  {link.label}
-                </a>
+                  <MdOutlinePlace size={30} className="" />
+                  <span className="px-3 font-bold">{link.name}</span>
+                </Link>
               </li>
             ))}
           </ul>
