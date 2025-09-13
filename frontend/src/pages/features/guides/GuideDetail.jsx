@@ -5,6 +5,7 @@ import { FaL } from "react-icons/fa6";
 import { BiLogoPlayStore } from "react-icons/bi";
 import { FaAppStoreIos } from "react-icons/fa";
 import { MdOutlinePlace } from "react-icons/md";
+import { MdOutlineTipsAndUpdates } from "react-icons/md";
 
 export default function GuideDetail() {
   const { id } = useParams();
@@ -102,21 +103,24 @@ export default function GuideDetail() {
         );
       case "links":
         return (
-          <ul key={index} className="mb-8 flex justify-center gap-5">
-            {section.items.map((link, idx) => (
-              <li key={idx} className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
-                <Link
-                  to={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-black flex hover:bg-gray-100 min-w-35 text-center"
-                >
-                  <MdOutlinePlace size={30} className="" />
-                  <span className="px-3 font-bold">{link.name}</span>
-                </Link>
-              </li>
-            ))}
+          <div>
+            <h3 className="mb-4 text-2xl font-semibold text-gray-900 text-center">Click below for Address</h3>
+            <ul key={index} className="mb-8 flex justify-center gap-5 flex-wrap">
+              {section.items.map((link, idx) => (
+                <li key={idx} className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
+                  <Link
+                    to={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-black flex hover:bg-gray-100 min-w-35 text-center"
+                  >
+                    <MdOutlinePlace size={30} className="" />
+                    <span className="px-3 font-bold">{link.name}</span>
+                  </Link>
+                </li>
+              ))}
           </ul>
+          </div>
         );
       case "app_links":
       return (
@@ -164,6 +168,16 @@ export default function GuideDetail() {
           </ul>
         </div>
       );
+      case "tip":
+        return (
+          <div key={index} className="mb-8 rounded-lg border-l-4 border-r-4 border-gray-800 bg-gold-50 p-4">
+            <div className="mb-4 flex gap-3 items-center">
+              <MdOutlineTipsAndUpdates size={35} className="mb-2 text-gray-800" />
+              <h1 className="mb-2 text-2xl font-bold text-gray-800">Tip</h1>
+            </div>
+            <h3 className="mb-2 text-lg font-semibold text-gray-800">{section.body}</h3>
+          </div>
+          );
         
       default:
         return null;
@@ -175,7 +189,7 @@ export default function GuideDetail() {
       {/* Back button */}
       <Link
         to="/guides"
-        className="mb-6 inline-block text-sm font-medium text-black-600 hover:underline px-3 py-1"
+        className="mb-6 inline-block text-sm font-medium text-black hover:underline px-3 py-1 dark:text-black"
       >
         ← Back to Guides
       </Link>
