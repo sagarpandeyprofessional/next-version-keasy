@@ -59,7 +59,6 @@ function App() {
   
   return (
     <AuthProvider>
-      <Router>
         <ScrollToTop />
           <Routes>
             {/* Main Pages */}
@@ -95,7 +94,6 @@ function App() {
             <Route element={<Layout><PrivateRoute><SettingsPage/></PrivateRoute></Layout>} path='/settings'/>
 
           </Routes>
-      </Router>
     </AuthProvider>
   )
 }
