@@ -1,6 +1,9 @@
 // lib
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
+// hooks for google analytics
+import useAnalytics from "./hooks/useAnalytics";
+
 // context
 import { AuthProvider, useAuth } from './context/AuthContext'
 
@@ -51,7 +54,8 @@ const ScrollToTop = () => {
 };
 
 function App() {
-
+  // func for google analytics
+  useAnalytics();
   
   return (
     <AuthProvider>
