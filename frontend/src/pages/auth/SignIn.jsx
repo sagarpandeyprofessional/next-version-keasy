@@ -49,7 +49,7 @@ const SignIn = () => {
         <div className="hidden md:flex items-center justify-center">
           <div className="relative h-full w-full max-w-md overflow-hidden rounded-lg">
             <img
-              src="../../../../public/app_img/IMG_3637.JPEG"
+              src="https://ltfgerwmkbyxfaebxucc.supabase.co/storage/v1/object/public/app_bucket/IMG_3637.JPEG"
               alt="Authentication illustration"
               className="object-cover w-full h-full"
               loading="eager"
