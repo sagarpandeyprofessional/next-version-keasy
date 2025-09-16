@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    background-color: white;
+
+  }
+  
+  
+  body {
+    @apply bg-white text-black dark:bg-black dark:text-white;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: white;
+
+  }
+  
+  a {
+    @apply text-black hover:underline dark:text-white;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-black dark:text-white font-bold;
+  }
+  
+  button {
+    @apply text-black dark:text-white;
+  }
+}
+
+@layer components {
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 1280px;
+  }
+  
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium;
+  }
+  
+  .btn-primary {
+    @apply bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-black border border-black hover:bg-gray-100 dark:bg-black dark:text-white dark:border-white dark:hover:bg-gray-900;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+  
+  /* Add smooth scrolling to the document */
+  html {
+    scroll-behavior: smooth;
+  }
+}
