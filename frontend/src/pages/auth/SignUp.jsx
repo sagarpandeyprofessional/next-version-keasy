@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../api/supabase-client";
+import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 
 // Password & email rules
 const passwordRules = (password) => {
@@ -47,6 +48,10 @@ const SignUp = () => {
 
   // Confirm password live check
   const [passwordMatch, setPasswordMatch] = useState(null);
+
+  // Show/hide password toggles
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // 👇 debounce check username availability
   useEffect(() => {
@@ -127,21 +132,27 @@ const SignUp = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-white">
       <div className="grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-2">
-
-        
-
         {/* Right Form */}
         <div className="flex items-center justify-center">
-          <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4" noValidate>
+          <form
+            onSubmit={handleSubmit}
+            className="w-full max-w-md space-y-4"
+            noValidate
+          >
             <h2 className="text-2xl font-semibold text-gray-900">
               Create an account
             </h2>
 
-            {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
+            {error && (
+              <p className="text-red-600 text-sm font-medium">{error}</p>
+            )}
 
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Username
               </label>
               <input
@@ -154,18 +165,37 @@ const SignUp = () => {
                 onChange={handleUsernameChange}
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
               />
+              <p className="my-1 text-xs text-gray-500">
+                Username can contain only underscore("_"), dot("."), numbers and
+                small letters!
+              </p>
               {username && (
                 <p className="mt-1 text-xs">
-                  {isCheckingUsername && <span className="text-gray-500">⏳ Checking...</span>}
-                  {!isCheckingUsername && isUsernameAvailable === true && <span className="text-green-600">✅ Username is available</span>}
-                  {!isCheckingUsername && isUsernameAvailable === false && <span className="text-red-600">❌ Username is already taken</span>}
+                  {isCheckingUsername && (
+                    <span className="text-gray-500">⏳ Checking...</span>
+                  )}
+                  {!isCheckingUsername &&
+                    isUsernameAvailable === true && (
+                      <span className="text-green-600">
+                        ✅ Username is available
+                      </span>
+                    )}
+                  {!isCheckingUsername &&
+                    isUsernameAvailable === false && (
+                      <span className="text-red-600">
+                        ❌ Username is already taken
+                      </span>
+                    )}
                 </p>
               )}
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <input
@@ -181,44 +211,135 @@ const SignUp = () => {
             </div>
 
             {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            {/* <div className="relative">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 autoComplete="new-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
               />
-            </div>
+              <button
+                type="button"
+                className="absolute right-3 top-9 text-gray-600 hover:text-black"
+              >
+                {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+              </button>
+            </div> */}
 
             {/* Confirm Password */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            {/* <div className="relative">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirm Password
               </label>
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 name="confirmPassword"
                 autoComplete="new-password"
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-9 text-gray-600 hover:text-black"
+              >
+                {showConfirmPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+              </button>
+
               {confirmPassword && (
                 <p className="mt-1 text-xs">
-                  {passwordMatch === true && <span className="text-green-600">✅ Passwords match</span>}
-                  {passwordMatch === false && <span className="text-red-600">❌ Passwords do not match</span>}
+                  {passwordMatch === true && (
+                    <span className="text-green-600">✅ Passwords match</span>
+                  )}
+                  {passwordMatch === false && (
+                    <span className="text-red-600">
+                      ❌ Passwords do not match
+                    </span>
+                  )}
                 </p>
               )}
-            </div>
+            </div> */}
+            {/* Password */}
+<div className="relative">
+  <label
+    htmlFor="password"
+    className="block text-sm font-medium text-gray-700"
+  >
+    Password
+  </label>
+  <input
+    type={showPassword ? "text" : "password"}
+    id="password"
+    name="password"
+    autoComplete="new-password"
+    required
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
+  />
+  <button
+    type="button"
+    onClick={() => setShowPassword((prev) => !prev)}
+    className="absolute right-3 top-9 text-gray-600 hover:text-black"
+  >
+    {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+  </button>
+</div>
+
+{/* Confirm Password */}
+<div className="relative">
+  <label
+    htmlFor="confirmPassword"
+    className="block text-sm font-medium text-gray-700"
+  >
+    Confirm Password
+  </label>
+  <input
+    type={showConfirmPassword ? "text" : "password"}
+    id="confirmPassword"
+    name="confirmPassword"
+    autoComplete="new-password"
+    required
+    value={confirmPassword}
+    onChange={(e) => setConfirmPassword(e.target.value)}
+    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
+  />
+  <button
+    type="button"
+    onClick={() => setShowConfirmPassword((prev) => !prev)}
+    className="absolute right-3 top-9 text-gray-600 hover:text-black"
+  >
+    {showConfirmPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+  </button>
+
+  {confirmPassword && (
+    <p className="mt-1 text-xs">
+      {passwordMatch === true && (
+        <span className="text-green-600">✅ Passwords match</span>
+      )}
+      {passwordMatch === false && (
+        <span className="text-red-600">❌ Passwords do not match</span>
+      )}
+    </p>
+  )}
+</div>
+
 
             <button
               type="submit"
@@ -230,7 +351,10 @@ const SignUp = () => {
 
             <p className="mt-4 text-center text-sm text-gray-600">
               Already have an account?{" "}
-              <Link to="/signin" className="font-medium text-black hover:underline ">
+              <Link
+                to="/signin"
+                className="font-medium text-black hover:underline "
+              >
                 Sign in
               </Link>
             </p>

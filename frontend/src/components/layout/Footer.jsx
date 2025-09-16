@@ -30,7 +30,7 @@ const Footer = () => {
               <div className="mt-6 space-x-4 text-sm">
                 <p className='mb-1 max-w-80'>MontemFlumen Inc.</p>
                 <p className='mb-1 max-w-80'>Business Registration Number: 280-81-04090</p>
-                <p className='mb-1 max-w-80'>CEO & Founder: Sagar Panday</p>
+                <p className='mb-1 max-w-80'>CEO & Founder: Sagar Pandey</p>
             </div>
           </div>
 

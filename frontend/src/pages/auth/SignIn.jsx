@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 // Email & password validation
 const emailRules = (email) => {
@@ -18,9 +19,11 @@ const passwordRules = (password) => {
 const SignIn = () => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👈 toggle state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,7 +52,7 @@ const SignIn = () => {
         <div className="hidden md:flex items-center justify-center">
           <div className="relative h-full w-full max-w-md overflow-hidden rounded-lg">
             <img
-              src="../../../../public/app_img/IMG_3637.JPEG"
+              src="https://ltfgerwmkbyxfaebxucc.supabase.co/storage/v1/object/public/app_bucket/IMG_3637.JPEG"
               alt="Authentication illustration"
               className="object-cover w-full h-full"
               loading="eager"
@@ -66,6 +69,7 @@ const SignIn = () => {
 
             {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
 
+            {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
@@ -82,22 +86,31 @@ const SignIn = () => {
               />
             </div>
 
-            <div>
+            {/* Password */}
+            <div className="relative">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black text-black"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-9 text-gray-600 hover:text-black"
+              >
+                {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+              </button>
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
               className="w-full rounded-md bg-black px-4 py-2 text-white hover:bg-gray-800"
