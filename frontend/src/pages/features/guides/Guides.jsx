@@ -1,15 +1,28 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from "../../../api/supabase-client";
 import { Link } from 'react-router';
+import { IoEyeOutline } from "react-icons/io5";
+import { IoIosHeart } from "react-icons/io";
+import { IoIosHeartEmpty } from "react-icons/io";
 
-const getPlaceholderImage = (id, type) =>
-  `https://picsum.photos/400/300?random=${id}`; // using Picsum instead of via.placeholder
+const getPlaceholderImage = (id) =>
+  `https://picsum.photos/400/300?random=${id || Math.floor(Math.random() * 1000)}`;
 
 const Guides = () => {
   const [guides, setGuides] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [user, setUser] = useState(null);
+
+  // Get current user
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   // Fetch categories
   useEffect(() => {
@@ -31,13 +44,23 @@ const Guides = () => {
     fetchCategories();
   }, []);
 
-  // Fetch guides
+  // Fetch guides with likes and views
   useEffect(() => {
     const fetchGuides = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('guide')
-        .select('id, created_at, name, description, img_url, created_by, category');
+        .select(`
+          id, 
+          created_at, 
+          name, 
+          description, 
+          img_url, 
+          created_by, 
+          category,
+          view,
+          like
+        `);
 
       if (error) {
         console.error('Error fetching guides:', error.message);
@@ -50,27 +73,86 @@ const Guides = () => {
     fetchGuides();
   }, []);
 
+  const handleLike = async (guideId) => {
+    if (!user) {
+      alert('Please login to like guides');
+      return;
+    }
+
+    const guide = guides.find(g => g.id === guideId);
+    const currentLikes = guide.like || {};
+    const userId = user.id;
+    const isCurrentlyLiked = currentLikes[userId] === true;
+    
+    try {
+      let newLikes;
+      if (isCurrentlyLiked) {
+        // Remove user's like
+        newLikes = { ...currentLikes };
+        delete newLikes[userId];
+      } else {
+        // Add user's like
+        newLikes = { ...currentLikes, [userId]: true };
+      }
+
+      // Update in database
+      const { error } = await supabase
+        .from('guide')
+        .update({ like: newLikes })
+        .eq('id', guideId);
+
+      if (error) {
+        console.error('Error updating like:', error);
+        return;
+      }
+
+      // Update local state
+      setGuides(prev => prev.map(guide => 
+        guide.id === guideId 
+          ? { ...guide, like: newLikes }
+          : guide
+      ));
+    } catch (error) {
+      console.error('Error updating like:', error);
+    }
+  };
+
+  const handleViewGuide = async (guideId) => {
+    // This should work for both logged-in and non-logged-in users
+    try {
+      const guide = guides.find(g => g.id === guideId);
+      const currentViews = parseInt(guide.view || 0);
+      const newViews = currentViews + 1;
+
+      // Update view count in database - no user authentication required for views
+      const { error } = await supabase
+        .from('guide')
+        .update({ view: newViews })
+        .eq('id', guideId);
+
+      if (error) {
+        console.error('Error updating views:', error);
+        return;
+      }
+
+      // Update local state
+      setGuides(prev => prev.map(guide => 
+        guide.id === guideId 
+          ? { ...guide, view: newViews }
+          : guide
+      ));
+    } catch (error) {
+      console.error('Error updating views:', error);
+    }
+  };
+
   const filteredGuides =
     activeCategory === 'All'
       ? guides
       : guides.filter((guide) => guide.category === activeCategory);
 
   return (
-  // <div className="container mx-auto px-4 py-12">
-  //   {/* Explore Korea Carousel */}
-  //   <section className="py-16">
-  //     <div className="container mx-auto px-4">
-  //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-  //         {filteredGuides.map((guide) => (
-  //           <ExploreCard key={guide.id} {...guide} />
-  //         ))}
-  //       </div>
-  //     </div>
-  //   </section>
-  // </div>
-
     <div className="container mx-auto px-4 py-12">
-      {/* Explore Korea Carousel */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <ExploreSection
@@ -81,132 +163,18 @@ const Guides = () => {
             categories={categories}
           >
             {filteredGuides.map((guide) => (
-              <ExploreCard key={guide.id} {...guide} className="flex"/>
+              <ExploreCard 
+                key={guide.id} 
+                {...guide} 
+                className="flex"
+                onLike={() => handleLike(guide.id)}
+                onView={() => handleViewGuide(guide.id)}
+                user={user}
+              />
             ))}
           </ExploreSection>
         </div>
       </section>
-    </div>
-  );
-};
-
-/* Carousel Component */
-const Carousel = ({
-  title,
-  children,
-  className = "",
-  setActiveCategory,
-  activeCategory,
-  loading,
-  categories,
-}) => {
-  const scrollContainerRef = useRef(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
-
-  const handleScroll = () => {
-    if (!scrollContainerRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    setShowLeftArrow(scrollLeft > 10);
-    setShowRightArrow(scrollLeft + clientWidth < scrollWidth - 10);
-  };
-
-  const scroll = (direction) => {
-    if (!scrollContainerRef.current) return;
-    const container = scrollContainerRef.current;
-    const scrollAmount = container.clientWidth * 0.8;
-    container.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
-  };
-
-  // Attach scroll + wheel listener
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener("scroll", handleScroll);
-      handleScroll(); // check arrows on mount
-
-      // mouse wheel → horizontal scroll
-      const handleWheel = (e) => {
-        if (e.deltaY === 0) return; // only vertical wheel input
-        e.preventDefault();
-        scrollContainer.scrollBy({
-          left: e.deltaY < 0 ? -100 : 100, // adjust scroll speed
-          behavior: "smooth",
-        });
-      };
-
-      scrollContainer.addEventListener("wheel", handleWheel, { passive: false });
-
-      return () => {
-        scrollContainer.removeEventListener("scroll", handleScroll);
-        scrollContainer.removeEventListener("wheel", handleWheel);
-      };
-    }
-  }, []);
-
-  // Recalculate arrow visibility when guides (children) or category change
-  useEffect(() => {
-    handleScroll();
-  }, [children, activeCategory, loading]);
-
-  return (
-    <div className={className}>
-      {/* Categories filter buttons */}
-      <div className="mb-8 flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <button
-            key={category.id || category.name}
-            onClick={() => setActiveCategory(category.name)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              activeCategory === category.name
-                ? "bg-black text-white hover:bg-gray-200"
-                : "bg-primary-600 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {category.name}
-          </button>
-        ))}
-      </div>
-
-      {/* Title + Arrows */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-black md:text-3xl">{title}</h2>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => scroll("left")}
-            disabled={!showLeftArrow}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
-              showLeftArrow
-                ? "text-black hover:bg-gray-100"
-                : "cursor-default text-gray-300"
-            }`}
-          >
-            &#8592;
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            disabled={!showRightArrow}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
-              showRightArrow
-                ? "text-black hover:bg-gray-100"
-                : "cursor-default text-gray-300"
-            }`}
-          >
-            &#8594;
-          </button>
-        </div>
-      </div>
-
-      {/* Scroll container */}
-      <div
-        className="flex -mx-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
-        ref={scrollContainerRef}
-      >
-        {children}
-      </div>
     </div>
   );
 };
@@ -251,20 +219,37 @@ const ExploreSection = ({
   );
 };
 
-
 /* ExploreCard Component */
-const ExploreCard = ({ id, name, description, img_url, created_by, category }) => {
-  const [imageError, setImageError] = useState(false);
-  const imageUrl =
-    imageError || !img_url
-      ? getPlaceholderImage(category)
-      : img_url;
-
+const ExploreCard = ({ 
+  id, 
+  name, 
+  description, 
+  img_url, 
+  created_by, 
+  category, 
+  view = 0,
+  like = {},
+  onLike,
+  onView,
+  user
+}) => {
   const [author, setAuthor] = useState('');
+  const [isLiking, setIsLiking] = useState(false);
+
+  // Check if current user has liked this guide
+  const isLiked = user && like && like[user.id] === true;
+  
+  // Count total likes
+  const likesCount = like ? Object.keys(like).filter(key => like[key] === true).length : 0;
+  
+  // Convert view to number
+  const viewsCount = parseInt(view) || 0;
 
   // Fetch author
   useEffect(() => {
     const fetchAuthor = async () => {
+      if (!created_by) return;
+      
       const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('username')
@@ -274,32 +259,136 @@ const ExploreCard = ({ id, name, description, img_url, created_by, category }) =
         console.error('Error fetching author:', userError.message);
       } else if (userData && userData.length > 0) {
         setAuthor(userData[0].username);
+      } else {
+        setAuthor('Unknown Author');
       }
     };
 
     fetchAuthor();
   }, [created_by]);
 
+  const handleImageError = (e) => {
+    console.error('Image failed to load:', img_url);
+  };
+
+  const handleLike = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isLiking) return;
+    
+    if (!user) {
+      alert('Please login to like guides');
+      return;
+    }
+    
+    setIsLiking(true);
+    await onLike();
+    setTimeout(() => setIsLiking(false), 300);
+  };
+
+  const handleCardClick = () => {
+    console.log('View clicked for guide:', id);
+    onView();
+  };
+
+  const formatCount = (count) => {
+    if (count >= 1000000) {
+      return (count / 1000000).toFixed(1) + 'M';
+    }
+    if (count >= 1000) {
+      return (count / 1000).toFixed(1) + 'K';
+    }
+    return count.toString();
+  };
+
   return (
     <div className="snap-start px-4 flex-shrink-0 w-full sm:w-72 md:w-80">
-      <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1">
-        <div className="relative h-48 w-full">
-          <img
-            src={imageUrl}
-            alt={name}
-            className="object-cover w-full h-full"
-            onError={() => setImageError(true)}
-          />
-        </div>
-        <div className="p-4">
-          <div className="mb-1 flex items-center text-sm text-gray-500">
-            by {author}
+      <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
+        <div className="relative h-48 w-full overflow-hidden bg-gray-200">
+          {/* Show image only if img_url exists */}
+          {img_url ? (
+            <img
+              src={img_url}
+              alt={name || 'Guide image'}
+              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+              onError={handleImageError}
+              loading="lazy"
+            />
+          ) : (
+            /* No image placeholder */
+            <div className="flex items-center justify-center h-full bg-gray-200">
+              <div className="text-gray-400 text-sm">No image</div>
+            </div>
+          )}
+          
+          {/* Overlay with stats - no background */}
+          <div className="absolute inset-0 transition-all duration-300">
+            <div className="absolute top-3 right-3 flex flex-col gap-2">
+              {/* Like button */}
+              <button
+                onClick={handleLike}
+                disabled={isLiking}
+                className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
+                  isLiked 
+                    ? 'bg-red-500 text-white shadow-lg' 
+                    : 'bg-white/80 hover:bg-white text-gray-700 hover:text-red-500'
+                } ${isLiking ? 'scale-110' : ''} ${!user ? 'opacity-75' : 'hover:scale-110'}`}
+                title={!user ? 'Login to like guides' : (isLiked ? 'Unlike' : 'Like')}
+              >
+                {isLiked ? (
+                  <IoIosHeart className="w-4 h-4" />
+                ) : (
+                  <IoIosHeartEmpty className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+
+            {/* Bottom stats */}
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+              <div className="flex items-center gap-3 text-white">
+                <div className="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm">
+                  <IoEyeOutline className="w-4 h-4" />
+                  <span className="text-sm font-medium">{formatCount(viewsCount)}</span>
+                </div>
+                <div className="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm">
+                  <IoIosHeart className="w-4 h-4" />
+                  <span className="text-sm font-medium">{formatCount(likesCount)}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <h3 className="mb-2 text-lg font-semibold text-black">{name}</h3>
-          <p className="mb-4 text-sm text-gray-600">{description}</p>
+        </div>
+
+        <div className="p-4">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              by {author || 'Loading...'}
+            </div>
+            {/* Small stats for mobile/when not hovering */}
+            <div className="flex items-center gap-3 text-gray-500 sm:hidden">
+              <div className="flex items-center gap-1">
+                <IoEyeOutline className="w-3 h-3" />
+                <span className="text-xs">{formatCount(viewsCount)}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <IoIosHeart className="w-3 h-3" />
+                <span className="text-xs">{formatCount(likesCount)}</span>
+              </div>
+            </div>
+          </div>
+          
+          <h3 className="mb-2 text-lg font-semibold text-black line-clamp-2">
+            {name || 'Untitled Guide'}
+          </h3>
+          <p className="mb-4 text-sm text-gray-600 line-clamp-3">
+            {description || 'No description available.'}
+          </p>
+          
           <Link
             to={`guide/${id}`}
-            className="inline-block rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+            onClick={handleCardClick}
+            className="inline-block rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
             Read full guide &rarr;
           </Link>
