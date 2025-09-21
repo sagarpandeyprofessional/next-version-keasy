@@ -187,23 +187,58 @@ const ExploreSection = ({
   activeCategory,
   categories,
 }) => {
+  const scrollContainerRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className={className}>
-      {/* Categories filter buttons */}
-      <div className="mb-8 flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <button
-            key={category.id || category.name}
-            onClick={() => setActiveCategory(category.name)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              activeCategory === category.name
-                ? "bg-black text-white hover:bg-gray-800"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            {category.name}
-          </button>
-        ))}
+      {/* Categories filter buttons - Horizontal scrollable */}
+      <div className="mb-8 relative">
+        {/* Scroll buttons for desktop */}
+        <button
+          onClick={scrollLeft}
+          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-8 h-8 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+        >
+          <span className="text-gray-600">‹</span>
+        </button>
+        <button
+          onClick={scrollRight}
+          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-8 h-8 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+        >
+          <span className="text-gray-600">›</span>
+        </button>
+
+        {/* Scrollable container */}
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 md:px-10"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {categories.map((category) => (
+            <button
+              key={category.id || category.name}
+              onClick={() => setActiveCategory(category.name)}
+              className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap ${
+                activeCategory === category.name
+                  ? "bg-black text-white hover:bg-gray-800"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Title */}
@@ -211,8 +246,8 @@ const ExploreSection = ({
         <h2 className="text-2xl font-bold text-black md:text-3xl">{title}</h2>
       </div>
 
-      {/* Cards grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Cards grid - 2 columns on mobile, responsive on larger screens */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
         {children}
       </div>
     </div>
@@ -303,9 +338,9 @@ const ExploreCard = ({
   };
 
   return (
-    <div className="snap-start px-4 flex-shrink-0 w-full sm:w-72 md:w-80">
+    <div className="w-full">
       <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
-        <div className="relative h-48 w-full overflow-hidden bg-gray-200">
+        <div className="relative h-32 sm:h-48 w-full overflow-hidden bg-gray-200">
           {/* Show image only if img_url exists */}
           {img_url ? (
             <img
@@ -318,18 +353,18 @@ const ExploreCard = ({
           ) : (
             /* No image placeholder */
             <div className="flex items-center justify-center h-full bg-gray-200">
-              <div className="text-gray-400 text-sm">No image</div>
+              <div className="text-gray-400 text-xs sm:text-sm">No image</div>
             </div>
           )}
           
-          {/* Overlay with stats - no background */}
+          {/* Overlay with stats */}
           <div className="absolute inset-0 transition-all duration-300">
-            <div className="absolute top-3 right-3 flex flex-col gap-2">
+            <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex flex-col gap-1 sm:gap-2">
               {/* Like button */}
               <button
                 onClick={handleLike}
                 disabled={isLiking}
-                className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
+                className={`p-1 sm:p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
                   isLiked 
                     ? 'bg-red-500 text-white shadow-lg' 
                     : 'bg-white/80 hover:bg-white text-gray-700 hover:text-red-500'
@@ -337,60 +372,52 @@ const ExploreCard = ({
                 title={!user ? 'Login to like guides' : (isLiked ? 'Unlike' : 'Like')}
               >
                 {isLiked ? (
-                  <IoIosHeart className="w-4 h-4" />
+                  <IoIosHeart className="w-3 h-3 sm:w-4 sm:h-4" />
                 ) : (
-                  <IoIosHeartEmpty className="w-4 h-4" />
+                  <IoIosHeartEmpty className="w-3 h-3 sm:w-4 sm:h-4" />
                 )}
               </button>
             </div>
 
             {/* Bottom stats */}
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-white">
-                <div className="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm">
-                  <IoEyeOutline className="w-4 h-4" />
-                  <span className="text-sm font-medium">{formatCount(viewsCount)}</span>
+            <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 sm:gap-3 text-white">
+                <div className="flex items-center gap-1 bg-black/50 px-1 sm:px-2 py-1 rounded-full backdrop-blur-sm">
+                  <IoEyeOutline className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="text-xs sm:text-sm font-medium">{formatCount(viewsCount)}</span>
                 </div>
-                <div className="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm">
-                  <IoIosHeart className="w-4 h-4" />
-                  <span className="text-sm font-medium">{formatCount(likesCount)}</span>
+                <div className="flex items-center gap-1 bg-black/50 px-1 sm:px-2 py-1 rounded-full backdrop-blur-sm">
+                  <IoIosHeart className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="text-xs sm:text-sm font-medium">{formatCount(likesCount)}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-2 sm:p-4">
           <div className="mb-1 flex items-center justify-between">
-            <div className="text-sm text-gray-500">
+            <div className="text-xs sm:text-sm text-gray-500 truncate">
               by {author || 'Loading...'}
-            </div>
-            {/* Small stats for mobile/when not hovering */}
-            <div className="flex items-center gap-3 text-gray-500 sm:hidden">
-              <div className="flex items-center gap-1">
-                <IoEyeOutline className="w-3 h-3" />
-                <span className="text-xs">{formatCount(viewsCount)}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <IoIosHeart className="w-3 h-3" />
-                <span className="text-xs">{formatCount(likesCount)}</span>
-              </div>
             </div>
           </div>
           
-          <h3 className="mb-2 text-lg font-semibold text-black line-clamp-2">
+          <h3 className="mb-2 text-sm sm:text-lg font-semibold text-black line-clamp-2">
             {name || 'Untitled Guide'}
           </h3>
-          <p className="mb-4 text-sm text-gray-600 line-clamp-3">
+          
+          {/* Hide description on mobile, show on sm and up */}
+          <p className="hidden sm:block mb-4 text-sm text-gray-600 line-clamp-3">
             {description || 'No description available.'}
           </p>
           
           <Link
             to={`guide/${id}`}
             onClick={handleCardClick}
-            className="inline-block rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+            className="inline-block rounded-md bg-black px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
-            Read full guide &rarr;
+            <span className="hidden sm:inline">Read full guide &rarr;</span>
+            <span className="sm:hidden">Read &rarr;</span>
           </Link>
         </div>
       </div>

@@ -151,97 +151,34 @@ const FestivalCard = ({ id, title, image, description, date, location, href }) =
   );
 };
 
-/* FeatureCard Component */
+/* FeatureCard Component - Updated for mobile */
 const FeatureCard = ({ title, description, icon, href, linkText }) => {
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md">
-      <div className="mb-4">{icon}</div>
-      <h3 className="mb-2 text-xl font-semibold text-black" >{title}</h3>
-      <p className="mb-4 text-gray-600">{description}</p>
-      <a href={href} className="font-medium text-blue-600 hover:underline">
-        {linkText} &rarr;
+    <div className="rounded-lg bg-white p-4 sm:p-6 shadow-md">
+      {/* Mobile: Icon and title in one line, Desktop: Icon on top */}
+      <div className="flex items-center gap-3 sm:block mb-3 sm:mb-4">
+        <div className="text-2xl sm:text-3xl flex-shrink-0">{icon}</div>
+        <h3 className="text-lg sm:text-xl font-semibold text-black">{title}</h3>
+      </div>
+      {/* Description - hidden on mobile to save space */}
+      <p className="hidden sm:block mb-4 text-gray-600">{description}</p>
+      <a href={href} className="font-medium text-blue-600 hover:underline text-sm sm:text-base">
+        <span className="sm:hidden">Explore</span>
+        <span className="hidden sm:inline">{linkText}</span> &rarr;
       </a>
     </div>
   );
 };
 
-/* GuidesCarousel Component */
-const GuidesCarousel = ({ title, children, className = "" }) => {
-  const scrollContainerRef = useRef(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
-
-  const handleScroll = () => {
-    if (!scrollContainerRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    setShowLeftArrow(scrollLeft > 10);
-    setShowRightArrow(scrollLeft + clientWidth < scrollWidth - 10);
-  };
-
-  const scroll = (direction) => {
-    if (!scrollContainerRef.current) return;
-    const container = scrollContainerRef.current;
-    const scrollAmount = container.clientWidth * 0.8;
-    container.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener("scroll", handleScroll);
-      handleScroll();
-      return () => scrollContainer.removeEventListener("scroll", handleScroll);
-    }
-  }, []);
-
-  useEffect(() => {
-    handleScroll();
-  }, [children]);
-
-  return (
-    <div className={className}>
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-black md:text-3xl">{title}</h2>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => scroll("left")}
-            disabled={!showLeftArrow}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
-              showLeftArrow ? "text-black hover:bg-gray-100" : "cursor-default text-gray-300"
-            }`}
-          >
-            &#8592;
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            disabled={!showRightArrow}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
-              showRightArrow ? "text-black hover:bg-gray-100" : "cursor-default text-gray-300"
-            }`}
-          >
-            &#8594;
-          </button>
-        </div>
-      </div>
-      <div
-        className="flex -mx-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
-        ref={scrollContainerRef}
-      >
-        {children}
-      </div>
-    </div>
-  );
-};
-
-/* GuidesCard Component */
+/* GuidesCard Component - Updated with button like Guides.jsx */
 const GuidesCard = ({ id, name, description, img_url, created_by, category }) => {
   const [imageError, setImageError] = useState(false);
-  const imageUrl = imageError || !img_url ? getPlaceholderImage(category) : img_url;
-
   const [author, setAuthor] = useState('');
 
   useEffect(() => {
     const fetchAuthor = async () => {
+      if (!created_by) return;
+      
       const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('username')
@@ -251,29 +188,62 @@ const GuidesCard = ({ id, name, description, img_url, created_by, category }) =>
         console.error('Error fetching author:', userError.message);
       } else if (userData && userData.length > 0) {
         setAuthor(userData[0].username);
+      } else {
+        setAuthor('Unknown Author');
       }
     };
 
     fetchAuthor();
   }, [created_by]);
 
+  const handleImageError = (e) => {
+    console.error('Image failed to load:', img_url);
+  };
+
   return (
-    <div className="snap-start px-4 flex-shrink-0 w-full sm:w-72 md:w-80">
-      <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1">
-        <div className="relative h-48 w-full">
-          <img
-            src={imageUrl}
-            alt={name}
-            className="object-cover w-full h-full"
-            onError={() => setImageError(true)}
-          />
+    <div className="w-full">
+      <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
+        <div className="relative h-32 sm:h-48 w-full overflow-hidden bg-gray-200">
+          {/* Show image only if img_url exists */}
+          {img_url ? (
+            <img
+              src={img_url}
+              alt={name || 'Guide image'}
+              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+              onError={handleImageError}
+              loading="lazy"
+            />
+          ) : (
+            /* No image placeholder */
+            <div className="flex items-center justify-center h-full bg-gray-200">
+              <div className="text-gray-400 text-xs sm:text-sm">No image</div>
+            </div>
+          )}
         </div>
-        <div className="p-4">
-          <div className="mb-1 flex items-center text-sm text-gray-500">
-            by {author}
+
+        <div className="p-2 sm:p-4">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="text-xs sm:text-sm text-gray-500 truncate">
+              by {author || 'Loading...'}
+            </div>
           </div>
-          <h3 className="mb-2 text-lg font-semibold text-black">{name}</h3>
-          <p className="mb-4 text-sm text-gray-600">{description}</p>
+          
+          <h3 className="mb-2 text-sm sm:text-lg font-semibold text-black line-clamp-2">
+            {name || 'Untitled Guide'}
+          </h3>
+          
+          {/* Hide description on mobile, show on sm and up */}
+          <p className="hidden sm:block mb-4 text-sm text-gray-600 line-clamp-3">
+            {description || 'No description available.'}
+          </p>
+          
+          <Link
+            to={`guide/${id}`}
+            className="inline-block rounded-md bg-black px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+          >
+            <span className="hidden sm:inline">Read full guide &rarr;</span>
+            <span className="sm:hidden">Read &rarr;</span>
+          </Link>
         </div>
       </div>
     </div>
@@ -439,15 +409,6 @@ const HeroCarousel = () => {
   );
 };
 
-
-
-
-
-
-
-
-
-
 /* Home Component */
 export default function Home() {
   const features = [
@@ -463,8 +424,7 @@ export default function Home() {
     const fetchGuides = async () => {
       const { data, error } = await supabase
         .from('guide')
-        .select('id, created_at, name, description, img_url, created_by, category')
-        .range(0, 4);
+        .select('id, created_at, name, description, img_url, created_by, category');
 
       if (error) {
         console.error('Error fetching guides:', error.message);
@@ -478,27 +438,12 @@ export default function Home() {
   return (
     <div>
       <HeroCarousel />
-      {/* Hero Section */}
-      {/* <section className="relative bg-black py-24 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl text-white">Welcome to keasy</h1>
-          <p className="mx-auto mb-8 max-w-2xl text-xl">Making life in South Korea easier for foreigners</p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href="#" className="rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
-              Explore Marketplace
-            </a>
-            <a href="#" className="rounded-lg border border-white bg-transparent px-6 py-3 font-medium text-white hover:bg-white/10">
-              Find Events
-            </a>
-          </div>
-        </div>
-      </section> */}
 
       {/* Features Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold text-black">Our Features</h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 text-black">
+          <h2 className="mb-8 sm:mb-12 text-center text-2xl sm:text-3xl font-bold text-black">Our Features</h2>
+          <div className="grid grid-cols-2 gap-3 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4 text-black">
             {features.map((feature, index) => (
               <FeatureCard key={index} {...feature} />
             ))}
@@ -506,15 +451,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Explore Guides Carousel */}
+      {/* Explore Guides Section - Grid instead of Carousel */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
-          <GuidesCarousel title="Explore Guides">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-black md:text-3xl">Explore Guides</h2>
+          </div>
+          
+          {/* Cards grid - 2 columns on mobile, responsive on larger screens */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 mb-8">
             {guides.map((guide) => (
               <GuidesCard key={guide.id} {...guide} />
             ))}
-          </GuidesCarousel>
-          <div className="mt-4 flex justify-center">
+          </div>
+          
+          <div className="flex justify-center">
             <Link
               to={`/guides`}
               className="inline-block rounded-md bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800"
@@ -535,13 +486,6 @@ export default function Home() {
           </a>
         </div>
       </section>
-
-      {/* Chatbot Button */}
-      {/* <div className="fixed bottom-6 right-6 z-50">
-        <button className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-lg hover:bg-gray-800">
-          💬
-        </button>
-      </div> */}
     </div>
   );
 }
