@@ -170,10 +170,11 @@ const FeatureCard = ({ title, description, icon, href, linkText }) => {
   );
 };
 
-/* GuidesCard Component - Updated with button like Guides.jsx */
+/* GuidesCard Component - Updated with clickable container and separate like button */
 const GuidesCard = ({ id, name, description, img_url, created_by, category }) => {
   const [imageError, setImageError] = useState(false);
   const [author, setAuthor] = useState('');
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const fetchAuthor = async () => {
@@ -200,52 +201,87 @@ const GuidesCard = ({ id, name, description, img_url, created_by, category }) =>
     console.error('Image failed to load:', img_url);
   };
 
+  const handleLike = (e) => {
+    e.preventDefault(); // Prevent navigation when clicking like
+    e.stopPropagation(); // Stop event bubbling
+    setIsLiked(!isLiked);
+    // Add your like functionality here
+    console.log(`Guide ${id} ${isLiked ? 'unliked' : 'liked'}`);
+  };
+
   return (
     <div className="w-full">
-      <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
-        <div className="relative h-32 sm:h-48 w-full overflow-hidden bg-gray-200">
-          {/* Show image only if img_url exists */}
-          {img_url ? (
-            <img
-              src={img_url}
-              alt={name || 'Guide image'}
-              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
-              onError={handleImageError}
-              loading="lazy"
-            />
-          ) : (
-            /* No image placeholder */
-            <div className="flex items-center justify-center h-full bg-gray-200">
-              <div className="text-gray-400 text-xs sm:text-sm">No image</div>
-            </div>
-          )}
-        </div>
+      <Link 
+        to={`guides/guide/${id}`}
+        className="block h-full"
+      >
+        <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group cursor-pointer">
+          <div className="relative h-32 sm:h-48 w-full overflow-hidden bg-gray-200">
+            {/* Like button - positioned absolutely to prevent container click */}
+            <button
+              onClick={handleLike}
+              className={`absolute top-2 right-2 z-10 p-2 rounded-full transition-all duration-200 ${
+                isLiked 
+                  ? 'bg-red-500 text-white hover:bg-red-600' 
+                  : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
+              }`}
+            >
+              <svg 
+                className="w-4 h-4" 
+                fill={isLiked ? 'currentColor' : 'none'} 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
+                />
+              </svg>
+            </button>
 
-        <div className="p-2 sm:p-4">
-          <div className="mb-1 flex items-center justify-between">
-            <div className="text-xs sm:text-sm text-gray-500 truncate">
-              by {author || 'Loading...'}
+            {/* Show image only if img_url exists */}
+            {img_url ? (
+              <img
+                src={img_url}
+                alt={name || 'Guide image'}
+                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                onError={handleImageError}
+                loading="lazy"
+              />
+            ) : (
+              /* No image placeholder */
+              <div className="flex items-center justify-center h-full bg-gray-200">
+                <div className="text-gray-400 text-xs sm:text-sm">No image</div>
+              </div>
+            )}
+          </div>
+
+          <div className="p-2 sm:p-4">
+            <div className="mb-1 flex items-center justify-between">
+              <div className="text-xs sm:text-sm text-gray-500 truncate">
+                by {author || 'Loading...'}
+              </div>
+            </div>
+            
+            <h3 className="mb-2 text-sm sm:text-lg font-semibold text-black line-clamp-2">
+              {name || 'Untitled Guide'}
+            </h3>
+            
+            {/* Hide description on mobile, show on sm and up */}
+            <p className="hidden sm:block mb-4 text-sm text-gray-600 line-clamp-3">
+              {description || 'No description available.'}
+            </p>
+            
+            {/* Read button - now just for visual indication since whole card is clickable */}
+            <div className="inline-block rounded-md bg-black px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white group-hover:bg-gray-800 transition-colors">
+              <span className="hidden sm:inline">Read full guide &rarr;</span>
+              <span className="sm:hidden">Read &rarr;</span>
             </div>
           </div>
-          
-          <h3 className="mb-2 text-sm sm:text-lg font-semibold text-black line-clamp-2">
-            {name || 'Untitled Guide'}
-          </h3>
-          
-          {/* Hide description on mobile, show on sm and up */}
-          <p className="hidden sm:block mb-4 text-sm text-gray-600 line-clamp-3">
-            {description || 'No description available.'}
-          </p>
-          
-          <Link
-            to={`guide/${id}`}
-            className="inline-block rounded-md bg-black px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-          >
-            <span className="hidden sm:inline">Read full guide &rarr;</span>
-            <span className="sm:hidden">Read &rarr;</span>
-          </Link>
         </div>
-      </div>
+      </Link>
     </div>
   );
 };

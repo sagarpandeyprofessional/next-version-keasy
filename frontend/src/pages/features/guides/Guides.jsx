@@ -339,88 +339,91 @@ const ExploreCard = ({
 
   return (
     <div className="w-full">
-      <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
-        <div className="relative h-32 sm:h-48 w-full overflow-hidden bg-gray-200">
-          {/* Show image only if img_url exists */}
-          {img_url ? (
-            <img
-              src={img_url}
-              alt={name || 'Guide image'}
-              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
-              onError={handleImageError}
-              loading="lazy"
-            />
-          ) : (
-            /* No image placeholder */
-            <div className="flex items-center justify-center h-full bg-gray-200">
-              <div className="text-gray-400 text-xs sm:text-sm">No image</div>
-            </div>
-          )}
-          
-          {/* Overlay with stats */}
-          <div className="absolute inset-0 transition-all duration-300">
-            <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex flex-col gap-1 sm:gap-2">
-              {/* Like button */}
-              <button
-                onClick={handleLike}
-                disabled={isLiking}
-                className={`p-1 sm:p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
-                  isLiked 
-                    ? 'bg-red-500 text-white shadow-lg' 
-                    : 'bg-white/80 hover:bg-white text-gray-700 hover:text-red-500'
-                } ${isLiking ? 'scale-110' : ''} ${!user ? 'opacity-75' : 'hover:scale-110'}`}
-                title={!user ? 'Login to like guides' : (isLiked ? 'Unlike' : 'Like')}
-              >
-                {isLiked ? (
-                  <IoIosHeart className="w-3 h-3 sm:w-4 sm:h-4" />
-                ) : (
-                  <IoIosHeartEmpty className="w-3 h-3 sm:w-4 sm:h-4" />
-                )}
-              </button>
-            </div>
+      <Link
+        to={`guide/${id}`}
+        onClick={handleCardClick}
+        className="block h-full"
+      >
+        <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group cursor-pointer">
+          <div className="relative h-32 sm:h-48 w-full overflow-hidden bg-gray-200">
+            {/* Show image only if img_url exists */}
+            {img_url ? (
+              <img
+                src={img_url}
+                alt={name || 'Guide image'}
+                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                onError={handleImageError}
+                loading="lazy"
+              />
+            ) : (
+              /* No image placeholder */
+              <div className="flex items-center justify-center h-full bg-gray-200">
+                <div className="text-gray-400 text-xs sm:text-sm">No image</div>
+              </div>
+            )}
+            
+            {/* Overlay with stats */}
+            <div className="absolute inset-0 transition-all duration-300">
+              <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex flex-col gap-1 sm:gap-2">
+                {/* Like button - positioned outside of Link to prevent navigation */}
+                <button
+                  onClick={handleLike}
+                  disabled={isLiking}
+                  className={`relative z-10 p-1 sm:p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
+                    isLiked 
+                      ? 'bg-red-500 text-white shadow-lg' 
+                      : 'bg-white/80 hover:bg-white text-gray-700 hover:text-red-500'
+                  } ${isLiking ? 'scale-110' : ''} ${!user ? 'opacity-75' : 'hover:scale-110'}`}
+                  title={!user ? 'Login to like guides' : (isLiked ? 'Unlike' : 'Like')}
+                >
+                  {isLiked ? (
+                    <IoIosHeart className="w-3 h-3 sm:w-4 sm:h-4" />
+                  ) : (
+                    <IoIosHeartEmpty className="w-3 h-3 sm:w-4 sm:h-4" />
+                  )}
+                </button>
+              </div>
 
-            {/* Bottom stats */}
-            <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between">
-              <div className="flex items-center gap-2 sm:gap-3 text-white">
-                <div className="flex items-center gap-1 bg-black/50 px-1 sm:px-2 py-1 rounded-full backdrop-blur-sm">
-                  <IoEyeOutline className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="text-xs sm:text-sm font-medium">{formatCount(viewsCount)}</span>
-                </div>
-                <div className="flex items-center gap-1 bg-black/50 px-1 sm:px-2 py-1 rounded-full backdrop-blur-sm">
-                  <IoIosHeart className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="text-xs sm:text-sm font-medium">{formatCount(likesCount)}</span>
+              {/* Bottom stats */}
+              <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between">
+                <div className="flex items-center gap-2 sm:gap-3 text-white">
+                  <div className="flex items-center gap-1 bg-black/50 px-1 sm:px-2 py-1 rounded-full backdrop-blur-sm">
+                    <IoEyeOutline className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="text-xs sm:text-sm font-medium">{formatCount(viewsCount)}</span>
+                  </div>
+                  <div className="flex items-center gap-1 bg-black/50 px-1 sm:px-2 py-1 rounded-full backdrop-blur-sm">
+                    <IoIosHeart className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="text-xs sm:text-sm font-medium">{formatCount(likesCount)}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="p-2 sm:p-4">
-          <div className="mb-1 flex items-center justify-between">
-            <div className="text-xs sm:text-sm text-gray-500 truncate">
-              by {author || 'Loading...'}
+          <div className="p-2 sm:p-4">
+            <div className="mb-1 flex items-center justify-between">
+              <div className="text-xs sm:text-sm text-gray-500 truncate">
+                by {author || 'Loading...'}
+              </div>
+            </div>
+            
+            <h3 className="mb-2 text-sm sm:text-lg font-semibold text-black line-clamp-2">
+              {name || 'Untitled Guide'}
+            </h3>
+            
+            {/* Hide description on mobile, show on sm and up */}
+            <p className="hidden sm:block mb-4 text-sm text-gray-600 line-clamp-3">
+              {description || 'No description available.'}
+            </p>
+            
+            {/* Visual indicator that the card is clickable */}
+            <div className="inline-block rounded-md bg-black px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white group-hover:bg-gray-800 transition-colors">
+              <span className="hidden sm:inline">Read full guide &rarr;</span>
+              <span className="sm:hidden">Read &rarr;</span>
             </div>
           </div>
-          
-          <h3 className="mb-2 text-sm sm:text-lg font-semibold text-black line-clamp-2">
-            {name || 'Untitled Guide'}
-          </h3>
-          
-          {/* Hide description on mobile, show on sm and up */}
-          <p className="hidden sm:block mb-4 text-sm text-gray-600 line-clamp-3">
-            {description || 'No description available.'}
-          </p>
-          
-          <Link
-            to={`guide/${id}`}
-            onClick={handleCardClick}
-            className="inline-block rounded-md bg-black px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-          >
-            <span className="hidden sm:inline">Read full guide &rarr;</span>
-            <span className="sm:hidden">Read &rarr;</span>
-          </Link>
         </div>
-      </div>
+      </Link>
     </div>
   );
 };
