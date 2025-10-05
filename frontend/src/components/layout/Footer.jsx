@@ -101,13 +101,13 @@ const Footer = () => {
               <li className='mb-4 max-w-60'>66-24 Jayang-dong Dong-gu Daejeon, 34644, Republic of Korea</li>
               <li className='gap-10 max-w-60'>
                 <span>Phone: </span>
-                <a href="callto:1096959805" className="hover:text-white hover:underline">
+                <a href="callto:1096959805" className="hover:text-white hover:underline text-white">
                   +82 10-96959805
                 </a>
               </li>
               <li className='gap-10 max-w-60'>
                 <span>Email: </span>
-                <a href="mailto:keasy.contact@gmail.com" className="hover:text-white hover:underline">
+                <a href="mailto:keasy.contact@gmail.com" className="hover:text-white hover:underline text-white">
                   keasy.contact@gmail.com
                 </a>
               </li>

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../api/supabase-client";
 import { FiHeart, FiEye } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
+import { CiFilter } from "react-icons/ci";
+
 
 // =========================
 // Helpers
@@ -29,17 +31,38 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 
   const handleCardClick = async () => {
     try {
-      // Increment view count
       await supabase
         .from("marketplace")
         .update({ views: (item.views || 0) + 1 })
         .eq("id", item.id);
-
       navigate(`/marketplace/${item.id}`);
     } catch (err) {
       console.error("Error incrementing view count:", err);
       navigate(`/marketplace/${item.id}`);
     }
+  };
+
+  const conditionStyles = {
+    new: {
+      label: "New",
+      color: "bg-black",
+    },
+    like_new: {
+      label: "Like New",
+      color: "bg-blue-600",
+    },
+    used: {
+      label: "Used",
+      color: "bg-gray-700",
+    },
+    refurbished: {
+      label: "Refurbished",
+      color: "bg-green-600",
+    },
+    damaged: {
+      label: "Damaged",
+      color: "bg-red-700",
+    },
   };
 
   return (
@@ -56,10 +79,10 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
         />
         <div
           className={`absolute top-0 left-0 m-2 rounded-full px-2 py-1 text-xs font-semibold text-white ${
-            item.condition === "new" ? "bg-black" : "bg-gray-700"
+            conditionStyles[item.condition]?.color || "bg-gray-700"
           }`}
         >
-          {item.condition === "new" ? "New" : "Used"}
+          {conditionStyles[item.condition]?.label || "Unknown"}
         </div>
       </div>
 
@@ -72,30 +95,29 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
         <h3 className="mb-2 text-lg font-semibold text-black">{item.title}</h3>
 
         <div className="mb-2 flex items-center justify-between text-gray-800 text-sm">
-  <div className="flex items-center gap-2">
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onToggleLike(item);
-      }}
-      className="flex items-center gap-1 transition"
-      style={{ color: isLiked ? '#EF4444' : '#1F2937' }} // Red if liked, dark gray if not
-    >
-      {isLiked ? (
-        <FaHeart style={{ color: '#EF4444' }} /> // Always red
-      ) : (
-        <FiHeart style={{ color: '#1F2937' }} /> // Always dark
-      )}
-      <span style={{ color: '#1F2937' }}>{likesCount}</span>
-    </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleLike(item);
+              }}
+              className="flex items-center gap-1 transition"
+              style={{ color: isLiked ? "#EF4444" : "#1F2937" }}
+            >
+              {isLiked ? (
+                <FaHeart style={{ color: "#EF4444" }} />
+              ) : (
+                <FiHeart style={{ color: "#1F2937" }} />
+              )}
+              <span style={{ color: "#1F2937" }}>{likesCount}</span>
+            </button>
 
-    <div className="flex items-center gap-1" style={{ color: '#1F2937' }}>
-      <FiEye style={{ color: '#1F2937' }} />
-      <span>{item.views || 0}</span>
-    </div>
-  </div>
-</div>
-
+            <div className="flex items-center gap-1" style={{ color: "#1F2937" }}>
+              <FiEye style={{ color: "#1F2937" }} />
+              <span>{item.views || 0}</span>
+            </div>
+          </div>
+        </div>
 
         <div className="flex items-center justify-between">
           <p className="font-bold text-black">{formatCurrency(item.price)}</p>
@@ -125,7 +147,15 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 // =========================
 // FilterSidebar component
 // =========================
-const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onClose }) => {
+const FilterSidebar = ({
+  filters,
+  setFilters,
+  categories,
+  onApplyFilters,
+  onClear,
+  isMobile = false,
+  onClose,
+}) => {
   const handleSearchChange = (e) =>
     setFilters((prev) => ({ ...prev, search: e.target.value }));
 
@@ -162,15 +192,6 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
 
   const handleLocationChange = (e) =>
     setFilters((prev) => ({ ...prev, location: e.target.value }));
-
-  const handleClear = () =>
-    setFilters({
-      search: "",
-      category_id: "",
-      condition: [],
-      priceRange: { min: null, max: null },
-      location: "",
-    });
 
   return (
     <div className={`bg-white p-4 ${isMobile ? "rounded-lg shadow-lg" : ""}`}>
@@ -216,7 +237,7 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
       <div className="mb-6">
         <p className="mb-2 block text-sm font-medium text-black">Condition</p>
         <div className="space-y-2">
-          <label className="flex items-center">
+          <label className="flex items-center text-black">
             <input
               type="checkbox"
               checked={filters.condition.includes("new")}
@@ -225,14 +246,41 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
             />
             New
           </label>
-          <label className="flex items-center">
+          <label className="flex items-center text-black">
             <input
               type="checkbox"
-              checked={filters.condition.includes("second-hand")}
-              onChange={() => handleConditionChange("second-hand")}
+              checked={filters.condition.includes("like_new")}
+              onChange={() => handleConditionChange("like_new")}
               className="mr-2 h-4 w-4"
             />
-            Second-hand
+            Like New
+          </label>
+          <label className="flex items-center text-black">
+            <input
+              type="checkbox"
+              checked={filters.condition.includes("used")}
+              onChange={() => handleConditionChange("used")}
+              className="mr-2 h-4 w-4"
+            />
+            Used
+          </label>
+          <label className="flex items-center text-black">
+            <input
+              type="checkbox"
+              checked={filters.condition.includes("refurbished")}
+              onChange={() => handleConditionChange("refurbished")}
+              className="mr-2 h-4 w-4"
+            />
+            Refurbished
+          </label>
+          <label className="flex items-center text-black">
+            <input
+              type="checkbox"
+              checked={filters.condition.includes("damaged")}
+              onChange={() => handleConditionChange("damaged")}
+              className="mr-2 h-4 w-4"
+            />
+            Damaged
           </label>
         </div>
       </div>
@@ -268,25 +316,40 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
           className="w-full rounded-md border border-gray-300 p-2 text-black"
         >
           <option value="">All Locations</option>
-          <option value="Seoul">Seoul</option>
-          <option value="Busan">Busan</option>
-          <option value="Incheon">Incheon</option>
-          <option value="Daegu">Daegu</option>
-          <option value="Daejeon">Daejeon</option>
-          <option value="Gwangju">Gwangju</option>
-          <option value="Suwon">Suwon</option>
-          <option value="Ulsan">Ulsan</option>
-          <option value="Jeju">Jeju</option>
-          <option value="Gyeonggi-do">Gyeonggi-do</option>
+          {[
+            "Seoul",
+            "Busan",
+            "Incheon",
+            "Daegu",
+            "Daejeon",
+            "Gwangju",
+            "Suwon",
+            "Ulsan",
+            "Jeju",
+            "Gyeonggi-do",
+          ].map((loc) => (
+            <option key={loc} value={loc}>
+              {loc}
+            </option>
+          ))}
         </select>
       </div>
 
-      <button
-        onClick={handleClear}
-        className="w-full rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-black hover:bg-gray-100"
-      >
-        Clear Filters
-      </button>
+      {/* Buttons */}
+      <div className="space-y-2">
+        <button
+          onClick={onApplyFilters}
+          className="w-full rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+        >
+          Apply Filters
+        </button>
+        <button
+          onClick={onClear}
+          className="w-full rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-black hover:bg-gray-100"
+        >
+          Clear Filters
+        </button>
+      </div>
     </div>
   );
 };
@@ -317,17 +380,26 @@ export default function Marketplace() {
     fetchUser();
   }, []);
 
-  const fetchCategories = async () => {
-    const { data, error } = await supabase.from("marketplace_category").select("id,name");
-    if (!error) setCategories(data || []);
-  };
-
-  const fetchItems = async () => {
-    const { data, error } = await supabase.from("marketplace").select("*");
-    if (!error) setAllItems(data || []);
-  };
-
   useEffect(() => {
+    const fetchCategories = async () => {
+      const { data, error } = await supabase
+        .from("marketplace_category")
+        .select("id,name");
+      if (!error) setCategories(data || []);
+    };
+
+    const fetchItems = async () => {
+      const { data, error } = await supabase.from("marketplace").select("*");
+      if (!error) {
+        const itemsWithCategory = data.map((item) => {
+          const cat = categories.find((c) => c.id === item.category_id);
+          return { ...item, category_name: cat ? cat.name : "" };
+        });
+        setAllItems(itemsWithCategory);
+        setItems(itemsWithCategory);
+      }
+    };
+
     fetchCategories();
     fetchItems();
   }, []);
@@ -345,10 +417,14 @@ export default function Marketplace() {
     }
 
     if (filters.category_id)
-      filtered = filtered.filter((item) => item.category_id === parseInt(filters.category_id));
+      filtered = filtered.filter(
+        (item) => item.category_id === parseInt(filters.category_id)
+      );
 
     if (filters.condition.length > 0)
-      filtered = filtered.filter((item) => filters.condition.includes(item.condition));
+      filtered = filtered.filter((item) =>
+        filters.condition.includes(item.condition)
+      );
 
     if (filters.priceRange.min !== null)
       filtered = filtered.filter((item) => item.price >= filters.priceRange.min);
@@ -359,24 +435,9 @@ export default function Marketplace() {
     if (filters.location)
       filtered = filtered.filter((item) => item.location === filters.location);
 
-    const filteredWithCategoryName = filtered.map((item) => {
-      const cat = categories.find((c) => c.id === item.category_id);
-      return { ...item, category_name: cat ? cat.name : "" };
-    });
-
-    setItems(filteredWithCategoryName);
-  }, [filters, allItems, categories]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters, applyFilters]);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    setItems(filtered);
+    if (isMobile) setIsFilterDrawerOpen(false);
+  }, [filters, allItems, isMobile]);
 
   const handleToggleLike = async (item) => {
     if (!userId) {
@@ -399,7 +460,9 @@ export default function Marketplace() {
 
       setAllItems((prev) =>
         prev.map((it) =>
-          it.id === item.id ? { ...it, favourites: { favourites: updatedFavourites } } : it
+          it.id === item.id
+            ? { ...it, favourites: { favourites: updatedFavourites } }
+            : it
         )
       );
     } catch (err) {
@@ -407,32 +470,64 @@ export default function Marketplace() {
     }
   };
 
+  const handleClearFilters = () => {
+    setFilters({
+      search: "",
+      category_id: "",
+      condition: [],
+      priceRange: { min: null, max: null },
+      location: "",
+    });
+    setItems(allItems);
+  };
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-black md:text-4xl">Marketplace</h1>
-            <p className="mt-2 text-xl text-gray-600">
-              Buy, sell, or give away items within the community.
-            </p>
-          </div>
-          {isMobile && (
-            <button
-              onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
-              className="flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-black border border-black"
-            >
-              Filters
-            </button>
-          )}
-        </div>
+  <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+    <div>
+      <h1 className="text-3xl font-bold text-black md:text-4xl">Marketplace</h1>
+      <div className="mt-2 flex items-center gap-3">
+        <p className="text-lg text-gray-600">
+          Buy, sell, or give away items within the community.
+        </p>
+
+        {/* Filter Button beside text */}
+        {isMobile && (
+          <button
+            onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
+            className="flex items-center justify-center rounded-lg  bg-white px-5 py-2.5 text-base font-medium text-black hover:bg-gray-100 active:scale-95"
+          >
+            <CiFilter className="text-xl mr-1" />
+            
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
 
         <div className="flex flex-col md:flex-row">
           {/* Sidebar */}
           <div className="hidden md:block md:w-1/4 md:pr-8">
             <h2 className="mb-4 text-xl font-semibold text-black">Filters</h2>
-            <FilterSidebar filters={filters} setFilters={setFilters} categories={categories} />
+            <FilterSidebar
+              filters={filters}
+              setFilters={setFilters}
+              categories={categories}
+              onApplyFilters={applyFilters}
+              onClear={handleClearFilters}
+            />
           </div>
 
           {/* Mobile drawer */}
@@ -444,6 +539,8 @@ export default function Marketplace() {
                   setFilters={setFilters}
                   categories={categories}
                   isMobile
+                  onApplyFilters={applyFilters}
+                  onClear={handleClearFilters}
                   onClose={() => setIsFilterDrawerOpen(false)}
                 />
               </div>
@@ -456,15 +553,7 @@ export default function Marketplace() {
               <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-gray-200">
                 <p className="text-lg text-gray-500">No items match your filters</p>
                 <button
-                  onClick={() =>
-                    setFilters({
-                      search: "",
-                      category_id: "",
-                      condition: [],
-                      priceRange: { min: null, max: null },
-                      location: "",
-                    })
-                  }
+                  onClick={handleClearFilters}
                   className="mt-4 text-black underline"
                 >
                   Clear all filters
