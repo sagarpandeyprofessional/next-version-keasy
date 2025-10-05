@@ -45,7 +45,7 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1 dark:bg-gray-900"
+      className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1"
     >
       <div className="relative w-full h-[250px] sm:h-[300px] md:h-48 bg-white flex justify-center items-center">
         <img
@@ -65,39 +65,40 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 
       <div className="p-4">
         <div className="mb-1 flex items-center justify-between">
-          <p className="text-sm font-medium text-black dark:text-white">
-            {item.category_name}
-          </p>
+          <p className="text-sm font-medium text-black">{item.category_name}</p>
           <p className="text-xs text-gray-500">{item.location}</p>
         </div>
 
-        <h3 className="mb-2 text-lg font-semibold text-black dark:text-white">
-          {item.title}
-        </h3>
+        <h3 className="mb-2 text-lg font-semibold text-black">{item.title}</h3>
 
-        <div className="mb-2 flex items-center justify-between text-gray-500 text-sm">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleLike(item);
-              }}
-              className="flex items-center gap-1 hover:text-red-500 transition"
-            >
-              {isLiked ? <FaHeart className="text-red-500" /> : <FiHeart />}
-              <span>{likesCount}</span>
-            </button>
-            <div className="flex items-center gap-1">
-              <FiEye />
-              <span>{item.views || 0}</span>
-            </div>
-          </div>
-        </div>
+        <div className="mb-2 flex items-center justify-between text-gray-800 text-sm">
+  <div className="flex items-center gap-2">
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggleLike(item);
+      }}
+      className="flex items-center gap-1 transition"
+      style={{ color: isLiked ? '#EF4444' : '#1F2937' }} // Red if liked, dark gray if not
+    >
+      {isLiked ? (
+        <FaHeart style={{ color: '#EF4444' }} /> // Always red
+      ) : (
+        <FiHeart style={{ color: '#1F2937' }} /> // Always dark
+      )}
+      <span style={{ color: '#1F2937' }}>{likesCount}</span>
+    </button>
+
+    <div className="flex items-center gap-1" style={{ color: '#1F2937' }}>
+      <FiEye style={{ color: '#1F2937' }} />
+      <span>{item.views || 0}</span>
+    </div>
+  </div>
+</div>
+
 
         <div className="flex items-center justify-between">
-          <p className="font-bold text-black dark:text-white">
-            {formatCurrency(item.price)}
-          </p>
+          <p className="font-bold text-black">{formatCurrency(item.price)}</p>
           <Link
             to={`/marketplace/${item.id}`}
             onClick={async (e) => {
@@ -111,7 +112,7 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
                 console.error("Error incrementing view:", err);
               }
             }}
-            className="text-sm font-medium text-black hover:underline dark:text-white"
+            className="text-sm font-medium text-black hover:underline"
           >
             View Details
           </Link>
@@ -172,17 +173,11 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
     });
 
   return (
-    <div
-      className={`bg-white p-4 dark:bg-gray-900 ${
-        isMobile ? "rounded-lg shadow-lg" : ""
-      }`}
-    >
+    <div className={`bg-white p-4 ${isMobile ? "rounded-lg shadow-lg" : ""}`}>
       {isMobile && (
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-black dark:text-white">
-            Filters
-          </h3>
-          <button onClick={onClose} className="text-black dark:text-white">
+          <h3 className="text-lg font-semibold text-black">Filters</h3>
+          <button onClick={onClose} className="text-black">
             &times;
           </button>
         </div>
@@ -190,27 +185,23 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
 
       {/* Search */}
       <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-          Search
-        </label>
+        <label className="mb-2 block text-sm font-medium text-black">Search</label>
         <input
           type="text"
           value={filters.search}
           onChange={handleSearchChange}
           placeholder="Search listings..."
-          className="w-full rounded-md border border-gray-300 p-2 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          className="w-full rounded-md border border-gray-300 p-2 text-black"
         />
       </div>
 
       {/* Category */}
       <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-          Category
-        </label>
+        <label className="mb-2 block text-sm font-medium text-black">Category</label>
         <select
           value={filters.category_id}
           onChange={handleCategoryChange}
-          className="w-full rounded-md border border-gray-300 p-2 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          className="w-full rounded-md border border-gray-300 p-2 text-black"
         >
           <option value="">All Categories</option>
           {categories.map((cat) => (
@@ -223,9 +214,7 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
 
       {/* Condition */}
       <div className="mb-6">
-        <p className="mb-2 block text-sm font-medium text-black dark:text-white">
-          Condition
-        </p>
+        <p className="mb-2 block text-sm font-medium text-black">Condition</p>
         <div className="space-y-2">
           <label className="flex items-center">
             <input
@@ -250,16 +239,14 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
 
       {/* Price Range */}
       <div className="mb-6">
-        <p className="mb-2 block text-sm font-medium text-black dark:text-white">
-          Price Range (₩)
-        </p>
+        <p className="mb-2 block text-sm font-medium text-black">Price Range (₩)</p>
         <div className="flex space-x-2">
           <input
             type="number"
             value={filters.priceRange.min ?? ""}
             onChange={handleMinPriceChange}
             placeholder="Min"
-            className="w-full rounded-md border border-gray-300 p-2 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-md border border-gray-300 p-2 text-black"
           />
           <span className="flex items-center text-gray-500">-</span>
           <input
@@ -267,20 +254,18 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
             value={filters.priceRange.max ?? ""}
             onChange={handleMaxPriceChange}
             placeholder="Max"
-            className="w-full rounded-md border border-gray-300 p-2 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-md border border-gray-300 p-2 text-black"
           />
         </div>
       </div>
 
       {/* Location */}
       <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-          Location
-        </label>
+        <label className="mb-2 block text-sm font-medium text-black">Location</label>
         <select
           value={filters.location}
           onChange={handleLocationChange}
-          className="w-full rounded-md border border-gray-300 p-2 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          className="w-full rounded-md border border-gray-300 p-2 text-black"
         >
           <option value="">All Locations</option>
           <option value="Seoul">Seoul</option>
@@ -297,16 +282,8 @@ const FilterSidebar = ({ filters, setFilters, categories, isMobile = false, onCl
       </div>
 
       <button
-        onClick={() =>
-          setFilters({
-            search: "",
-            category_id: "",
-            condition: [],
-            priceRange: { min: null, max: null },
-            location: "",
-          })
-        }
-        className="w-full rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:border-white dark:bg-black dark:text-white dark:hover:bg-gray-800"
+        onClick={handleClear}
+        className="w-full rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-black hover:bg-gray-100"
       >
         Clear Filters
       </button>
@@ -332,7 +309,6 @@ export default function Marketplace() {
   const [isMobile, setIsMobile] = useState(false);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
-  // Fetch current user
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
@@ -341,18 +317,14 @@ export default function Marketplace() {
     fetchUser();
   }, []);
 
-  // Fetch categories
   const fetchCategories = async () => {
     const { data, error } = await supabase.from("marketplace_category").select("id,name");
-    if (error) console.error(error);
-    else setCategories(data || []);
+    if (!error) setCategories(data || []);
   };
 
-  // Fetch items
   const fetchItems = async () => {
     const { data, error } = await supabase.from("marketplace").select("*");
-    if (error) console.error(error);
-    else setAllItems(data || []);
+    if (!error) setAllItems(data || []);
   };
 
   useEffect(() => {
@@ -368,21 +340,15 @@ export default function Marketplace() {
       filtered = filtered.filter(
         (item) =>
           item.title.toLowerCase().includes(term) ||
-          JSON.stringify(item.description || "")
-            .toLowerCase()
-            .includes(term)
+          JSON.stringify(item.description || "").toLowerCase().includes(term)
       );
     }
 
     if (filters.category_id)
-      filtered = filtered.filter(
-        (item) => item.category_id === parseInt(filters.category_id)
-      );
+      filtered = filtered.filter((item) => item.category_id === parseInt(filters.category_id));
 
     if (filters.condition.length > 0)
-      filtered = filtered.filter((item) =>
-        filters.condition.includes(item.condition)
-      );
+      filtered = filtered.filter((item) => filters.condition.includes(item.condition));
 
     if (filters.priceRange.min !== null)
       filtered = filtered.filter((item) => item.price >= filters.priceRange.min);
@@ -412,7 +378,6 @@ export default function Marketplace() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Toggle Like
   const handleToggleLike = async (item) => {
     if (!userId) {
       alert("Please log in to like items.");
@@ -422,7 +387,7 @@ export default function Marketplace() {
     let favourites = item.favourites?.favourites || [];
     if (!Array.isArray(favourites)) favourites = [];
 
-    let updatedFavourites = favourites.includes(userId)
+    const updatedFavourites = favourites.includes(userId)
       ? favourites.filter((id) => id !== userId)
       : [...favourites, userId];
 
@@ -443,22 +408,20 @@ export default function Marketplace() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-black dark:text-white md:text-4xl">
-              Marketplace
-            </h1>
-            <p className="mt-2 text-xl text-gray-600 dark:text-gray-300">
+            <h1 className="text-3xl font-bold text-black md:text-4xl">Marketplace</h1>
+            <p className="mt-2 text-xl text-gray-600">
               Buy, sell, or give away items within the community.
             </p>
           </div>
           {isMobile && (
             <button
               onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
-              className="flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-black border border-black dark:bg-black dark:text-white dark:border-white"
+              className="flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-black border border-black"
             >
               Filters
             </button>
@@ -468,20 +431,14 @@ export default function Marketplace() {
         <div className="flex flex-col md:flex-row">
           {/* Sidebar */}
           <div className="hidden md:block md:w-1/4 md:pr-8">
-            <h2 className="mb-4 text-xl font-semibold text-black dark:text-white">
-              Filters
-            </h2>
-            <FilterSidebar
-              filters={filters}
-              setFilters={setFilters}
-              categories={categories}
-            />
+            <h2 className="mb-4 text-xl font-semibold text-black">Filters</h2>
+            <FilterSidebar filters={filters} setFilters={setFilters} categories={categories} />
           </div>
 
           {/* Mobile drawer */}
           {isMobile && isFilterDrawerOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-              <div className="w-full max-w-md">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <div className="w-full max-w-md backdrop-blur-md bg-white/70 rounded-lg shadow-lg">
                 <FilterSidebar
                   filters={filters}
                   setFilters={setFilters}
@@ -496,10 +453,8 @@ export default function Marketplace() {
           {/* Items Grid */}
           <div className="w-full md:w-3/4">
             {items.length === 0 ? (
-              <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700">
-                <p className="text-lg text-gray-500 dark:text-gray-400">
-                  No items match your filters
-                </p>
+              <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-gray-200">
+                <p className="text-lg text-gray-500">No items match your filters</p>
                 <button
                   onClick={() =>
                     setFilters({
@@ -510,7 +465,7 @@ export default function Marketplace() {
                       location: "",
                     })
                   }
-                  className="mt-4 text-black underline dark:text-white"
+                  className="mt-4 text-black underline"
                 >
                   Clear all filters
                 </button>
