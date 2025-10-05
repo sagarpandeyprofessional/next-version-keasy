@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from './Navbar';
+import Sidebar from './Sidebar';
 import Footer from './Footer';
 import ComingSoonOverlay from './Upcoming';
 import { Auth } from '@supabase/auth-ui-react'
@@ -87,6 +88,7 @@ const Layout = ({ children }) => {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
+      <Sidebar />
 
       <div className="relative flex-grow">
         {/* Blur content if needed */}

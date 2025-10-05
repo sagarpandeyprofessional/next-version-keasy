@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { supabase } from "../../api/supabase-client";
+import { useAuth } from "../../context/AuthContext";
 
 const Profile = () => {
   const { username: usernameFromUrl } = useParams();
@@ -63,9 +64,11 @@ const Profile = () => {
 };
 
 const ProfileHeader = ({ usernameFromUrl }) => {
+  const { signOut } = useAuth(); // AuthContext signOut
   const [profile, setProfile] = useState(null);
   const [isOurProfile, setIsOurProfile] = useState(false);
   const [session, setSession] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -91,6 +94,11 @@ const ProfileHeader = ({ usernameFromUrl }) => {
       setIsOurProfile(session.user.id === profile.user_id);
     }
   }, [session, profile]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/"); // redirect to home after logout
+  };
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
@@ -118,13 +126,19 @@ const ProfileHeader = ({ usernameFromUrl }) => {
         <p className="mt-2 text-gray-700">{profile?.bio}</p>
 
         {isOurProfile && (
-          <div className="mt-4">
+          <div className="mt-4 gap-x-6 inline-flex">
             <Link
               to="/edit-profile/"
               className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
             >
               Edit Profile
             </Link>
+            <button
+              onClick={handleSignOut}
+              className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
+            >
+              Sign Out
+            </button>
           </div>
         )}
       </div>
