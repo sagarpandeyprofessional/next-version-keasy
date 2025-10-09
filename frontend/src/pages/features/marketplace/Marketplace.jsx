@@ -234,7 +234,7 @@ const FilterSidebar = ({
       <div className="mb-6">
         <p className="mb-2 block text-sm font-medium text-black">Condition</p>
         <div className="space-y-2">
-          {["new", "like_new", "used", "refurbished", "damaged"].map((cond) => (
+          {["new", "used"].map((cond) => (
             <label key={cond} className="flex items-center text-black">
               <input
                 type="checkbox"

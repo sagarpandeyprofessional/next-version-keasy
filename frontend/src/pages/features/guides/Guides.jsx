@@ -153,7 +153,20 @@ const filteredGuides =
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <section className="py-16">
+      {/* Header */}
+      <div className=" flex flex-col md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-black md:text-4xl">Local Guides</h1>
+            <div className="mt-2 flex items-center gap-3">
+              <p className="text-lg text-gray-600">
+                {`Read, Learn & Grow with our curated guides :}`}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <section className="pb-16 pt-6">
         <div className="container mx-auto px-4">
           <ExploreSection
             title="Explore Guides"
