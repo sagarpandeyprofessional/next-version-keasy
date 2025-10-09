@@ -167,6 +167,74 @@ export default function MarketplaceItemPage() {
   const likesCount = favouritesList.length;
   const isLiked = userId && favouritesList.includes(userId);
 
+  // 🔹 Dynamic Description Renderer
+  const renderDescription = (descriptionObj) => {
+    if (!descriptionObj || Object.keys(descriptionObj).length === 0) {
+      return <p>No description provided.</p>;
+    }
+
+    return Object.entries(descriptionObj).map(([key, value]) => {
+      if (!Array.isArray(value)) return null;
+
+      // Format the section title
+      const title = key
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase());
+
+      // Switch-based handling for future extensibility
+      switch (key) {
+        case "specs":
+          return (
+            <div key={key} className="mb-4">
+              <h3 className="font-semibold text-gray-800 mb-1">{title}</h3>
+              <ul className="list-disc ml-6 text-gray-700 space-y-1">
+                {value.map((v, i) => (
+                  <li key={i}>{v}</li>
+                ))}
+              </ul>
+            </div>
+          );
+
+        case "condition":
+          return (
+            <div key={key} className="mb-4">
+              <h3 className="font-semibold text-gray-800 mb-1">{title}</h3>
+              <ul className="list-disc ml-6 text-gray-700 space-y-1">
+                {value.map((v, i) => (
+                  <li key={i}>{v}</li>
+                ))}
+              </ul>
+            </div>
+          );
+
+        case "included_accessories":
+          return (
+            <div key={key} className="mb-4">
+              <h3 className="font-semibold text-gray-800 mb-1">{title}</h3>
+              <ul className="list-disc ml-6 text-gray-700 space-y-1">
+                {value.map((v, i) => (
+                  <li key={i}>{v}</li>
+                ))}
+              </ul>
+            </div>
+          );
+
+        default:
+          // fallback for any new keys added in future
+          return (
+            <div key={key} className="mb-4">
+              <h3 className="font-semibold text-gray-800 mb-1">{title}</h3>
+              <ul className="list-disc ml-6 text-gray-700 space-y-1">
+                {value.map((v, i) => (
+                  <li key={i}>{v}</li>
+                ))}
+              </ul>
+            </div>
+          );
+      }
+    });
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
       <Link to="/marketplace" className="mb-6 inline-flex items-center text-gray-800 hover:underline">
@@ -210,10 +278,11 @@ export default function MarketplaceItemPage() {
                       <div
                         key={idx}
                         className={`w-2 h-2 rounded-full ${idx === currentImageIndex ? "bg-gray-800" : "bg-gray-500"}`}
-                      >
+                      ></div>
+                    ))}
                   </div>
-                ))}
-              </div></div>)}
+                </div>
+              )}
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -268,14 +337,10 @@ export default function MarketplaceItemPage() {
             </div>
           </div>
 
-          {/* Description */}
-          <h2 className="text-lg font-semibold mb-2 text-gray-800">Description</h2>
-          <div className="text-gray-700 mb-6 space-y-1">
-            {item.description?.description?.length > 0 ? (
-              item.description.description.map((para, idx) => <p key={idx}>{para}</p>)
-            ) : (
-              <p>No description provided.</p>
-            )}
+          {/* 🔹 Description */}
+          <h2 className="text-lg font-semibold mb-2 text-gray-800">Description of Product:</h2>
+          <div className="text-gray-700 mb-6 space-y-3">
+            {renderDescription(item.description)}
           </div>
 
           {/* Buttons */}
