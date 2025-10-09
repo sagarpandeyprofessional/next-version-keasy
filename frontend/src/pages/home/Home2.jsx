@@ -7,9 +7,11 @@ import { FiHeart, FiEye } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
 
+// Buttons imports
 import { LuMessageCircleMore } from "react-icons/lu";
-import { RiShoppingBag2Fill } from "react-icons/ri";
-import { BiParty } from "react-icons/bi";
+
+import { RiShoppingBag2Fill } from "react-icons/ri"; // ✅ exists
+import { BiParty } from "react-icons/bi";            // ✅ exists
 import { MdOutlineExplore } from "react-icons/md";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -83,10 +85,10 @@ const Carousel = ({ title, children, className = '' }) => {
 };
 
 // FeatureCard
-// FeatureCard
 const FeatureCard = ({ title, description, icon, href, linkText }) => {
   return (
-    <Link to={href} className="h-full">
+    <Link to={href}>
+      
       <motion.div
         whileHover={{ scale: 1.02, y: -4 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -99,16 +101,114 @@ const FeatureCard = ({ title, description, icon, href, linkText }) => {
           <h3 className="text-xl font-semibold text-black">{title}</h3>
         </div>
         <p className="text-gray-600 line-clamp-3 flex-grow">{description}</p>
-        <Link
-          to={href}
-          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-black mt-4"
-        >
-          {linkText} →
-        </Link>
+        <Link className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-black mt-4">
+              {linkText} →
+            </Link>
       </motion.div>
+
     </Link>
+    
   );
 };
+
+
+// GuidesCard
+
+const GuidesCard = ({ id, name, description, img_url, created_by }) => {
+  const [author, setAuthor] = useState("Unknown");
+  const [isLiked, setIsLiked] = useState(false);
+
+  useEffect(() => {
+    const fetchAuthor = async () => {
+      if (!created_by) return;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("user_id", created_by)
+        .single();
+      if (error) console.error(error.message);
+      else setAuthor(data?.username || "Unknown");
+    };
+    fetchAuthor();
+  }, [created_by]);
+
+  const handleLike = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLiked((prev) => !prev);
+  };
+
+  const handleToggleLike = async (item) => {
+  if (!userId) {
+    alert("Please log in to like items.");
+    return;
+  }
+  ...
+}
+
+  return (
+    <div
+      className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1"
+    >
+      <Link to={`/guides/guide/${id}`}>
+        {/* Image Section */}
+        <div className="relative w-full h-[250px] sm:h-[300px] md:h-48 bg-white flex justify-center items-center">
+          {img_url ? (
+            <img
+              src={img_url}
+              alt={name}
+              className="max-h-full w-auto object-contain"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full bg-gray-100 text-gray-400 text-sm">
+              No Image
+            </div>
+          )}
+
+          {/* Like Button */}
+          <button
+            onClick={handleLike}
+            className={`absolute top-2 right-2 p-2 rounded-full shadow-sm transition-all ${
+              isLiked ? "bg-red-500 text-white" : "bg-white/80 text-gray-700 hover:bg-white"
+            }`}
+          >
+            {isLiked ? <FaHeart size={16} /> : <FiHeart size={16} />}
+          </button>
+        </div>
+
+        {/* Text Section */}
+        <div className="p-4">
+          <div className="mb-1 flex items-center justify-between text-xs text-gray-500">
+            <span>By {author}</span>
+          </div>
+
+          <h3 className="mb-1 text-base font-medium text-black line-clamp-1">
+            {name}
+          </h3>
+
+          <p className="mb-3 text-sm text-gray-600 line-clamp-2">
+            {description || "No description available."}
+          </p>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-700 text-sm">
+              <FiEye />
+              <span>View</span>
+            </div>
+            <Link
+              to={`/guides/guide/${id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-sm font-medium text-black hover:underline"
+            >
+              View Details
+            </Link>
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+};
+
 
 
 
@@ -364,96 +464,7 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
-// GuidesCard Component
-const GuidesCard = ({ id, name, description, img_url, created_by, like = {}, onLike, currentUserId }) => {
-  const [author, setAuthor] = useState("Unknown");
-
-  // isLiked is calculated every render based on current props
-  const isLiked = currentUserId && like[currentUserId] === true;
-
-  // Count total likes (filtering true values only)
-  const likesCount = Object.values(like || {}).filter(val => val === true).length;
-
-  // Fetch the guide's author username once
-  useEffect(() => {
-    const fetchAuthor = async () => {
-      if (!created_by) return;
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("user_id", created_by)
-        .single();
-      if (error) console.error(error.message);
-      else setAuthor(data?.username || "Unknown");
-    };
-    fetchAuthor();
-  }, [created_by]);
-
-  const handleLike = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Call the parent handler to update state + Supabase
-    if (!currentUserId) {
-      alert("Please login to like guides");
-      return;
-    }
-    onLike(); 
-  };
-
-  const formatCount = (count) => {
-    if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
-    if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
-    return count.toString();
-  };
-
-  return (
-    // Wrap entire card in Link for navigation
-        <Link to={`/guides/guide/${id}`} className="block">
-        <div className="relative cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1">
-            {/* Like button */}
-            <button
-            onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onLike();
-            }}
-            className={`absolute top-2 right-2 z-20 p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
-                isLiked ? 'bg-red-500 text-white shadow-lg' : 'bg-white/80 hover:bg-white text-gray-700 hover:text-red-500'
-            }`}
-            title={!currentUserId ? 'Login to like guides' : isLiked ? 'Unlike' : 'Like'}
-            >
-            {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
-            </button>
-
-            <div className="relative w-full h-[250px] sm:h-[300px] md:h-48 flex justify-center items-center bg-white">
-            {img_url ? (
-                <img src={img_url} alt={name} className="object-cover w-full h-full" />
-            ) : (
-                <div className="flex items-center justify-center w-full h-full bg-gray-100 text-gray-400 text-sm">
-                No Image
-                </div>
-            )}
-            </div>
-
-            <div className="p-4">
-            <div className="mb-1 flex items-center justify-between text-xs text-gray-500">
-                <span>By {author}</span>
-            </div>
-            <h3 className="mb-1 text-base font-medium text-black line-clamp-1">{name}</h3>
-            <p className="mb-3 text-sm text-gray-600 line-clamp-2">{description || "No description available."}</p>
-            <div className="mt-2 text-xs text-gray-500">{formatCount(likesCount)} likes</div>
-            </div>
-        </div>
-        </Link>
-
-  );
-};
-
-
-
-
-// MarketplaceItem with real-time like (kept as you had it)
+// MarketplaceItem component with updated design & real-time like
 const MarketplaceItem = ({ item, userId, onToggleLike }) => {
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
@@ -465,10 +476,13 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 
   const handleCardClick = async () => {
     try {
-      await supabase.from("marketplace").update({ views: (item.views || 0) + 1 }).eq("id", item.id);
+      await supabase
+        .from("marketplace")
+        .update({ views: (item.views || 0) + 1 })
+        .eq("id", item.id);
       navigate(`/marketplace/${item.id}`);
     } catch (err) {
-      console.error(err);
+      console.error("Error incrementing view count:", err);
       navigate(`/marketplace/${item.id}`);
     }
   };
@@ -482,33 +496,22 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
   };
 
   return (
-    <div 
-      onClick={handleCardClick} 
-      className="relative cursor-pointer rounded-xl bg-white shadow-md hover:shadow-xl transition-transform hover:-translate-y-1 overflow-hidden"
+    <div
+      onClick={handleCardClick}
+      className="cursor-pointer rounded-xl bg-white shadow-md hover:shadow-xl transition-transform hover:-translate-y-1 overflow-hidden"
     >
-      {/* Like button on top-right */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!userId) return alert("Please log in to like");
-          onToggleLike(item);
-        }}
-        className={`absolute top-2 right-2 z-20 p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
-          isLiked ? 'bg-red-500 text-white shadow-lg' : 'bg-white/80 hover:bg-white text-gray-700 hover:text-red-500'
-        }`}
-        title={!userId ? 'Login to like' : isLiked ? 'Unlike' : 'Like'}
-      >
-        {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
-      </button>
-
-      <div className="relative w-full h-[220px] sm:h-[250px] md:h-48 flex justify-center items-center bg-white">
-        <img 
-          src={imageError ? "/no-image.png" : imageUrl} 
-          onError={() => setImageError(true)} 
-          alt={item.title} 
+      <div className="relative w-full h-[220px] sm:h-[250px] md:h-48 flex justify-center items-center bg-gray-50">
+        <img
+          src={imageError ? "/no-image.png" : imageUrl}
+          onError={() => setImageError(true)}
+          alt={item.title}
           className="object-contain max-h-full w-auto"
         />
-        <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold text-white ${conditionStyles[item.condition]?.color || "bg-gray-700"}`}>
+        <div
+          className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold text-white ${
+            conditionStyles[item.condition]?.color || "bg-gray-700"
+          }`}
+        >
           {conditionStyles[item.condition]?.label || "Unknown"}
         </div>
       </div>
@@ -520,14 +523,29 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
         <h3 className="text-base font-medium text-black mb-2 line-clamp-1">{item.title}</h3>
         <div className="flex items-center justify-between text-sm text-gray-700 mb-2">
           <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleLike(item);
+              }}
+              className="flex items-center gap-1 transition"
+            >
+              {isLiked ? <FaHeart className="text-red-500" /> : <FiHeart className='text-gray-500' />}
+              <span>{likesCount}</span>
+            </button>
+
             <div className="flex items-center gap-1">
               <FiEye />
               <span>{item.views || 0}</span>
             </div>
           </div>
-          <p className="font-bold">{new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", maximumFractionDigits: 0 }).format(item.price)}</p>
+          <p className="font-bold">{formatCurrency(item.price)}</p>
         </div>
-        <Link to={`/marketplace/${item.id}`} onClick={(e) => e.stopPropagation()} className="text-sm font-medium text-black hover:underline">
+        <Link
+          to={`/marketplace/${item.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="text-sm font-medium text-black hover:underline"
+        >
           View Details
         </Link>
       </div>
@@ -537,13 +555,18 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 
 
 
+
+
+
+
+
+
+
+// Home Component
+
 export default function Home() {
   const marketplaceRef = useRef(null);
-
-  const [guides, setGuides] = useState([]);
-  const [currentUserId, setCurrentUserId] = useState(null);
   const guidesRef = useRef(null);
-  const [marketplaceItems, setMarketplaceItems] = useState([]);
 
   const features = [
     { title: 'Marketplace', description: 'Buy, sell, or give away items within the expat community.', icon: <RiShoppingBag2Fill />, href: '/marketplace', linkText: 'Visit Marketplace' },
@@ -559,6 +582,10 @@ export default function Home() {
     { id: 4, image: '/hero-gyeongbokgung.jpg', heading: 'Learn & Grow', description: 'Access guides, tips, and resources', buttonText1: 'Read Guides', buttonLink1: '/guides', buttonText2: 'Watch Tutorials', buttonLink2: '/guides' },
   ];
 
+  const [guides, setGuides] = useState([]);
+  const [marketplaceItems, setMarketplaceItems] = useState([]);
+  const [userId, setUserId] = useState(null);
+
   useEffect(() => {
     const fetchMarketplaceItems = async () => {
       const { data, error } = await supabase.from('marketplace').select('*').limit(20);
@@ -568,30 +595,21 @@ export default function Home() {
     fetchMarketplaceItems();
   }, []);
 
-   // Fetch current user
   useEffect(() => {
     const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setCurrentUserId(data?.user?.id || null);
+      try{
+        const { data } = await supabase.auth.getUser();
+      setUserId(data?.user?.id || null);
+      }
+      catch(err){
+        setUserId(null);
+      }
     };
     fetchUser();
   }, []);
 
-  // Fetch guides
-    useEffect(() => {
-        const fetchGuides = async () => {
-        const { data, error } = await supabase
-            .from('guide')
-            .select('id, created_at, name, description, img_url, created_by, like')
-            .limit(8);
-        if (error) console.error(error.message);
-        else setGuides(data || []);
-        };
-        fetchGuides();
-    }, []);
-
 const handleToggleLike = async (item) => {
-    if (!currentUserId) {
+    if (!userId) {
       alert("Please log in to like items.");
       return;
     }
@@ -599,9 +617,9 @@ const handleToggleLike = async (item) => {
     let favourites = item.favourites?.favourites || [];
     if (!Array.isArray(favourites)) favourites = [];
 
-    const updatedFavourites = favourites.includes(currentUserId)
-      ? favourites.filter((id) => id !== currentUserId)
-      : [...favourites, currentUserId];
+    const updatedFavourites = favourites.includes(userId)
+      ? favourites.filter((id) => id !== userId)
+      : [...favourites, userId];
 
     try {
       await supabase.from("marketplace").update({ favourites: { favourites: updatedFavourites } }).eq("id", item.id);
@@ -615,33 +633,14 @@ const handleToggleLike = async (item) => {
     }
   };
 
-// Handler for liking a guide
-  const handleGuideLike = async (guideId) => {
-    if (!currentUserId) {
-      alert("Please login to like guides");
-      return;
-    }
-
-    // Optimistic update: update local state immediately
-    setGuides(prevGuides =>
-      prevGuides.map(guide => {
-        if (guide.id !== guideId) return guide;
-
-        const currentLikes = guide.like || {};
-        const isCurrentlyLiked = currentLikes[currentUserId] === true;
-
-        const newLikes = isCurrentlyLiked
-          ? { ...currentLikes, [currentUserId]: false } // mark false instead of delete
-          : { ...currentLikes, [currentUserId]: true };
-
-        // Fire-and-forget Supabase update
-        supabase.from('guide').update({ like: newLikes }).eq('id', guideId)
-          .then(({ error }) => { if (error) console.error(error.message); });
-
-        return { ...guide, like: newLikes }; // update state immediately
-      })
-    );
-  };
+  useEffect(() => {
+    const fetchGuides = async () => {
+      const { data, error } = await supabase.from('guide').select('id, created_at, name, description, img_url, created_by, category').limit(8);
+      if (error) console.error('Error fetching guides:', error.message);
+      else setGuides(data || []);
+    };
+    fetchGuides();
+  }, []);
 
   // Enable mouse wheel scroll for both carousels
   useEffect(() => {
@@ -702,7 +701,7 @@ const handleToggleLike = async (item) => {
         </div>
       </section>
 
-       {/* Guides Carousel */}
+      {/* Explore Guides Section (Now Carousel) */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="mb-6 text-2xl md:text-3xl font-bold text-black">
@@ -711,15 +710,40 @@ const handleToggleLike = async (item) => {
 
           <div
             ref={guidesRef}
-            className="flex flex-nowrap gap-4 pb-4 snap-x snap-mandatory overflow-x-auto scrollbar-hide"
+            className="flex flex-nowrap gap-4 pb-4 snap-x snap-mandatory overflow-x-auto scrollbar-hide touch-pan-x cursor-grab"
+            style={{
+              scrollBehavior: 'smooth',
+              WebkitOverflowScrolling: 'touch',
+            }}
+            onMouseDown={(e) => {
+              const slider = guidesRef.current;
+              slider.isDown = true;
+              slider.startX = e.pageX - slider.offsetLeft;
+              slider.scrollLeftStart = slider.scrollLeft;
+              slider.classList.add('cursor-grabbing');
+            }}
+            onMouseLeave={() => {
+              const slider = guidesRef.current;
+              slider.isDown = false;
+              slider.classList.remove('cursor-grabbing');
+            }}
+            onMouseUp={() => {
+              const slider = guidesRef.current;
+              slider.isDown = false;
+              slider.classList.remove('cursor-grabbing');
+            }}
+            onMouseMove={(e) => {
+              const slider = guidesRef.current;
+              if (!slider.isDown) return;
+              e.preventDefault();
+              const x = e.pageX - slider.startX;
+              const walk = (x - slider.startX) * 1.5;
+              slider.scrollLeft = slider.scrollLeftStart - walk;
+            }}
           >
             {guides.map((guide) => (
               <div key={guide.id} className="flex-none w-[300px] sm:w-[280px] md:w-[260px] snap-start">
-                <GuidesCard
-                  {...guide}
-                  currentUserId={currentUserId}
-                  onLike={() => handleGuideLike(guide.id)}
-                />
+                <GuidesCard {...guide} />
               </div>
             ))}
           </div>
@@ -770,7 +794,7 @@ const handleToggleLike = async (item) => {
           >
             {marketplaceItems.map((item) => (
               <div key={item.id} className="flex-none w-[300px] sm:w-[280px] md:w-[260px] snap-start">
-                <MarketplaceItem item={item} userId={currentUserId} onToggleLike={handleToggleLike} />
+                <MarketplaceItem item={item} userId={userId} onToggleLike={handleToggleLike} />
               </div>
             ))}
           </div>
@@ -823,4 +847,3 @@ const handleToggleLike = async (item) => {
     </div>
   );
 }
-

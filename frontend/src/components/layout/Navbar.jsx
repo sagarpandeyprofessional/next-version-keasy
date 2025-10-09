@@ -30,11 +30,12 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-sm dark:bg-white">
       <div className="container mx-auto px-4 lg:pl-24">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex justify-between items-center h-16 gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+          <Link to="/" className="flex flex-shrink-0 lg:-ml-18">
             <div className="text-2xl font-bold text-blue-600">Keasy</div>
           </Link>
+
 
           {/* Search + User */}
           <div className="flex items-center gap-2">
@@ -80,7 +81,11 @@ const Navbar = () => {
                   className="h-8 w-8 rounded-full object-cover"
                 />
               ) : (
-                <span className="text-sm font-medium">{getUserInitials()}</span>
+                <img
+                  src="https://ltfgerwmkbyxfaebxucc.supabase.co/storage/v1/object/public/app_bucket/pfp_logo.jpg"
+                  alt="Default Avatar "
+                  className="h-8 w-8 rounded-full object-cover"
+                />
               )}
             </button>
           </div>

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { FiMessageCircle, FiHeart, FiEye } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { PiPackageLight } from "react-icons/pi";
+import { div } from "framer-motion/client";
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("ko-KR", {
@@ -174,14 +175,14 @@ export default function MarketplaceItemPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Image Carousel */}
-        <div className="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
+        <div className="w-full aspect-square bg-white rounded-lg overflow-hidden relative">
           {item.images?.images?.length > 0 ? (
             <>
               <motion.img
                 key={currentImageIndex}
                 src={item.images.images[currentImageIndex]}
                 alt={item.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 onDragEnd={(e, info) => {
@@ -190,26 +191,29 @@ export default function MarketplaceItemPage() {
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
-              <button
-                onClick={handlePrev}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-gray-400/30 text-gray-800 p-3 rounded-full text-2xl"
-              >
-                <GrFormPrevious />
-              </button>
-              <button
-                onClick={handleNext}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gray-400/30 text-gray-800 p-3 rounded-full text-2xl"
-              >
-                <GrFormNext />
-              </button>
-              <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2 bg-gray-200/50 px-3 py-1.5 rounded-full">
-                {item.images.images.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-2 h-2 rounded-full ${idx === currentImageIndex ? "bg-gray-800" : "bg-gray-500"}`}
-                  ></div>
+              {item.images.images.length > 1 && (
+                <div>
+                  <button
+                    onClick={handlePrev}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-gray-400/30 text-gray-800 p-3 rounded-full text-2xl"
+                  >
+                    <GrFormPrevious />
+                  </button>
+                  <button
+                    onClick={handleNext}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gray-400/30 text-gray-800 p-3 rounded-full text-2xl"
+                  >
+                    <GrFormNext />
+                  </button>
+                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2 bg-gray-200/50 px-3 py-1.5 rounded-full">
+                    {item.images.images.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className={`w-2 h-2 rounded-full ${idx === currentImageIndex ? "bg-gray-800" : "bg-gray-500"}`}
+                      >
+                  </div>
                 ))}
-              </div>
+              </div></div>)}
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400">

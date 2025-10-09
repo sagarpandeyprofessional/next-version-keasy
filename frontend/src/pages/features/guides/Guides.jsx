@@ -146,7 +146,7 @@ const Guides = () => {
     }
   };
 
-  const filteredGuides =
+const filteredGuides =
     activeCategory === 'All'
       ? guides
       : guides.filter((guide) => guide.category === activeCategory);

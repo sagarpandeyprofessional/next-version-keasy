@@ -90,15 +90,13 @@ const Layout = ({ children }) => {
       <Navbar />
       <Sidebar />
 
-      <div className="relative flex-grow">
-        {/* Blur content if needed */}
-        <div className={`${showUpcoming ? 'filter blur-sm pointer-events-none select-none' : ''}`}>
-          {children}
-        </div>
+      <div className="relative flex-grow lg:flex lg:justify-center">
+  <div className={`w-full md:w-4/5 sm:w-full px-4 ${showUpcoming ? 'filter blur-sm pointer-events-none select-none' : ''}`}>
+    {children}
+  </div>
+  {showUpcoming && <ComingSoonOverlay />}
+</div>
 
-        {/* Overlay text if needed */}
-        {showUpcoming && <ComingSoonOverlay />}
-      </div>
 
       <Footer />
     </div>

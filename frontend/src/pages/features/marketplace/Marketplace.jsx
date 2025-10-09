@@ -5,7 +5,6 @@ import { FiHeart, FiEye } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
 
-
 // =========================
 // Helpers
 // =========================
@@ -77,6 +76,8 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
           onError={() => setImageError(true)}
           className="max-h-full w-auto object-contain"
         />
+
+        {/* Condition Label */}
         <div
           className={`absolute top-0 left-0 m-2 rounded-full px-2 py-1 text-xs font-semibold text-white ${
             conditionStyles[item.condition]?.color || "bg-gray-700"
@@ -84,6 +85,22 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
         >
           {conditionStyles[item.condition]?.label || "Unknown"}
         </div>
+
+        {/* Like Button (Top Right) */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleLike(item);
+          }}
+          className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-white/10 px-2 py-1 shadow-sm hover:bg-white/30"
+        >
+          {isLiked ? (
+            <FaHeart className="text-red-500 text-lg" />
+          ) : (
+            <FiHeart className="text-gray-700 text-lg" />
+          )}
+          <span className="text-xs text-gray-700">{likesCount}</span>
+        </button>
       </div>
 
       <div className="p-4">
@@ -94,29 +111,9 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 
         <h3 className="mb-2 text-lg font-semibold text-black">{item.title}</h3>
 
-        <div className="mb-2 flex items-center justify-between text-gray-800 text-sm">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleLike(item);
-              }}
-              className="flex items-center gap-1 transition"
-              style={{ color: isLiked ? "#EF4444" : "#1F2937" }}
-            >
-              {isLiked ? (
-                <FaHeart style={{ color: "#EF4444" }} />
-              ) : (
-                <FiHeart style={{ color: "#1F2937" }} />
-              )}
-              <span style={{ color: "#1F2937" }}>{likesCount}</span>
-            </button>
-
-            <div className="flex items-center gap-1" style={{ color: "#1F2937" }}>
-              <FiEye style={{ color: "#1F2937" }} />
-              <span>{item.views || 0}</span>
-            </div>
-          </div>
+        <div className="mb-2 flex items-center gap-1 text-gray-800 text-sm">
+          <FiEye />
+          <span>{item.views || 0}</span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -237,51 +234,20 @@ const FilterSidebar = ({
       <div className="mb-6">
         <p className="mb-2 block text-sm font-medium text-black">Condition</p>
         <div className="space-y-2">
-          <label className="flex items-center text-black">
-            <input
-              type="checkbox"
-              checked={filters.condition.includes("new")}
-              onChange={() => handleConditionChange("new")}
-              className="mr-2 h-4 w-4"
-            />
-            New
-          </label>
-          <label className="flex items-center text-black">
-            <input
-              type="checkbox"
-              checked={filters.condition.includes("like_new")}
-              onChange={() => handleConditionChange("like_new")}
-              className="mr-2 h-4 w-4"
-            />
-            Like New
-          </label>
-          <label className="flex items-center text-black">
-            <input
-              type="checkbox"
-              checked={filters.condition.includes("used")}
-              onChange={() => handleConditionChange("used")}
-              className="mr-2 h-4 w-4"
-            />
-            Used
-          </label>
-          <label className="flex items-center text-black">
-            <input
-              type="checkbox"
-              checked={filters.condition.includes("refurbished")}
-              onChange={() => handleConditionChange("refurbished")}
-              className="mr-2 h-4 w-4"
-            />
-            Refurbished
-          </label>
-          <label className="flex items-center text-black">
-            <input
-              type="checkbox"
-              checked={filters.condition.includes("damaged")}
-              onChange={() => handleConditionChange("damaged")}
-              className="mr-2 h-4 w-4"
-            />
-            Damaged
-          </label>
+          {["new", "like_new", "used", "refurbished", "damaged"].map((cond) => (
+            <label key={cond} className="flex items-center text-black">
+              <input
+                type="checkbox"
+                checked={filters.condition.includes(cond)}
+                onChange={() => handleConditionChange(cond)}
+                className="mr-2 h-4 w-4"
+              />
+              {cond
+                .split("_")
+                .map((s) => s[0].toUpperCase() + s.slice(1))
+                .join(" ")}
+            </label>
+          ))}
         </div>
       </div>
 
@@ -372,6 +338,7 @@ export default function Marketplace() {
   const [isMobile, setIsMobile] = useState(false);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
+  // Load user
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
@@ -380,11 +347,10 @@ export default function Marketplace() {
     fetchUser();
   }, []);
 
+  // Load categories and items
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data, error } = await supabase
-        .from("marketplace_category")
-        .select("id,name");
+      const { data, error } = await supabase.from("marketplace_category").select("id,name");
       if (!error) setCategories(data || []);
     };
 
@@ -404,6 +370,31 @@ export default function Marketplace() {
     fetchItems();
   }, []);
 
+  // Real-time subscription for favourites
+  useEffect(() => {
+    const channel = supabase
+      .channel("realtime:marketplace-favourites")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "marketplace" },
+        (payload) => {
+          const updatedItem = payload.new;
+          setAllItems((prev) =>
+            prev.map((it) => (it.id === updatedItem.id ? { ...it, ...updatedItem } : it))
+          );
+          setItems((prev) =>
+            prev.map((it) => (it.id === updatedItem.id ? { ...it, ...updatedItem } : it))
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Apply filters
   const applyFilters = useCallback(() => {
     let filtered = [...allItems];
 
@@ -417,14 +408,10 @@ export default function Marketplace() {
     }
 
     if (filters.category_id)
-      filtered = filtered.filter(
-        (item) => item.category_id === parseInt(filters.category_id)
-      );
+      filtered = filtered.filter((item) => item.category_id === parseInt(filters.category_id));
 
     if (filters.condition.length > 0)
-      filtered = filtered.filter((item) =>
-        filters.condition.includes(item.condition)
-      );
+      filtered = filtered.filter((item) => filters.condition.includes(item.condition));
 
     if (filters.priceRange.min !== null)
       filtered = filtered.filter((item) => item.price >= filters.priceRange.min);
@@ -439,6 +426,7 @@ export default function Marketplace() {
     if (isMobile) setIsFilterDrawerOpen(false);
   }, [filters, allItems, isMobile]);
 
+  // Handle toggle like
   const handleToggleLike = async (item) => {
     if (!userId) {
       alert("Please log in to like items.");
@@ -453,23 +441,28 @@ export default function Marketplace() {
       : [...favourites, userId];
 
     try {
+      // Optimistic UI update
+      setAllItems((prev) =>
+        prev.map((it) =>
+          it.id === item.id ? { ...it, favourites: { favourites: updatedFavourites } } : it
+        )
+      );
+      setItems((prev) =>
+        prev.map((it) =>
+          it.id === item.id ? { ...it, favourites: { favourites: updatedFavourites } } : it
+        )
+      );
+
       await supabase
         .from("marketplace")
         .update({ favourites: { favourites: updatedFavourites } })
         .eq("id", item.id);
-
-      setAllItems((prev) =>
-        prev.map((it) =>
-          it.id === item.id
-            ? { ...it, favourites: { favourites: updatedFavourites } }
-            : it
-        )
-      );
     } catch (err) {
       console.error(err);
     }
   };
 
+  // Clear filters
   const handleClearFilters = () => {
     setFilters({
       search: "",
@@ -481,6 +474,7 @@ export default function Marketplace() {
     setItems(allItems);
   };
 
+  // Responsive
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -493,29 +487,25 @@ export default function Marketplace() {
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-  <div className="flex flex-col md:flex-row md:items-center md:gap-4">
-    <div>
-      <h1 className="text-3xl font-bold text-black md:text-4xl">Marketplace</h1>
-      <div className="mt-2 flex items-center gap-3">
-        <p className="text-lg text-gray-600">
-          Buy, sell, or give away items within the community.
-        </p>
-
-        {/* Filter Button beside text */}
-        {isMobile && (
-          <button
-            onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
-            className="flex items-center justify-center rounded-lg  bg-white px-5 py-2.5 text-base font-medium text-black hover:bg-gray-100 active:scale-95"
-          >
-            <CiFilter className="text-xl mr-1" />
-            
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-</div>
-
+          <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-black md:text-4xl">Marketplace</h1>
+              <div className="mt-2 flex items-center gap-3">
+                <p className="text-lg text-gray-600">
+                  Buy, sell, or give away items within the community.
+                </p>
+                {isMobile && (
+                  <button
+                    onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
+                    className="flex items-center justify-center rounded-lg bg-white px-5 py-2.5 text-base font-medium text-black hover:bg-gray-100 active:scale-95"
+                  >
+                    <CiFilter className="text-xl mr-1" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="flex flex-col md:flex-row">
           {/* Sidebar */}
