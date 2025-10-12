@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../api/supabase-client";
-import { FiHeart, FiEye } from "react-icons/fi";
+import { FiHeart, FiEye, FiSearch } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
 
@@ -42,26 +42,11 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
   };
 
   const conditionStyles = {
-    new: {
-      label: "New",
-      color: "bg-black",
-    },
-    like_new: {
-      label: "Like New",
-      color: "bg-blue-600",
-    },
-    used: {
-      label: "Used",
-      color: "bg-gray-700",
-    },
-    refurbished: {
-      label: "Refurbished",
-      color: "bg-green-600",
-    },
-    damaged: {
-      label: "Damaged",
-      color: "bg-red-700",
-    },
+    new: { label: "New", color: "bg-black" },
+    like_new: { label: "Like New", color: "bg-blue-600" },
+    used: { label: "Used", color: "bg-gray-700" },
+    refurbished: { label: "Refurbished", color: "bg-green-600" },
+    damaged: { label: "Damaged", color: "bg-red-700" },
   };
 
   return (
@@ -86,7 +71,7 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
           {conditionStyles[item.condition]?.label || "Unknown"}
         </div>
 
-        {/* Like Button (Top Right) */}
+        {/* Like Button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -142,22 +127,41 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 };
 
 // =========================
+// SearchBar component (NEW)
+// =========================
+const SearchBar = ({ searchTerm, setSearchTerm }) => {
+  return (
+    <div className="relative w-full md:w-1/2 mb-6">
+      <FiSearch className="absolute left-3 top-3 text-gray-500 text-lg" />
+      <input
+        type="text"
+        placeholder="Search listings..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full rounded-md border border-gray-300 pl-10 pr-4 py-2 text-black focus:border-black focus:ring-black"
+      />
+    </div>
+  );
+};
+
+// =========================
 // FilterSidebar component
 // =========================
 const FilterSidebar = ({
   filters,
   setFilters,
   categories,
+  brands,
   onApplyFilters,
   onClear,
   isMobile = false,
   onClose,
 }) => {
-  const handleSearchChange = (e) =>
-    setFilters((prev) => ({ ...prev, search: e.target.value }));
-
   const handleCategoryChange = (e) =>
     setFilters((prev) => ({ ...prev, category_id: e.target.value }));
+
+  const handleBrandChange = (e) =>
+    setFilters((prev) => ({ ...prev, brand_id: e.target.value }));
 
   const handleConditionChange = (condition) => {
     setFilters((prev) => {
@@ -201,18 +205,6 @@ const FilterSidebar = ({
         </div>
       )}
 
-      {/* Search */}
-      <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium text-black">Search</label>
-        <input
-          type="text"
-          value={filters.search}
-          onChange={handleSearchChange}
-          placeholder="Search listings..."
-          className="w-full rounded-md border border-gray-300 p-2 text-black"
-        />
-      </div>
-
       {/* Category */}
       <div className="mb-6">
         <label className="mb-2 block text-sm font-medium text-black">Category</label>
@@ -230,11 +222,28 @@ const FilterSidebar = ({
         </select>
       </div>
 
+      {/* Brand */}
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-medium text-black">Brand</label>
+        <select
+          value={filters.brand_id}
+          onChange={handleBrandChange}
+          className="w-full rounded-md border border-gray-300 p-2 text-black"
+        >
+          <option value="">All Brands</option>
+          {brands.map((brand) => (
+            <option key={brand.id} value={brand.id}>
+              {brand.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Condition */}
       <div className="mb-6">
         <p className="mb-2 block text-sm font-medium text-black">Condition</p>
         <div className="space-y-2">
-          {["new", "used"].map((cond) => (
+          {["new", "like_new", "used", "refurbished", "damaged"].map((cond) => (
             <label key={cond} className="flex items-center text-black">
               <input
                 type="checkbox"
@@ -326,13 +335,15 @@ const FilterSidebar = ({
 export default function Marketplace() {
   const [userId, setUserId] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [filters, setFilters] = useState({
-    search: "",
     category_id: "",
+    brand_id: "",
     condition: [],
     priceRange: { min: null, max: null },
     location: "",
   });
+  const [searchTerm, setSearchTerm] = useState("");
   const [allItems, setAllItems] = useState([]);
   const [items, setItems] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
@@ -347,68 +358,53 @@ export default function Marketplace() {
     fetchUser();
   }, []);
 
-  // Load categories and items
+  // Load categories, brands, and items
   useEffect(() => {
-    const fetchCategories = async () => {
-      const { data, error } = await supabase.from("marketplace_category").select("id,name");
-      if (!error) setCategories(data || []);
-    };
+    const fetchData = async () => {
+      const [catRes, brandRes, itemsRes] = await Promise.all([
+        supabase.from("marketplace_category").select("id,name"),
+        supabase.from("marketplace_brand").select("id,name"),
+        supabase.from("marketplace").select("*"),
+      ]);
 
-    const fetchItems = async () => {
-      const { data, error } = await supabase.from("marketplace").select("*");
-      if (!error) {
-        const itemsWithCategory = data.map((item) => {
-          const cat = categories.find((c) => c.id === item.category_id);
-          return { ...item, category_name: cat ? cat.name : "" };
-        });
-        setAllItems(itemsWithCategory);
-        setItems(itemsWithCategory);
+      if (!catRes.error) setCategories(catRes.data || []);
+      if (!brandRes.error) setBrands(brandRes.data || []);
+
+      if (!itemsRes.error) {
+        const categoryMap = Object.fromEntries(
+          (catRes.data || []).map((c) => [c.id, c.name])
+        );
+        const brandMap = Object.fromEntries(
+          (brandRes.data || []).map((b) => [b.id, b.name])
+        );
+
+        const itemsWithNames = itemsRes.data.map((item) => ({
+          ...item,
+          category_name: categoryMap[item.category_id] || "",
+          brand_name: brandMap[item.brand_id] || "",
+        }));
+
+        setAllItems(itemsWithNames);
+        setItems(itemsWithNames);
       }
     };
-
-    fetchCategories();
-    fetchItems();
-  }, []);
-
-  // Real-time subscription for favourites
-  useEffect(() => {
-    const channel = supabase
-      .channel("realtime:marketplace-favourites")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "marketplace" },
-        (payload) => {
-          const updatedItem = payload.new;
-          setAllItems((prev) =>
-            prev.map((it) => (it.id === updatedItem.id ? { ...it, ...updatedItem } : it))
-          );
-          setItems((prev) =>
-            prev.map((it) => (it.id === updatedItem.id ? { ...it, ...updatedItem } : it))
-          );
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    fetchData();
   }, []);
 
   // Apply filters
   const applyFilters = useCallback(() => {
     let filtered = [...allItems];
 
-    if (filters.search) {
-      const term = filters.search.toLowerCase();
-      filtered = filtered.filter(
-        (item) =>
-          item.title.toLowerCase().includes(term) ||
-          JSON.stringify(item.description || "").toLowerCase().includes(term)
-      );
-    }
-
+    // Category, brand, etc
     if (filters.category_id)
-      filtered = filtered.filter((item) => item.category_id === parseInt(filters.category_id));
+      filtered = filtered.filter(
+        (item) => item.category_id === parseInt(filters.category_id)
+      );
+
+    if (filters.brand_id)
+      filtered = filtered.filter(
+        (item) => item.brand_id === parseInt(filters.brand_id)
+      );
 
     if (filters.condition.length > 0)
       filtered = filtered.filter((item) => filters.condition.includes(item.condition));
@@ -422,11 +418,29 @@ export default function Marketplace() {
     if (filters.location)
       filtered = filtered.filter((item) => item.location === filters.location);
 
+    // Apply search term
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(term) ||
+          JSON.stringify(item.description || "").toLowerCase().includes(term)
+      );
+    }
+
     setItems(filtered);
     if (isMobile) setIsFilterDrawerOpen(false);
-  }, [filters, allItems, isMobile]);
+  }, [filters, allItems, searchTerm, isMobile]);
 
-  // Handle toggle like
+  // Real-time search (debounced)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      applyFilters();
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchTerm, applyFilters]);
+
+  // Handle like
   const handleToggleLike = async (item) => {
     if (!userId) {
       alert("Please log in to like items.");
@@ -441,7 +455,6 @@ export default function Marketplace() {
       : [...favourites, userId];
 
     try {
-      // Optimistic UI update
       setAllItems((prev) =>
         prev.map((it) =>
           it.id === item.id ? { ...it, favourites: { favourites: updatedFavourites } } : it
@@ -465,12 +478,13 @@ export default function Marketplace() {
   // Clear filters
   const handleClearFilters = () => {
     setFilters({
-      search: "",
       category_id: "",
+      brand_id: "",
       condition: [],
       priceRange: { min: null, max: null },
       location: "",
     });
+    setSearchTerm("");
     setItems(allItems);
   };
 
@@ -490,21 +504,24 @@ export default function Marketplace() {
           <div className="flex flex-col md:flex-row md:items-center md:gap-4">
             <div>
               <h1 className="text-3xl font-bold text-black md:text-4xl">Marketplace</h1>
-              <div className="mt-2 flex items-center gap-3">
-                <p className="text-lg text-gray-600">
-                  Buy, sell, or give away items within the community.
-                </p>
-                {isMobile && (
-                  <button
-                    onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
-                    className="flex items-center justify-center rounded-lg bg-white px-5 py-2.5 text-base font-medium text-black hover:bg-gray-100 active:scale-95"
-                  >
-                    <CiFilter className="text-xl mr-1" />
-                  </button>
-                )}
-              </div>
+              <p className="mt-2 text-lg text-gray-600">
+                Buy, sell, or give away items within the community.
+              </p>
             </div>
           </div>
+        </div>
+
+        {/* Search */}
+        <div className="flex items-center justify-between mb-6">
+          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          {isMobile && (
+            <button
+              onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
+              className="flex items-center justify-center rounded-lg bg-white px-5 py-2.5 text-base font-medium text-black hover:bg-gray-100 active:scale-95"
+            >
+              <CiFilter className="text-xl mr-1" />
+            </button>
+          )}
         </div>
 
         <div className="flex flex-col md:flex-row">
@@ -515,6 +532,7 @@ export default function Marketplace() {
               filters={filters}
               setFilters={setFilters}
               categories={categories}
+              brands={brands}
               onApplyFilters={applyFilters}
               onClear={handleClearFilters}
             />
@@ -528,6 +546,7 @@ export default function Marketplace() {
                   filters={filters}
                   setFilters={setFilters}
                   categories={categories}
+                  brands={brands}
                   isMobile
                   onApplyFilters={applyFilters}
                   onClear={handleClearFilters}
@@ -541,11 +560,8 @@ export default function Marketplace() {
           <div className="w-full md:w-3/4">
             {items.length === 0 ? (
               <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-gray-200">
-                <p className="text-lg text-gray-500">No items match your filters</p>
-                <button
-                  onClick={handleClearFilters}
-                  className="mt-4 text-black underline"
-                >
+                <p className="text-lg text-gray-500">No items match your search or filters</p>
+                <button onClick={handleClearFilters} className="mt-4 text-black underline">
                   Clear all filters
                 </button>
               </div>
