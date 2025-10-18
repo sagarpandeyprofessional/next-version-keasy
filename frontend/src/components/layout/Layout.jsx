@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
   const { session, profile, loading } = useAuth();
 
   // Define routes where the feature is upcoming
-  const upcomingRoutes = ['/blog', '/nearby', '/community', '/events', `/profile/id`, '"/edit-profile/', '', '/marketplace/post', '/marketplace/my', `/marketplace/id`, `/marketplace/edit/id`, '/settings', '/about', '/contact', '/faq', '/blog/', '/nearby/', '/community/', '/events/', '', '/profile/id/', '/edit-profile/', '/marketplace/id/', '/marketplace/edit/id/'];
+  const upcomingRoutes = ['/blog', '/nearby', '/events', `/profile/id`, '"/edit-profile/', '/marketplace/post', '/marketplace/my', `/marketplace/id`, `/marketplace/edit/id`, '/settings', '/about', '/contact', '/faq', '/blog/', '/nearby/', '/events/', '', '/profile/id/', '/edit-profile/', '/marketplace/id/', '/marketplace/edit/id/'];
   const showUpcoming = upcomingRoutes.includes(location.pathname);
 
   // Routes that don't require authentication at all
