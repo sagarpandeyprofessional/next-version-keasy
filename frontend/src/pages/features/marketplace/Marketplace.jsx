@@ -513,16 +513,18 @@ export default function Marketplace() {
 
         {/* Search */}
         <div className="flex items-center justify-between mb-6">
-          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          {isMobile && (
-            <button
-              onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
-              className="flex items-center justify-center rounded-lg bg-white px-5 py-2.5 text-base font-medium text-black hover:bg-gray-100 active:scale-95"
-            >
-              <CiFilter className="text-xl mr-1" />
-            </button>
-          )}
-        </div>
+  <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+  {isMobile && (
+    <button
+      onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
+      className="flex items-center justify-center rounded-lg bg-white px-5 text-base font-medium text-black hover:bg-gray-100 active:scale-95 translate-y-[-12.5px]"
+    >
+      <CiFilter className="text-xl mr-1" />
+      Filter
+    </button>
+  )}
+</div>
+
 
         <div className="flex flex-col md:flex-row">
           {/* Sidebar */}

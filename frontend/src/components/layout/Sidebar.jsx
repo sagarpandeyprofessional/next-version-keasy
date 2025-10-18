@@ -10,8 +10,8 @@ const LeftSidebar = () => {
     { name: "Events", path: "/events", icon: FiCalendar },
     { name: "Community", path: "/community", icon: FiUsers },
     { name: "Guides", path: "/guides", icon: FiBookOpen },
-    { name: "Nearby", path: "/nearby", icon: FiMapPin },
   ];
+  {/* { name: "Nearby", path: "/nearby", icon: FiMapPin }, */}
 
   return (
     <>
