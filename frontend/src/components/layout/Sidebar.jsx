@@ -58,7 +58,6 @@ const LeftSidebar = () => {
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{item.name}</span>
               </Link>
             );
           })}

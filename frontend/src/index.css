@@ -10,22 +10,21 @@
   
   
   body {
-    @apply bg-white text-black dark:bg-black dark:text-white;
+    @apply bg-gray-50 text-black ;
     font-feature-settings: "rlig" 1, "calt" 1;
-    background-color: white;
-
+    background-color: #F8FAFB;
   }
   
   a {
-    @apply text-black hover:underline dark:text-white;
+    @apply text-black ;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply text-black dark:text-white font-bold;
+    @apply text-black  font-bold;
   }
   
   button {
-    @apply text-black dark:text-white;
+    @apply text-black ;
   }
 }
 

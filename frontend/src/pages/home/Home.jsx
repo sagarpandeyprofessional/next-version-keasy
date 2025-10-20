@@ -92,19 +92,13 @@ const FeatureCard = ({ title, description, icon, href, linkText }) => {
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className="rounded-2xl bg-white p-6 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer h-full flex flex-col"
       >
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-black text-3xl shadow-lg">
+        <div className="flex items-center gap-4 mb-4 justify-items-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-black text-3xl">
             {icon}
           </div>
           <h3 className="text-xl font-semibold text-black">{title}</h3>
         </div>
         <p className="text-gray-600 line-clamp-3 flex-grow">{description}</p>
-        <Link
-          to={href}
-          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-black mt-4"
-        >
-          {linkText} →
-        </Link>
       </motion.div>
     </Link>
   );
@@ -680,10 +674,20 @@ const handleToggleLike = async (item) => {
             viewport={{ once: true }}
             variants={fadeUp}
             transition={{ duration: 0.8 }}
-            className="mb-8 text-center text-2xl sm:text-3xl font-bold"
+            className="mb-4 text-center text-2xl sm:text-3xl font-bold "
           >
-            Our Features
+            What We Provide
           </motion.h2>
+          <motion.p
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            transition={{ duration: 0.8 }}
+            className=" mb-8 text-center text-xl text-black"
+          >
+            Feel at home, meet friends, & grow with real support!!!
+          </motion.p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (

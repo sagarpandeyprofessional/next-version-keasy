@@ -19,6 +19,7 @@ export default {
           800: '#262626',
           900: '#171717',
           950: '#0a0a0a',
+          
         },
         secondary: {
           50: '#fafafa',
