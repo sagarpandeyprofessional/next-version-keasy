@@ -274,24 +274,26 @@ const Navbar = () => {
               </button>
 
               {/* User */}
-              <button
-                onClick={handleUserClick}
-                className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-              >
-                {profile?.pfp_url ? (
-                  <img
-                    src={profile.pfp_url}
-                    alt={profile.username}
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <img
-                    src="https://ltfgerwmkbyxfaebxucc.supabase.co/storage/v1/object/public/app_bucket/pfp_logo.jpg"
-                    alt="Default Avatar"
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
-                )}
-              </button>
+<button
+  onClick={handleUserClick}
+  className="flex flex-col items-center justify-center h-12 w-12 rounded-full text-blue-600 hover:bg-blue-50 transition-all duration-200"
+>
+  {user && profile?.pfp_url ? (
+    <img
+      src={profile.pfp_url}
+      alt={profile.username}
+      className="h-10 w-10 rounded-full object-cover border border-blue-200"
+    />
+  ) : (
+    <>
+      <FiUser className="h-6 w-6 mb-0.5" />
+      {/* <span className="text-[10px] font-medium leading-tight text-gray-600">
+        Sign up
+      </span> */}
+    </>
+  )}
+</button>
+
             </div>
           </div>
         </div>

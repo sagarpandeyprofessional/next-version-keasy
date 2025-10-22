@@ -16,53 +16,66 @@ const LeftSidebar = () => {
   return (
     <>
       {/* Desktop Sidebar - Centered vertically */}
-      <aside className="hidden lg:flex fixed left-0 top-1/2 -translate-y-1/2 w-16 bg-white border-r border-gray-200 shadow-sm z-40 rounded-r-2xl">
-        <nav className="flex flex-col items-center gap-3 py-6 w-full">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
+      <aside className="hidden lg:flex fixed left-0 top-1/2 -translate-y-1/2 group w-16 hover:w-48 bg-white border-r border-gray-200 shadow-sm z-40 rounded-r-2xl transition-all duration-300 overflow-hidden">
+  <nav className="flex flex-col items-start gap-3 py-6 w-full px-2">
+    {navItems.map((item) => {
+      const isActive = location.pathname === item.path;
+      const Icon = item.icon;
 
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex flex-col items-center justify-center gap-1 w-12 h-12 rounded-xl transition-all ${
-                  isActive
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
-                }`}
-                title={item.name}
-              >
-                <Icon className="w-5 h-5" />
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
+      return (
+        <Link
+          key={item.path}
+          to={item.path}
+          className={`flex items-center gap-3 w-full px-2 py-2 rounded-xl transition-all ${
+            isActive
+              ? "bg-blue-600 text-white shadow-md"
+              : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+          }`}
+          title={item.name}
+        >
+          <Icon className="w-5 h-5 shrink-0" />
+          <span className="text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            {item.name}
+          </span>
+        </Link>
+      );
+    })}
+  </nav>
+</aside>
+
+
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-        <div className="flex items-center justify-around h-16 px-2">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
+<nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+  <div className="flex items-center justify-around h-16 px-2">
+    {navItems.map((item) => {
+      const isActive = location.pathname === item.path;
+      const Icon = item.icon;
 
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex flex-col items-center justify-center gap-1 w-14 h-12 rounded-xl transition-all ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-600"
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      return (
+        <Link
+          key={item.path}
+          to={item.path}
+          className={`flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-xl transition-all ${
+            isActive
+              ? "text-blue-600"
+              : "text-gray-600 hover:text-blue-600"
+          }`}
+        >
+          <Icon className="w-5 h-5" />
+          <span
+            className={`text-[10px] font-medium ${
+              isActive ? "text-blue-600" : "text-gray-500"
+            }`}
+          >
+            {item.name}
+          </span>
+        </Link>
+      );
+    })}
+  </div>
+</nav>
+
     </>
   );
 };

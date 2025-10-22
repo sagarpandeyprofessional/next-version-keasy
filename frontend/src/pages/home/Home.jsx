@@ -706,6 +706,41 @@ const handleToggleLike = async (item) => {
         </div>
       </section>
 
+      {/* Join Keasy Section — only visible if user is not signed in */}
+{!currentUserId && (
+  <section className="py-20 bg-gradient-to-b from-gray-50 to-white text-center">
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
+      className="container mx-auto px-6"
+    >
+      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
+        Join Keasy Today
+      </h2>
+      <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
+        Become part of Korea’s most supportive expat community — connect, share, and explore together.
+      </p>
+      <div className="flex flex-col sm:flex-row justify-center gap-4">
+        <Link
+          to="/signup"
+          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-2xl hover:bg-blue-950 transition-all duration-300"
+        >
+          Sign Up
+        </Link>
+        <Link
+          to="/login"
+          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black border border-gray-300 rounded-xl font-semibold shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
+        >
+          Sign In
+        </Link>
+      </div>
+    </motion.div>
+  </section>
+)}
+
+
        {/* Guides Carousel */}
       <section className="py-16">
         <div className="container mx-auto px-4">
