@@ -28,6 +28,8 @@ import Nearby from './pages/features/nearby/Nearby'
 import Community from './pages/features/community/Community'
 import Blog from './pages/features/blog/Blog'
 import Events from './pages/features/events/Events'
+import EventPost from './pages/features/events/EventPost'
+import MapComponent from './pages/features/events/EventPost'
 import Marketplace from './pages/features/marketplace/Marketplace'
 import MarketplaceItem from './pages/features/marketplace/MarketplaceItem'
 import EditMarketplaceItemPage from './pages/features/marketplace/MarketplaceItemEdit'
@@ -36,6 +38,7 @@ import MyListingsPage from './pages/features/marketplace/MyListings'
 import SettingsPage from './pages/Settings'
 import GuideDetail from './pages/features/guides/GuideDetail'
 import Guides from './pages/features/guides/Guides'
+import GuidePost from './pages/features/guides/GuidePost';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -77,8 +80,10 @@ function App() {
         <Route element={<Layout><Nearby/></Layout>} path="/nearby" />
         <Route element={<Layout><Guides/></Layout>} path="/guides" />
         <Route element={<Layout><GuideDetail/></Layout>} path="/guides/guide/:id" />
+        <Route element={<Layout><GuidePost/></Layout>} path="/guides/new" />
         <Route element={<Layout><Community/></Layout>} path="/community" />
         <Route element={<Layout><Events /></Layout>} path='/events' />
+        <Route element={<Layout><MapComponent /></Layout>} path='/events/new' />
         <Route element={<Layout><Marketplace /></Layout>} path='/marketplace' />
         <Route element={<Layout><MarketplaceItem /></Layout>} path='/marketplace/:id' />
         <Route element={<Layout><EditMarketplaceItemPage /></Layout>} path='/marketplace/edit/:id'/> 
@@ -91,3 +96,4 @@ function App() {
 }
 
 export default App
+
