@@ -9,6 +9,7 @@ import { FaInstagram } from "react-icons/fa6";
 import { IoEyeOutline } from "react-icons/io5";
 import { IoIosHeart } from "react-icons/io";
 import { IoIosHeartEmpty } from "react-icons/io";
+import { BsFileEarmarkPdf } from "react-icons/bs";
 
 export default function GuideDetail() {
   const { id } = useParams();
@@ -255,15 +256,15 @@ export default function GuideDetail() {
             </h3>
             <ul className="flex justify-center gap-5 flex-wrap">
               {section.items?.map((link, idx) => (
-                <li key={idx} className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
+                <li key={idx} className="flex items-center gap-y-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
                   <Link
                     to={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-black flex hover:bg-gray-100 min-w-35 text-center items-center"
+                    className="text-gray-900 flex hover:bg-gray-100 min-w-35 text-center items-center"
                   >
-                    <MdOutlinePlace size={30} />
-                    <span className="px-3 font-bold text-black">{link.name}</span>
+                    <MdOutlinePlace size={25} />
+                    <span className="px-3 font-bold text-gray-900">{link.name}</span>
                   </Link>
                 </li>
               ))}
@@ -279,7 +280,7 @@ export default function GuideDetail() {
             </h4>
             <ul className="flex justify-center gap-4 flex-wrap">
               {section.items?.map((link, idx) => (
-                <li key={idx} className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
+                <li key={idx} className="flex items-center gap-y-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
                   {link.label === "Play Store" && (
                     <Link 
                       to={link.url} 
@@ -287,7 +288,7 @@ export default function GuideDetail() {
                       rel="noopener noreferrer"
                       className="text-[#34A853] flex items-center"
                     >
-                      <BiLogoPlayStore size={50} />
+                      <BiLogoPlayStore size={25} />
                       <span className="px-3 font-bold">{link.label}</span>
                     </Link>
                   )}
@@ -298,10 +299,31 @@ export default function GuideDetail() {
                       rel="noopener noreferrer"
                       className="text-blue-500 flex items-center"
                     >
-                      <FaAppStoreIos size={50} />
+                      <FaAppStoreIos size={25} />
                       <span className="px-3 font-bold">{link.label}</span>
                     </Link>
                   )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+
+        case "pdf_links":
+        return (
+          <div key={index} className="mb-8">
+            <ul className="flex justify-center gap-4 flex-wrap">
+              {section.items?.map((link, idx) => (
+                <li key={idx} className="flex items-center gap-y-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
+                    <Link 
+                      to={link.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-gray-900 flex items-center"
+                    >
+                      <BsFileEarmarkPdf size={25} />
+                      <span className="px-3 font-bold text-gray-900">{link.label}</span>
+                    </Link>
                 </li>
               ))}
             </ul>

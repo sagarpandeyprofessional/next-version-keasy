@@ -118,13 +118,11 @@ const Guides = () => {
   };
 
   const handleViewGuide = async (guideId) => {
-    // This should work for both logged-in and non-logged-in users
     try {
       const guide = guides.find(g => g.id === guideId);
       const currentViews = parseInt(guide.view || 0);
       const newViews = currentViews + 1;
 
-      // Update view count in database - no user authentication required for views
       const { error } = await supabase
         .from('guide')
         .update({ view: newViews })
@@ -135,7 +133,6 @@ const Guides = () => {
         return;
       }
 
-      // Update local state
       setGuides(prev => prev.map(guide => 
         guide.id === guideId 
           ? { ...guide, view: newViews }
@@ -146,28 +143,15 @@ const Guides = () => {
     }
   };
 
-const filteredGuides =
+  const filteredGuides =
     activeCategory === 'All'
       ? guides
       : guides.filter((guide) => guide.category === activeCategory);
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      {/* Header */}
-      <div className=" flex flex-col md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col md:flex-row md:items-center md:gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-black md:text-4xl">Local Guides</h1>
-            <div className="mt-2 flex items-center gap-3">
-              <p className="text-lg text-gray-600">
-                {`Read, Learn & Grow with our curated guides :}`}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="">
       <section className="pb-16 pt-6">
-        <div className="container mx-auto px-4">
+        <div className="">
           <ExploreSection
             title="Explore Guides"
             setActiveCategory={setActiveCategory}
@@ -176,10 +160,9 @@ const filteredGuides =
             categories={categories}
           >
             {filteredGuides.map((guide) => (
-              <ExploreCard 
+              <ExploreCard
                 key={guide.id} 
                 {...guide} 
-                className="flex"
                 onLike={() => handleLike(guide.id)}
                 onView={() => handleViewGuide(guide.id)}
                 user={user}
@@ -235,7 +218,7 @@ const ExploreSection = ({
         {/* Scrollable container */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 md:px-10"
+          className="flex gap-2 overflow-x-scroll scrollbar-hide pb-2"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {categories.map((category) => (
@@ -254,20 +237,15 @@ const ExploreSection = ({
         </div>
       </div>
 
-      {/* Title */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-black md:text-3xl">{title}</h2>
-      </div>
-
-      {/* Cards grid - 2 columns on mobile, responsive on larger screens */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+      {/* Cards grid - Different layouts for mobile and desktop */}
+      <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-6">
         {children}
       </div>
     </div>
   );
 };
 
-/* ExploreCard Component */
+/* ExploreCard Component with Separate Mobile and Desktop Layouts */
 const ExploreCard = ({ 
   id, 
   name, 
@@ -357,9 +335,10 @@ const ExploreCard = ({
         onClick={handleCardClick}
         className="block h-full"
       >
-        <div className="h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group cursor-pointer">
-          <div className="relative h-32 sm:h-48 w-full overflow-hidden bg-gray-200">
-            {/* Show image only if img_url exists */}
+        {/* MOBILE VIEW - Horizontal Layout */}
+        <div className="my-2 mx-2 sm:hidden h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl group cursor-pointer flex">
+          {/* Mobile Image - Left side */}
+          <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden bg-gray-200">
             {img_url ? (
               <img
                 src={img_url}
@@ -369,20 +348,102 @@ const ExploreCard = ({
                 loading="lazy"
               />
             ) : (
-              /* No image placeholder */
               <div className="flex items-center justify-center h-full bg-gray-200">
-                <div className="text-gray-400 text-xs sm:text-sm">No image</div>
+                <div className="text-gray-400 text-xs">No image</div>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Content - Right side */}
+          <div className="flex-1 p-3 flex flex-col justify-between">
+            {/* Title + Description */}
+            <div>
+              <h3 className="text-sm font-semibold text-black line-clamp-2 mb-1">
+                {name || 'Untitled Guide'}
+              </h3>
+
+              {description && (
+                <p className="text-xs text-gray-600 line-clamp-2 mb-2">
+                  {description}
+                </p>
+              )}
+            </div>
+
+            {/* Author + Stats + Actions */}
+            <div className="mt-1 flex flex-col gap-1">
+              {/* Author + stats */}
+              <div className="flex items-center justify-between text-xs text-blue-400">
+                <div className="flex items-center gap-2 truncate">
+                  <span className="truncate">by {author || 'Loading...'}</span>
+
+                  <div className="flex items-center gap-1 text-gray-500">
+                    <IoEyeOutline className="w-3 h-3" />
+                    <span>{formatCount(viewsCount)}</span>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-gray-500">
+                    <IoIosHeart className="w-3 h-3" />
+                    <span>{formatCount(likesCount)}</span>
+                  </div>
+
+                  <button
+                  onClick={handleLike}
+                  disabled={isLiking}
+                  className={`relative z-10 p-1 rounded-full transition-all duration-300 ${
+                    isLiked
+                      ? 'bg-red-500 text-white shadow-md'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-red-500'
+                  } ${isLiking ? 'scale-110' : ''} ${!user ? 'opacity-75' : 'hover:scale-110'}`}
+                  title={!user ? 'Login to like guides' : (isLiked ? 'Unlike' : 'Like')}
+                >
+                  {isLiked ? (
+                    <IoIosHeart className="w-4 h-4" />
+                  ) : (
+                    <IoIosHeartEmpty className="w-4 h-4" />
+                  )}
+                </button>
+                </div>
+              </div>
+
+              {/* Read + Like button row */}
+              <div className="flex items-center justify-between mt-1">
+                {/* <div className="inline-block rounded-md bg-black px-2 py-1 text-xs font-medium text-white group-hover:bg-gray-800 transition-colors">
+                  Read &rarr;
+                </div> */}
+
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        {/* DESKTOP VIEW - Vertical Layout */}
+        <div className="hidden sm:flex h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group cursor-pointer flex-col">
+          {/* Desktop Image - Top */}
+          <div className="relative w-full h-48 overflow-hidden bg-gray-200">
+            {img_url ? (
+              <img
+                src={img_url}
+                alt={name || 'Guide image'}
+                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                onError={handleImageError}
+                loading="lazy"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full bg-gray-200">
+                <div className="text-gray-400 text-sm">No image</div>
               </div>
             )}
             
-            {/* Overlay with stats */}
+            {/* Desktop overlay with stats */}
             <div className="absolute inset-0 transition-all duration-300">
-              <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex flex-col gap-1 sm:gap-2">
-                {/* Like button - positioned outside of Link to prevent navigation */}
+              <div className="absolute top-3 right-3 flex flex-col gap-2">
                 <button
                   onClick={handleLike}
                   disabled={isLiking}
-                  className={`relative z-10 p-1 sm:p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
+                  className={`relative z-10 p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
                     isLiked 
                       ? 'bg-red-500 text-white shadow-lg' 
                       : 'bg-white/80 hover:bg-white text-gray-700 hover:text-red-500'
@@ -390,49 +451,48 @@ const ExploreCard = ({
                   title={!user ? 'Login to like guides' : (isLiked ? 'Unlike' : 'Like')}
                 >
                   {isLiked ? (
-                    <IoIosHeart className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <IoIosHeart className="w-4 h-4" />
                   ) : (
-                    <IoIosHeartEmpty className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <IoIosHeartEmpty className="w-4 h-4" />
                   )}
                 </button>
               </div>
 
-              {/* Bottom stats */}
-              <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between">
-                <div className="flex items-center gap-2 sm:gap-3 text-white">
-                  <div className="flex items-center gap-1 bg-black/50 px-1 sm:px-2 py-1 rounded-full backdrop-blur-sm">
-                    <IoEyeOutline className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="text-xs sm:text-sm font-medium">{formatCount(viewsCount)}</span>
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                <div className="flex items-center gap-3 text-white">
+                  <div className="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm">
+                    <IoEyeOutline className="w-4 h-4" />
+                    <span className="text-sm font-medium">{formatCount(viewsCount)}</span>
                   </div>
-                  <div className="flex items-center gap-1 bg-black/50 px-1 sm:px-2 py-1 rounded-full backdrop-blur-sm">
-                    <IoIosHeart className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="text-xs sm:text-sm font-medium">{formatCount(likesCount)}</span>
+                  <div className="flex items-center gap-1 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm">
+                    <IoIosHeart className="w-4 h-4" />
+                    <span className="text-sm font-medium">{formatCount(likesCount)}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-2 sm:p-4">
-            <div className="mb-1 flex items-center justify-between">
-              <div className="text-xs sm:text-sm text-gray-500 truncate">
-                by {author || 'Loading...'}
-              </div>
+          {/* Desktop Content - Bottom */}
+          <div className="flex-1 p-4 flex flex-col justify-between">
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-black line-clamp-2 mb-2">
+                {name || 'Untitled Guide'}
+              </h3>
+              
+              <p className="text-sm text-gray-600 line-clamp-3">
+                {description || 'No description available.'}
+              </p>
             </div>
             
-            <h3 className="mb-2 text-sm sm:text-lg font-semibold text-black line-clamp-2">
-              {name || 'Untitled Guide'}
-            </h3>
-            
-            {/* Hide description on mobile, show on sm and up */}
-            <p className="hidden sm:block mb-4 text-sm text-gray-600 line-clamp-3">
-              {description || 'No description available.'}
-            </p>
-            
-            {/* Visual indicator that the card is clickable */}
-            <div className="inline-block rounded-md bg-black px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white group-hover:bg-gray-800 transition-colors">
-              <span className="hidden sm:inline">Read full guide &rarr;</span>
-              <span className="sm:hidden">Read &rarr;</span>
+            <div className="mt-2">
+              <div className="text-sm text-gray-500 truncate mb-2">
+                by {author || 'Loading...'}
+              </div>
+              
+              <div className="inline-block rounded-md bg-black px-4 py-2 text-sm font-medium text-white group-hover:bg-gray-800 transition-colors">
+                Read full guide &rarr;
+              </div>
             </div>
           </div>
         </div>

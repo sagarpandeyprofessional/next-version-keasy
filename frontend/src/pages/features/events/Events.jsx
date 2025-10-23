@@ -160,7 +160,7 @@ export default function Events() {
         {filteredEvents.map((event) => (
           <div
             key={event.id}
-            className="overflow-hidden rounded-lg bg-white shadow-md"
+            className="overflow-hidden rounded-lg  shadow-md"
           >
             <div className="border-b border-gray-200 bg-gray-50 p-4 ">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -240,7 +240,7 @@ export default function Events() {
         ))}
 
         {filteredEvents.length === 0 && (
-          <div className="rounded-lg bg-white p-6 text-center">
+          <div className="rounded-lg p-6 text-center">
             <p className="text-gray-700">
               No events found in this category. Check back later!
             </p>

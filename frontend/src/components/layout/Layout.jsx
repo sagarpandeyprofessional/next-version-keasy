@@ -77,21 +77,48 @@ const Layout = ({ children }) => {
 
   // Show loading while checking auth state
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        <span className="ml-2">Loading...</span>
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-white/80 z-50">
+      <div className="flex flex-col items-center">
+        {/* SVG spinner */}
+        <svg
+          className="animate-spin h-10 w-10 text-blue-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          ></path>
+        </svg>
+
+        {/* Text animation */}
+        <span className="mt-3 text-blue-700 font-semibold text-lg animate-pulse">
+          keasy
+        </span>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   return (
-    <div className="flex min-h-screen flex-col">
+  <div className="flex min-h-screen flex-col">
       <Navbar />
       <Sidebar />
 
       <div className="relative flex-grow lg:flex lg:justify-center">
-  <div className={`w-full md:w-4/5 sm:w-full px-4 ${showUpcoming ? 'filter blur-sm pointer-events-none select-none' : ''}`}>
+  <div className={`w-full md:w-4/5 sm:w-full mx-auto px-1  ${showUpcoming ? 'filter blur-sm pointer-events-none select-none' : ''}`}>
     {children}
   </div>
   {showUpcoming && <ComingSoonOverlay />}

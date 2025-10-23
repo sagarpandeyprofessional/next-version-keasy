@@ -317,7 +317,7 @@ const CoolCarousel = ({ slides = [], intervalMs = 4000 }) => {
   return (
     <div
         ref={containerRef}
-        className="flex overflow-x-auto snap-x snap-mandatory gap-4 px-4 scrollbar-hide rounded-b-3xl overflow-hidden relative"
+        className="flex overflow-x-auto snap-x snap-mandatory gap-4 px-4 scrollbar-hide rounded-b-3xl overflow-hidden relative mx-2"
       >
         {track.map((slide, i) => (
           <div
@@ -663,7 +663,7 @@ const handleToggleLike = async (item) => {
   return (
     <div>
       {/* Hero Carousel */}
-      <CoolCarousel slides={slides} />
+      <CoolCarousel slides={slides} className='mx-2'/>
 
       {/* Features Section */}
       <section className="py-16">
