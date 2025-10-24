@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../api/supabase-client";
 import { useAuth } from "../../../context/AuthContext";
+import { useNavigate, useParams } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 
 const SOUTH_KOREA_CITIES = [
@@ -17,12 +17,14 @@ const SOUTH_KOREA_CITIES = [
   "Jinju", "Tongyeong", "Sacheon", "Geoje", "Yangsan", "Miryang"
 ].sort();
 
-export default function EventPost() {
+export default function EventUpdate() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { id } = useParams();
   const [step, setStep] = useState(1);
   const [categories, setCategories] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [userLocation, setUserLocation] = useState(null);
 
@@ -37,19 +39,78 @@ export default function EventPost() {
     organizer_contact: "",
   });
 
-  // Check if user is authenticated
+  // Fetch event data and verify ownership
   useEffect(() => {
-    if (!user) {
-      alert("Please sign in to create an event");
-      navigate("/signin");
-    }
-  }, [user, navigate]);
+    const fetchEvent = async () => {
+      if (!id) {
+        alert("No event ID provided");
+        navigate("/events");
+        return;
+      }
+
+      if (!user) {
+        alert("Please sign in to edit events");
+        navigate("/signin");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error || !data) {
+        alert("Event not found");
+        navigate("/events");
+        return;
+      }
+
+      // Check if user owns this event
+      if (data.user_id !== user.id) {
+        alert("You don't have permission to edit this event");
+        navigate("/events");
+        return;
+      }
+
+      // Extract contact from link
+      let contact = data.organizer_contact_link || "";
+      if (data.organizer_contact_type === "telegram") {
+        contact = contact.replace("https://t.me/", "");
+      } else if (data.organizer_contact_type === "whatsapp") {
+        contact = contact.replace("https://wa.me/", "");
+      } else if (data.organizer_contact_type === "instagram") {
+        contact = contact.replace("https://instagram.com/", "");
+      } else if (data.organizer_contact_type === "messenger") {
+        contact = contact.replace("https://m.me/", "");
+      } else if (data.organizer_contact_type === "email") {
+        contact = contact.replace("mailto:", "");
+      } else if (data.organizer_contact_type === "message") {
+        contact = contact.replace("tel:", "");
+      }
+
+      setFormData({
+        category_id: data.category_id || "",
+        name: data.name || "",
+        description: data.description || "",
+        location: data.location || "",
+        location_coordinates: data.location_coordinates || null,
+        date: data.date ? new Date(data.date).toISOString().slice(0, 16) : "",
+        organizer_contact_type: data.organizer_contact_type || "",
+        organizer_contact: contact,
+      });
+
+      setIsLoading(false);
+    };
+
+    fetchEvent();
+  }, [id, user, navigate]);
 
   // Fetch event categories
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data, error } = await supabase.from("event_category").select("*");
-      if (!error) setCategories(data);
+      const { data } = await supabase.from("event_category").select("*");
+      if (data) setCategories(data);
     };
     fetchCategories();
   }, []);
@@ -64,9 +125,7 @@ export default function EventPost() {
             lng: position.coords.longitude,
           });
         },
-        (error) => {
-          console.log("Location access denied or unavailable");
-          // Default to Daejeon if location access is denied
+        () => {
           setUserLocation({ lat: 36.35, lng: 127.38 });
         }
       );
@@ -162,7 +221,7 @@ export default function EventPost() {
       if (type === "email") {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(contact)) {
-          newErrors.organizer_contact = "Please enter a valid email address (e.g., name@example.com)";
+          newErrors.organizer_contact = "Please enter a valid email address";
         }
       } else if (type === "message") {
         const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
@@ -170,11 +229,8 @@ export default function EventPost() {
           newErrors.organizer_contact = "Please enter a valid phone number";
         }
       } else {
-        // For social media platforms, check for username format
         if (contact.length < 3) {
-          newErrors.organizer_contact = "Username must be at least 3 characters long";
-        } else if (contact.length > 50) {
-          newErrors.organizer_contact = "Username is too long";
+          newErrors.organizer_contact = "Username must be at least 3 characters";
         }
       }
     }
@@ -195,7 +251,7 @@ export default function EventPost() {
       case "instagram":
         return `https://instagram.com/${cleanContact}`;
       case "kakao talk":
-        return contact; // KakaoTalk doesn't have direct web links
+        return contact;
       case "messenger":
         return `https://m.me/${cleanContact}`;
       case "email":
@@ -228,24 +284,18 @@ export default function EventPost() {
     if (isValid) {
       setStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      // Show first error in alert
-      const firstError = Object.values(errors)[0];
-      if (firstError) alert(firstError);
     }
   };
 
   // Form submission
   const handleSubmit = async () => {
     if (!user) {
-      alert("You must be logged in to create an event. Please sign in and try again.");
+      alert("You must be logged in to update an event");
       navigate("/signin");
       return;
     }
 
     if (!validateStep4()) {
-      const firstError = Object.values(errors)[0];
-      if (firstError) alert(firstError);
       return;
     }
 
@@ -256,8 +306,7 @@ export default function EventPost() {
       formData.organizer_contact
     );
 
-    const insertData = {
-      user_id: user.id,
+    const updateData = {
       name: formData.name.trim(),
       description: formData.description.trim(),
       location: formData.location,
@@ -268,18 +317,17 @@ export default function EventPost() {
       location_coordinates: formData.location_coordinates,
     };
 
-    const { data, error } = await supabase.from("events").insert([insertData]).select();
+    const { error } = await supabase
+      .from("events")
+      .update(updateData)
+      .eq("id", id);
 
     if (error) {
-      console.error("Insert error:", error);
-      alert(`We couldn't create your event right now. ${error.message}. Please try again.`);
+      alert(`Failed to update event: ${error.message}`);
       setIsSubmitting(false);
     } else {
-      alert("🎉 Your event has been created successfully!");
-      // Navigate to events page after short delay
-      setTimeout(() => {
-        navigate("/events");
-      }, 500);
+      alert("🎉 Event updated successfully!");
+      navigate("/events");
     }
   };
 
@@ -314,13 +362,12 @@ export default function EventPost() {
     </div>
   );
 
-  // Show loading while checking auth
-  if (!user || !userLocation) {
+  if (isLoading || !userLocation) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600 font-medium">Loading...</p>
+          <p className="mt-4 text-gray-600 font-medium">Loading event...</p>
         </div>
       </div>
     );
@@ -332,17 +379,17 @@ export default function EventPost() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-white rounded-2xl p-8 shadow-2xl text-center">
             <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-4 text-gray-700 font-semibold text-lg">Creating your event...</p>
+            <p className="mt-4 text-gray-700 font-semibold text-lg">Updating your event...</p>
           </div>
         </div>
       )}
 
-      <div className="min-h-screen bg-gradient-to-br py-12 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Create New Event</h1>
-            <p className="text-gray-600">Share your event with the community</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Update Event</h1>
+            <p className="text-gray-600">Edit your event details</p>
           </div>
 
           {/* Progress Indicator */}
@@ -463,13 +510,17 @@ export default function EventPost() {
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Mark Event Location</h2>
                 <p className="text-gray-600 mb-4">
-                  Click anywhere on the map to mark the exact location of your event
+                  Click anywhere on the map to mark the exact location
                 </p>
 
                 <div className="rounded-2xl overflow-hidden border-4 border-gray-100 shadow-lg">
                   <div style={{ height: "400px", width: "100%" }}>
                     <MapContainer
-                      center={[userLocation.lat, userLocation.lng]}
+                      center={
+                        formData.location_coordinates
+                          ? [formData.location_coordinates.lat, formData.location_coordinates.lng]
+                          : [userLocation.lat, userLocation.lng]
+                      }
                       zoom={13}
                       style={{ height: "100%", width: "100%" }}
                     >
@@ -534,9 +585,6 @@ export default function EventPost() {
                   {errors.date && (
                     <p className="text-red-500 text-sm mt-1">{errors.date}</p>
                   )}
-                  <p className="text-gray-500 text-sm mt-2">
-                    Select a date and time in the future
-                  </p>
                 </div>
 
                 <div className="flex gap-4">
@@ -604,9 +652,7 @@ export default function EventPost() {
                           ? "your.email@example.com"
                           : formData.organizer_contact_type === "message"
                           ? "+82 10-1234-5678"
-                          : formData.organizer_contact_type === "telegram"
-                          ? "your_username"
-                          : "username"
+                          : "your_username"
                       }
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
                         errors.organizer_contact ? "border-red-500" : "border-gray-200"
@@ -620,13 +666,6 @@ export default function EventPost() {
                     {errors.organizer_contact && (
                       <p className="text-red-500 text-sm mt-1">{errors.organizer_contact}</p>
                     )}
-                    <p className="text-gray-500 text-sm mt-2">
-                      {formData.organizer_contact_type === "email"
-                        ? "Enter a valid email address"
-                        : formData.organizer_contact_type === "message"
-                        ? "Enter your phone number with country code"
-                        : "Enter your username without @ symbol"}
-                    </p>
                   </div>
                 )}
 
@@ -641,9 +680,9 @@ export default function EventPost() {
                   <button
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-4 rounded-xl transition-all shadow-lg shadow-green-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-4 rounded-xl transition-all shadow-lg shadow-green-600/30 disabled:opacity-50"
                   >
-                    {isSubmitting ? "Creating..." : "Create Event ✅"}
+                    {isSubmitting ? "Updating..." : "Update Event ✅"}
                   </button>
                 </div>
               </div>

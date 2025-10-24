@@ -27,8 +27,11 @@ import FAQ from './pages/static/faq/FAQ'
 import Nearby from './pages/features/nearby/Nearby'
 import Community from './pages/features/community/Community'
 import Blog from './pages/features/blog/Blog'
+
 import Events from './pages/features/events/Events'
-import EventPost from './pages/features/events/EventPost'
+import EventPost from './pages/features/events/EventPost';
+import EventUpdate from './pages/features/events/EventUpdate';
+
 import MapComponent from './pages/features/events/EventPost'
 import Marketplace from './pages/features/marketplace/Marketplace'
 import MarketplaceItem from './pages/features/marketplace/MarketplaceItem'
@@ -84,6 +87,7 @@ function App() {
         <Route element={<Layout><Community/></Layout>} path="/community" />
         <Route element={<Layout><Events /></Layout>} path='/events' />
         <Route element={<Layout><MapComponent /></Layout>} path='/events/new' />
+        <Route path="/events/edit/:id" element={<EventUpdate />} />
         <Route element={<Layout><Marketplace /></Layout>} path='/marketplace' />
         <Route element={<Layout><MarketplaceItem /></Layout>} path='/marketplace/:id' />
         <Route element={<Layout><EditMarketplaceItemPage /></Layout>} path='/marketplace/edit/:id'/> 
