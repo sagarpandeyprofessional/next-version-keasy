@@ -41,7 +41,7 @@ import MyListingsPage from './pages/features/marketplace/MyListings'
 import SettingsPage from './pages/Settings'
 import GuideDetail from './pages/features/guides/GuideDetail'
 import Guides from './pages/features/guides/Guides'
-import GuidePost from './pages/features/guides/GuidePost';
+import GuideEditor from './pages/features/guides/GuidePost';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -81,13 +81,17 @@ function App() {
         {/* Features Pages */}
         <Route element={<Layout><Blog/></Layout>} path="/blog" />
         <Route element={<Layout><Nearby/></Layout>} path="/nearby" />
+
         <Route element={<Layout><Guides/></Layout>} path="/guides" />
         <Route element={<Layout><GuideDetail/></Layout>} path="/guides/guide/:id" />
-        <Route element={<Layout><GuidePost/></Layout>} path="/guides/new" />
+        <Route element={<Layout><GuideEditor/></Layout>} path="/guides/new" />
+        
         <Route element={<Layout><Community/></Layout>} path="/community" />
+
         <Route element={<Layout><Events /></Layout>} path='/events' />
         <Route element={<Layout><MapComponent /></Layout>} path='/events/new' />
         <Route path="/events/edit/:id" element={<EventUpdate />} />
+
         <Route element={<Layout><Marketplace /></Layout>} path='/marketplace' />
         <Route element={<Layout><MarketplaceItem /></Layout>} path='/marketplace/:id' />
         <Route element={<Layout><EditMarketplaceItemPage /></Layout>} path='/marketplace/edit/:id'/> 

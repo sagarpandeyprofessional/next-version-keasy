@@ -12,7 +12,7 @@ const Guides = () => {
   const [guides, setGuides] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('All'); // Changed to 'All' string
   const [user, setUser] = useState(null);
 
   // Get current user
@@ -28,14 +28,15 @@ const Guides = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       const { data: TagsData, error: TagsError } = await supabase
-        .from('category')
+        .from('guide_category')
         .select('*');
 
       if (TagsError) {
         console.error('Error fetching categories:', TagsError.message);
         setLoading(false);
       } else {
-        const allOption = { name: 'All' };
+        // Create 'All' option with consistent structure
+        const allOption = { id: 'All', name: 'All' };
         const categoriesWithAll = [allOption, ...TagsData];
         setCategories(categoriesWithAll);
         setLoading(false);
@@ -143,6 +144,7 @@ const Guides = () => {
     }
   };
 
+  // Fixed filtering logic
   const filteredGuides =
     activeCategory === 'All'
       ? guides
@@ -204,13 +206,13 @@ const ExploreSection = ({
         {/* Scroll buttons for desktop */}
         <button
           onClick={scrollLeft}
-          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-8 h-8 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+          className="hidden md:flex absolute left-[-40px] top-1/3  -translate-y-1/2 z-10 items-center justify-center w-8 h-8 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
         >
           <span className="text-gray-600">‹</span>
         </button>
         <button
           onClick={scrollRight}
-          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-8 h-8 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+          className="hidden md:flex absolute right-[-20px] top-1/3 -translate-y-1/2 z-10 items-center justify-center w-8 h-8 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
         >
           <span className="text-gray-600">›</span>
         </button>
@@ -224,9 +226,9 @@ const ExploreSection = ({
           {categories.map((category) => (
             <button
               key={category.id || category.name}
-              onClick={() => setActiveCategory(category.name)}
+              onClick={() => setActiveCategory(category.id)}
               className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap ${
-                activeCategory === category.name
+                activeCategory === category.id
                   ? "bg-black text-white hover:bg-gray-800"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
@@ -497,7 +499,31 @@ const ExploreCard = ({
           </div>
         </div>
       </Link>
-    </div>
+
+      <Link to="/guides/new"
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 
+                    w-14 h-14 bg-blue-600 hover:bg-blue-700 rounded-full 
+                    shadow shadow-blue-200 hover:shadow-2xl 
+                    transition-all duration-300 hover:scale-110 group 
+                    flex items-center justify-center"
+          aria-label="Create New Guide"
+        >
+          <svg 
+            className="w-6 h-6 text-white transition-transform group-hover:rotate-90" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              d="M12 4v16m8-8H4" 
+            />
+          </svg>
+        </Link>
+
+            </div>
   );
 };
 

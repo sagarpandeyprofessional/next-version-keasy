@@ -96,7 +96,10 @@ export default function GuideDetail() {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="flex items-center justify-center min-h-64">
-          <p className="text-lg text-gray-600">Loading guide...</p>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-lg text-gray-600">Loading guide...</p>
+          </div>
         </div>
       </div>
     );
@@ -208,27 +211,84 @@ export default function GuideDetail() {
   // Convert view to number
   const viewsCount = parseInt(guide?.view) || 0;
 
+const groupConsecutiveLinkSections = (sections) => {
+  const grouped = [];
+  let linkGroup = [];
+  let precedingText = null;
+  
+  sections.forEach((section, index) => {
+    const isLinkType = ['links', 'app_links', 'pdf_links', 'social_links'].includes(section.type);
+    
+    if (isLinkType) {
+      linkGroup.push(section);
+    } else {
+      if (linkGroup.length > 0) {
+        grouped.push({ 
+          type: 'link_group', 
+          sections: linkGroup,
+          precedingText: precedingText 
+        });
+        linkGroup = [];
+        precedingText = null;
+      }
+      
+      // Check if this is a text section that might precede links
+      if (section.type === 'text' && index < sections.length - 1) {
+        const nextSection = sections[index + 1];
+        const isNextLinkType = ['links', 'app_links', 'pdf_links', 'social_links'].includes(nextSection?.type);
+        
+        if (isNextLinkType) {
+          precedingText = section;
+          return; // Don't add to grouped yet
+        }
+      }
+      
+      grouped.push(section);
+    }
+  });
+  
+  // Don't forget remaining link group
+  if (linkGroup.length > 0) {
+    grouped.push({ 
+      type: 'link_group', 
+      sections: linkGroup,
+      precedingText: precedingText 
+    });
+  }
+  
+  return grouped;
+};
+
   // Render content sections dynamically
-  const renderSection = (section, index) => {
+  const reFderSection = (section, index) => {
     switch (section.type) {
       case "text":
         return (
-          <div key={index} className="mb-8 flex justify-center text-center">
-            <p className="py-4 text-lg text-gray-700 max-w-4xl">
+          <div key={index} className="mb-6">
+            <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans mt-6">
               {section.body}
             </p>
+          </div>
+        );
+      
+      case "heading":
+        return (
+          <div key={index} className="mb-6 ">
+            <h2 className=" font-bold text-gray-900 text-1xl md:text-2xl lg:text-3xl font-sans mb-4 leading-tight">
+              {section.body}
+            </h2>
           </div>
         );
         
       case "image":
         return (
-          <div key={index} className="mb-8 flex justify-center">
-            <div className="overflow-hidden rounded-2xl border-2 border-gray-200 shadow-lg bg-gray-50 w-full max-w-3xl">
+          <div key={index} className="mb-8">
+            <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-gray-100">
               {section.url ? (
                 <img
                   src={section.url}
                   alt={section.caption || "Guide image"}
-                  className="w-full object-cover transition-transform duration-300 hover:scale-105"
+                  className="w-full h-full object-cover"
                   onError={(e) => {
                     console.error('Section image failed to load:', section.url);
                     e.target.style.display = 'none';
@@ -239,32 +299,77 @@ export default function GuideDetail() {
                   <span className="text-gray-400">Image not available</span>
                 </div>
               )}
-              {section.caption && (
-                <p className="mt-2 px-4 py-2 text-center text-sm text-gray-500">
+              {/* {section.caption && (
+                <p className="px-4 py-3 text-xs text-gray-600 bg-gray-50">
                   {section.caption}
                 </p>
-              )}
+              )} */}
+            </div>
+          </div>
+        );
+
+      case "list":
+        const items =
+          section.items ||
+          section.body
+            ?.split(/\n+/) // split on newlines
+            .map(line => line.replace(/^•\s*/, "").trim()) // clean up bullet symbols
+            .filter(Boolean);
+
+        return (
+
+          <div key={index} className="mb-6 mx-10">
+            <ul className="space-y-0">
+              {items.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-800">
+                  <span className=" mt-0.5">•</span>
+                  <span className="text-lg leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        );
+
+      case "quote":
+        return (
+          <div key={index} className="mb-8">
+            <blockquote className="border-l-4 border-gray-300 pl-6 py-2">
+              <p className="text-xl italic text-gray-700 leading-relaxed">
+                {section.body}
+              </p>
+            </blockquote>
+          </div>
+        );
+
+      case "delimiter":
+        return (
+          <div key={index} className="flex justify-center py-6 mb-6">
+            <div className="flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
             </div>
           </div>
         );
         
       case "links":
         return (
-          <div key={index} className="mb-8">
-            <h3 className="mb-4 text-2xl font-semibold text-gray-900 text-center">
-              Click below for Address
-            </h3>
-            <ul className="flex justify-center gap-5 flex-wrap">
+          <div key={index} className="mb-8 justify-center justify-items-center">
+            {/* <h3 className="mb-4 text-xl font-semibold text-gray-900">
+              Locations
+            </h3> */}
+            <ul className="flex flex-wrap gap-3">
               {section.items?.map((link, idx) => (
-                <li key={idx} className="flex items-center gap-y-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
+                <li key={idx}>
                   <Link
                     to={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-900 flex hover:bg-gray-100 min-w-35 text-center items-center"
+                    className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all"
                   >
-                    <MdOutlinePlace size={25} />
-                    <span className="px-3 font-bold text-gray-900">{link.name}</span>
+                    <MdOutlinePlace size={22} className="text-blue-600 flex-shrink-0" />
+                    <span className="font-medium text-gray-900">{link.name}</span>
                   </Link>
                 </li>
               ))}
@@ -273,57 +378,62 @@ export default function GuideDetail() {
         );
         
       case "app_links":
-        return (
-          <div key={index} className="mb-8">
-            <h4 className="mb-6 text-2xl font-semibold text-gray-900 text-center">
-              Get the App on
-            </h4>
-            <ul className="flex justify-center gap-4 flex-wrap">
-              {section.items?.map((link, idx) => (
-                <li key={idx} className="flex items-center gap-y-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
-                  {link.label === "Play Store" && (
-                    <Link 
-                      to={link.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-[#34A853] flex items-center"
-                    >
-                      <BiLogoPlayStore size={25} />
-                      <span className="px-3 font-bold">{link.label}</span>
-                    </Link>
-                  )}
-                  {link.label === "App Store" && (
-                    <Link 
-                      to={link.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-500 flex items-center"
-                    >
-                      <FaAppStoreIos size={25} />
-                      <span className="px-3 font-bold">{link.label}</span>
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
+  return (
+    <div key={index} className="mb-10 flex justify-center">
+      <ul className="flex-row items-center justify-center gap-4 sm:gap-6">
+        {section.items?.map((link, idx) => (
+          <li key={idx} className="">
+            <Link
+              to={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex items-center justify-center gap-2 px-6 py-3 w-48 sm:w-auto bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
+                link.label === "Play Store"
+                  ? "hover:border-green-300 hover:bg-green-50"
+                  : "hover:border-blue-300 hover:bg-blue-50"
+              }`}
+            >
+              {link.label === "Play Store" ? (
+                <>
+                  <BiLogoPlayStore size={24} className="text-green-600" />
+                  <span className="font-semibold text-gray-900 tracking-tight">
+                    {link.label}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <FaAppStoreIos size={24} className="text-blue-600" />
+                  <span className="font-semibold text-gray-900 tracking-tight">
+                    {link.label}
+                  </span>
+                </>
+              )}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 
-        case "pdf_links":
+
+      case "pdf_links":
         return (
-          <div key={index} className="mb-8">
-            <ul className="flex justify-center gap-4 flex-wrap">
+          <div key={index} className="mb-8 justify-center justify-items-center">
+            {/* <h4 className="mb-4 text-xl font-semibold text-gray-900">
+              Documents
+            </h4> */}
+            <ul className="flex flex-wrap gap-3">
               {section.items?.map((link, idx) => (
-                <li key={idx} className="flex items-center gap-y-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
-                    <Link 
-                      to={link.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-gray-900 flex items-center"
-                    >
-                      <BsFileEarmarkPdf size={25} />
-                      <span className="px-3 font-bold text-gray-900">{link.label}</span>
-                    </Link>
+                <li key={idx}>
+                  <Link 
+                    to={link.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-red-300 transition-all"
+                  >
+                    <BsFileEarmarkPdf size={22} className="text-red-600 flex-shrink-0" />
+                    <span className="font-medium text-gray-900">{link.label}</span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -332,32 +442,34 @@ export default function GuideDetail() {
         
       case "tip":
         return (
-          <div key={index} className="mb-8 rounded-lg border-l-4 border-r-4 border-gray-800 bg-yellow-50 p-6 max-w-4xl mx-auto">
-            <div className="mb-4 flex gap-3 items-center">
-              <MdOutlineTipsAndUpdates size={35} className="text-gray-800" />
-              <h3 className="text-2xl font-bold text-gray-800">Tip</h3>
+          <div key={index} className="mb-8">
+            <div className="rounded-xl border-l-4 border-yellow-400 bg-yellow-50 p-6 shadow-sm">
+              <div className="flex items-start gap-3 mb-3">
+                <MdOutlineTipsAndUpdates size={28} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+                <h3 className="text-lg font-bold text-gray-900">Tip</h3>
+              </div>
+              <p className="text-gray-800 leading-relaxed pl-11">{section.body}</p>
             </div>
-            <p className="text-lg text-gray-800">{section.body}</p>
           </div>
         );
         
       case "social_links":
         return (
-          <div key={index} className="mb-8">
-            <h3 className="mb-4 text-2xl font-semibold text-gray-900 text-center">
-              Our Instagram Page
-            </h3>
-            <ul className="flex justify-center gap-5 flex-wrap">
+          <div key={index} className="mb-8 justify-center justify-items-center">
+            {/* <h3 className="mb-4 text-xl font-semibold text-gray-900">
+              Follow Us
+            </h3> */}
+            <ul className="flex flex-wrap gap-3">
               {section.items?.map((social_link, idx) => (
-                <li key={idx} className="flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-black shadow-md hover:bg-gray-100">
+                <li key={idx}>
                   <Link
                     to={social_link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-black flex hover:bg-gray-100 min-w-35 text-center items-center"
+                    className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-pink-300 transition-all"
                   >
-                    <FaInstagram size={30} className="text-pink-500" />
-                    <span className="px-3 font-bold text-black">{social_link.name}</span>
+                    <FaInstagram size={24} className="text-pink-600" />
+                    <span className="font-medium text-gray-900">{social_link.name}</span>
                   </Link>
                 </li>
               ))}
@@ -367,103 +479,753 @@ export default function GuideDetail() {
         
       default:
         return null;
-    }
+    
   };
 
-  return (
-    <div className="container mx-auto px-4 py-12">
-      {/* Back button */}
-      <Link
-        to="/guides"
-        className="mb-6 inline-block text-sm font-medium text-black hover:underline px-3 py-1"
-      >
-        ← Back to Guides
-      </Link>
-
-      {/* Title + Author + Stats */}
-      <h1 className="mb-4 text-3xl font-bold text-gray-900 text-center">
-        {guide.name}
-      </h1>
-      <div className="mb-4 text-sm text-gray-500 text-center">
-        <span>By {author}</span>
-        <span className="mx-2">•</span>
-        <span>{createdDate}</span>
-      </div>
-
-      {/* View and Like Stats */}
-      <div className="mb-6 flex items-center justify-center gap-6">
-        <div className="flex items-center gap-2 text-gray-600">
-          <IoEyeOutline className="w-5 h-5" />
-          <span className="text-lg font-medium">{formatCount(viewsCount)} views</span>
-        </div>
-        
-        <button
-          onClick={handleLike}
-          disabled={isLiking}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
-            isLiked 
-              ? 'bg-red-500 text-white shadow-lg hover:bg-red-600' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-red-500'
-          } ${isLiking ? 'scale-110' : ''} ${!user ? 'opacity-75 cursor-not-allowed' : 'hover:scale-105'}`}
-          title={!user ? 'Login to like guides' : (isLiked ? 'Unlike' : 'Like')}
-        >
-          {isLiked ? (
-            <IoIosHeart className="w-5 h-5" />
-          ) : (
-            <IoIosHeartEmpty className="w-5 h-5" />
+  const renderSection = (section, index) => {
+  // Handle grouped links
+  if (section.type === 'link_group') {
+    return (
+      <div key={index} className="mb-8">
+        <div className="flex flex-col items-center gap-4">
+          {/* Preceding text if exists */}
+          {section.precedingText && (
+            <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans text-center max-w-3xl">
+              {section.precedingText.body}
+            </p>
           )}
-          <span className="text-lg font-medium">{formatCount(likesCount)}</span>
-        </button>
-      </div>
-
-      {/* Main image - Fixed: using img_url instead of image_url */}
-      {guide.img_url && (
-        <div className="mb-8 flex justify-center">
-          <div className="overflow-hidden rounded-2xl border-2 border-gray-200 shadow-lg bg-gray-50 w-full max-w-4xl">
-            <img
-              src={guide.img_url}
-              alt={guide.name}
-              className="w-full object-cover transition-transform duration-300 hover:scale-105"
-              onError={(e) => {
-                console.error('Main image failed to load:', guide.img_url);
-                e.target.parentNode.style.display = 'none';
-              }}
-            />
+          
+          {/* Links container */}
+          <div className="flex flex-wrap gap-3 justify-center items-center">
+            {section.sections.map((linkSection, idx) => {
+              switch (linkSection.type) {
+                case "links":
+                  return linkSection.items?.map((link, linkIdx) => (
+                    <Link
+                      key={`links-${idx}-${linkIdx}`}
+                      to={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all"
+                    >
+                      <MdOutlinePlace size={22} className="text-blue-600 flex-shrink-0" />
+                      <span className="font-medium text-gray-900">{link.name}</span>
+                    </Link>
+                  ));
+                  
+                case "app_links":
+                  return linkSection.items?.map((link, linkIdx) => (
+                    <Link
+                      key={`app-${idx}-${linkIdx}`}
+                      to={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center justify-center gap-2 px-6 py-3 w-48 sm:w-auto bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
+                        link.label === "Play Store"
+                          ? "hover:border-green-300 hover:bg-green-50"
+                          : "hover:border-blue-300 hover:bg-blue-50"
+                      }`}
+                    >
+                      {link.label === "Play Store" ? (
+                        <>
+                          <BiLogoPlayStore size={24} className="text-green-600" />
+                          <span className="font-semibold text-gray-900 tracking-tight">
+                            {link.label}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <FaAppStoreIos size={24} className="text-blue-600" />
+                          <span className="font-semibold text-gray-900 tracking-tight">
+                            {link.label}
+                          </span>
+                        </>
+                      )}
+                    </Link>
+                  ));
+                  
+                case "pdf_links":
+                  return linkSection.items?.map((link, linkIdx) => (
+                    <Link
+                      key={`pdf-${idx}-${linkIdx}`}
+                      to={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-red-300 transition-all"
+                    >
+                      <BsFileEarmarkPdf size={22} className="text-red-600 flex-shrink-0" />
+                      <span className="font-medium text-gray-900">{link.label}</span>
+                    </Link>
+                  ));
+                  
+                case "social_links":
+                  return linkSection.items?.map((social_link, linkIdx) => (
+                    <Link
+                      key={`social-${idx}-${linkIdx}`}
+                      to={social_link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-pink-300 transition-all"
+                    >
+                      <FaInstagram size={24} className="text-pink-600" />
+                      <span className="font-medium text-gray-900">{social_link.name}</span>
+                    </Link>
+                  ));
+                  
+                default:
+                  return null;
+              }
+            })}
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {/* Description */}
-      {guide.description && (
-        <div className="mb-8 flex justify-center">
-          <p className="text-lg text-gray-700 max-w-4xl text-center">
-            {guide.description}
+  // ... rest of your existing switch cases for other section types remain the same
+  switch (section.type) {
+    case "text":
+      return (
+        <div key={index} className="mb-6">
+          <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans mt-6">
+            {section.body}
           </p>
         </div>
-      )}
+      );
 
-      {/* Content sections */}
-      {guide.content?.sections?.length > 0 ? (
-        guide.content.sections.map((section, idx) => renderSection(section, idx))
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-gray-600">No content available for this guide.</p>
-        </div>
-      )}
+      case "heading":
+        return (
+          <div key={index} className="mb-6 ">
+            <h2 className=" font-bold text-gray-900 text-1xl md:text-2xl lg:text-3xl font-sans mb-4 leading-tight">
+              {section.body}
+            </h2>
+          </div>
+        );
+        
+      case "image":
+        return (
+          <div key={index} className="mb-8">
+            <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-gray-100">
+              {section.url ? (
+                <img
+                  src={section.url}
+                  alt={section.caption || "Guide image"}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error('Section image failed to load:', section.url);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-64 flex items-center justify-center bg-gray-200">
+                  <span className="text-gray-400">Image not available</span>
+                </div>
+              )}
+              {/* {section.caption && (
+                <p className="px-4 py-3 text-xs text-gray-600 bg-gray-50">
+                  {section.caption}
+                </p>
+              )} */}
+            </div>
+          </div>
+        );
 
-      {/* Tags */}
-      {Array.isArray(guide.content?.tags) && guide.content.tags.length > 0 && (
-        <div className="mt-8 flex flex-wrap gap-2 justify-center">
-          {guide.content.tags.map((tag, idx) => (
-            <span
-              key={idx}
-              className="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-full"
-            >
-              #{tag}
-            </span>
-          ))}
+      case "list":
+        const items =
+          section.items ||
+          section.body
+            ?.split(/\n+/) // split on newlines
+            .map(line => line.replace(/^•\s*/, "").trim()) // clean up bullet symbols
+            .filter(Boolean);
+
+        return (
+
+          <div key={index} className="mb-6 mx-10">
+            <ul className="space-y-0">
+              {items.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-800">
+                  <span className=" mt-0.5">•</span>
+                  <span className="text-lg leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        );
+
+      case "quote":
+        return (
+          <div key={index} className="mb-8">
+            <blockquote className="border-l-4 border-gray-300 pl-6 py-2">
+              <p className="text-xl italic text-gray-700 leading-relaxed">
+                {section.body}
+              </p>
+            </blockquote>
+          </div>
+        );
+
+      case "delimiter":
+        return (
+          <div key={index} className="flex justify-center py-6 mb-6">
+            <div className="flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+            </div>
+          </div>
+        );
+
+case "tip":
+        return (
+          <div key={index} className="mb-8">
+            <div className="rounded-xl border-l-4 border-yellow-400 bg-yellow-50 p-6 shadow-sm">
+              <div className="flex items-start gap-3 mb-3">
+                <MdOutlineTipsAndUpdates size={28} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+                <h3 className="text-lg font-bold text-gray-900">Tip</h3>
+              </div>
+              <p className="text-gray-800 leading-relaxed pl-11">{section.body}</p>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+        
+    
+    // ... all other cases remain unchanged
+  }
+};
+
+const renderSection = (section, index) => {
+  // Handle grouped links
+  if (section.type === 'link_group') {
+    return (
+      <div key={index} className="mb-8">
+        <div className="flex flex-col items-center gap-4">
+          {/* Preceding text if exists */}
+          {section.precedingText && (
+            <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans text-center max-w-3xl">
+              {section.precedingText.body}
+            </p>
+          )}
+          
+          {/* Links container */}
+          <div className="flex flex-wrap gap-3 justify-center items-center">
+            {section.sections.map((linkSection, idx) => {
+              switch (linkSection.type) {
+                case "links":
+                  return linkSection.items?.map((link, linkIdx) => (
+                    <Link
+                      key={`links-${idx}-${linkIdx}`}
+                      to={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all"
+                    >
+                      <MdOutlinePlace size={22} className="text-blue-600 flex-shrink-0" />
+                      <span className="font-medium text-gray-900">{link.name}</span>
+                    </Link>
+                  ));
+                  
+                case "app_links":
+                  return linkSection.items?.map((link, linkIdx) => (
+                    <Link
+                      key={`app-${idx}-${linkIdx}`}
+                      to={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center justify-center gap-2 px-6 py-3 w-48 sm:w-auto bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
+                        link.label === "Play Store"
+                          ? "hover:border-green-300 hover:bg-green-50"
+                          : "hover:border-blue-300 hover:bg-blue-50"
+                      }`}
+                    >
+                      {link.label === "Play Store" ? (
+                        <>
+                          <BiLogoPlayStore size={24} className="text-green-600" />
+                          <span className="font-semibold text-gray-900 tracking-tight">
+                            {link.label}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <FaAppStoreIos size={24} className="text-blue-600" />
+                          <span className="font-semibold text-gray-900 tracking-tight">
+                            {link.label}
+                          </span>
+                        </>
+                      )}
+                    </Link>
+                  ));
+                  
+                case "pdf_links":
+                  return linkSection.items?.map((link, linkIdx) => (
+                    <Link
+                      key={`pdf-${idx}-${linkIdx}`}
+                      to={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-red-300 transition-all"
+                    >
+                      <BsFileEarmarkPdf size={22} className="text-red-600 flex-shrink-0" />
+                      <span className="font-medium text-gray-900">{link.label}</span>
+                    </Link>
+                  ));
+                  
+                case "social_links":
+                  return linkSection.items?.map((social_link, linkIdx) => (
+                    <Link
+                      key={`social-${idx}-${linkIdx}`}
+                      to={social_link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-pink-300 transition-all"
+                    >
+                      <FaInstagram size={24} className="text-pink-600" />
+                      <span className="font-medium text-gray-900">{social_link.name}</span>
+                    </Link>
+                  ));
+                  
+                default:
+                  return null;
+              }
+            })}
+          </div>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  // ... rest of your existing switch cases for other section types remain the same
+  switch (section.type) {
+    case "text":
+      return (
+        <div key={index} className="mb-6">
+          <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans mt-6">
+            {section.body}
+          </p>
+        </div>
+      );
+    
+    // ... all other cases remain unchanged
+
+    case "heading":
+        return (
+          <div key={index} className="mb-6 ">
+            <h2 className=" font-bold text-gray-900 text-1xl md:text-2xl lg:text-3xl font-sans mb-4 leading-tight">
+              {section.body}
+            </h2>
+          </div>
+        );
+        
+      case "image":
+        return (
+          <div key={index} className="mb-8">
+            <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-gray-100">
+              {section.url ? (
+                <img
+                  src={section.url}
+                  alt={section.caption || "Guide image"}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error('Section image failed to load:', section.url);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-64 flex items-center justify-center bg-gray-200">
+                  <span className="text-gray-400">Image not available</span>
+                </div>
+              )}
+              {/* {section.caption && (
+                <p className="px-4 py-3 text-xs text-gray-600 bg-gray-50">
+                  {section.caption}
+                </p>
+              )} */}
+            </div>
+          </div>
+        );
+
+      case "list":
+        const items =
+          section.items ||
+          section.body
+            ?.split(/\n+/) // split on newlines
+            .map(line => line.replace(/^•\s*/, "").trim()) // clean up bullet symbols
+            .filter(Boolean);
+
+        return (
+
+          <div key={index} className="mb-6 mx-10">
+            <ul className="space-y-0">
+              {items.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-800">
+                  <span className=" mt-0.5">•</span>
+                  <span className="text-lg leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        );
+
+      case "quote":
+        return (
+          <div key={index} className="mb-8">
+            <blockquote className="border-l-4 border-gray-300 pl-6 py-2">
+              <p className="text-xl italic text-gray-700 leading-relaxed">
+                {section.body}
+              </p>
+            </blockquote>
+          </div>
+        );
+
+      case "delimiter":
+        return (
+          <div key={index} className="flex justify-center py-6 mb-6">
+            <div className="flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+            </div>
+          </div>
+        );
+
+      case "tip":
+        return (
+          <div key={index} className="mb-8">
+            <div className="rounded-xl border-l-4 border-yellow-400 bg-yellow-50 p-6 shadow-sm">
+              <div className="flex items-start gap-3 mb-3">
+                <MdOutlineTipsAndUpdates size={28} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+                <h3 className="text-lg font-bold text-gray-900">Tip</h3>
+              </div>
+              <p className="text-gray-800 leading-relaxed pl-11">{section.body}</p>
+            </div>
+          </div>
+        );
+        
+      default:
+        return null;
+  }
+};
+
+  const RenderSection = (section, index) => {
+  // Handle grouped links
+  if (section.type === 'link_group') {
+    return (
+      <div key={index} className="mb-8 flex justify-center">
+        <div className="flex flex-wrap gap-3 justify-center items-center">
+          {section.sections.map((linkSection, idx) => {
+            switch (linkSection.type) {
+              case "links":
+                return linkSection.items?.map((link, linkIdx) => (
+                  <Link
+                    key={`links-${idx}-${linkIdx}`}
+                    to={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all"
+                  >
+                    <MdOutlinePlace size={22} className="text-blue-600 flex-shrink-0" />
+                    <span className="font-medium text-gray-900">{link.name}</span>
+                  </Link>
+                ));
+                
+              case "app_links":
+                return linkSection.items?.map((link, linkIdx) => (
+                  <Link
+                    key={`app-${idx}-${linkIdx}`}
+                    to={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center justify-center gap-2 px-6 py-3 w-48 sm:w-auto bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
+                      link.label === "Play Store"
+                        ? "hover:border-green-300 hover:bg-green-50"
+                        : "hover:border-blue-300 hover:bg-blue-50"
+                    }`}
+                  >
+                    {link.label === "Play Store" ? (
+                      <>
+                        <BiLogoPlayStore size={24} className="text-green-600" />
+                        <span className="font-semibold text-gray-900 tracking-tight">
+                          {link.label}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <FaAppStoreIos size={24} className="text-blue-600" />
+                        <span className="font-semibold text-gray-900 tracking-tight">
+                          {link.label}
+                        </span>
+                      </>
+                    )}
+                  </Link>
+                ));
+                
+              case "pdf_links":
+                return linkSection.items?.map((link, linkIdx) => (
+                  <Link
+                    key={`pdf-${idx}-${linkIdx}`}
+                    to={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-red-300 transition-all"
+                  >
+                    <BsFileEarmarkPdf size={22} className="text-red-600 flex-shrink-0" />
+                    <span className="font-medium text-gray-900">{link.label}</span>
+                  </Link>
+                ));
+                
+              case "social_links":
+                return linkSection.items?.map((social_link, linkIdx) => (
+                  <Link
+                    key={`social-${idx}-${linkIdx}`}
+                    to={social_link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md hover:border-pink-300 transition-all"
+                  >
+                    <FaInstagram size={24} className="text-pink-600" />
+                    <span className="font-medium text-gray-900">{social_link.name}</span>
+                  </Link>
+                ));
+                
+              default:
+                return null;
+            }
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ... rest of your existing switch cases for other section types remain the same
+  switch (section.type) {
+    case "text":
+      return (
+        <div key={index} className="mb-6">
+          <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans mt-6">
+            {section.body}
+          </p>
+        </div>
+      );
+
+      case "heading":
+        return (
+          <div key={index} className="mb-6 ">
+            <h2 className=" font-bold text-gray-900 text-1xl md:text-2xl lg:text-3xl font-sans mb-4 leading-tight">
+              {section.body}
+            </h2>
+          </div>
+        );
+        
+      case "image":
+        return (
+          <div key={index} className="mb-8">
+            <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-gray-100">
+              {section.url ? (
+                <img
+                  src={section.url}
+                  alt={section.caption || "Guide image"}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error('Section image failed to load:', section.url);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-64 flex items-center justify-center bg-gray-200">
+                  <span className="text-gray-400">Image not available</span>
+                </div>
+              )}
+              {/* {section.caption && (
+                <p className="px-4 py-3 text-xs text-gray-600 bg-gray-50">
+                  {section.caption}
+                </p>
+              )} */}
+            </div>
+          </div>
+        );
+
+      case "list":
+        const items =
+          section.items ||
+          section.body
+            ?.split(/\n+/) // split on newlines
+            .map(line => line.replace(/^•\s*/, "").trim()) // clean up bullet symbols
+            .filter(Boolean);
+
+        return (
+
+          <div key={index} className="mb-6 mx-10">
+            <ul className="space-y-0">
+              {items.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-800">
+                  <span className=" mt-0.5">•</span>
+                  <span className="text-lg leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        );
+
+      case "quote":
+        return (
+          <div key={index} className="mb-8">
+            <blockquote className="border-l-4 border-gray-300 pl-6 py-2">
+              <p className="text-xl italic text-gray-700 leading-relaxed">
+                {section.body}
+              </p>
+            </blockquote>
+          </div>
+        );
+
+      case "delimiter":
+        return (
+          <div key={index} className="flex justify-center py-6 mb-6">
+            <div className="flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+            </div>
+          </div>
+        );
+
+      case "tip":
+        return (
+          <div key={index} className="mb-8">
+            <div className="rounded-xl border-l-4 border-yellow-400 bg-yellow-50 p-6 shadow-sm">
+              <div className="flex items-start gap-3 mb-3">
+                <MdOutlineTipsAndUpdates size={28} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+                <h3 className="text-lg font-bold text-gray-900">Tip</h3>
+              </div>
+              <p className="text-gray-800 leading-relaxed pl-11">{section.body}</p>
+            </div>
+          </div>
+        );
+        
+        default:
+        return null;
+    
+    // ... all other cases remain unchanged
+  }
+};
+
+  return (
+    <div className="min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12">
+        {/* Back button */}
+        <Link
+          to="/guides"
+          className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <span>←</span>
+          <span>Back to Guides</span>
+        </Link>
+
+        {/* Main Content Card */}
+        <article className="rounded-2xl overflow-hidden">
+          {/* Cover Image */}
+          {guide.img_url && (
+            <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-gray-100">
+              <img
+                src={guide.img_url}
+                alt={guide.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  console.error('Main image failed to load:', guide.img_url);
+                  e.target.parentNode.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+
+          {/* Header Section */}
+          <div className="px-0 md:px-10 py-auto pt-4">
+            {/* Title */}
+            <h1 className="font-sans text-1xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+              {guide.name}
+            </h1>
+
+            {/* Meta Info */}
+            <div className="flex flex-wrap items-center justify-between text-sm text-gray-600 mb-2">
+              {/* Left side info */}
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="font-medium">By {author}</span>
+                <span className="text-gray-400">•</span>
+                <span>{createdDate}</span>
+                <span className="text-gray-400">•</span>
+                <div className="flex items-center gap-2 text-gray-600">
+                  {/* <IoEyeOutline className="w-5 h-5" /> */}
+                  <span className="font-medium">{formatCount(viewsCount)} views</span>
+                </div>
+              </div>
+
+              {/* Right side like button */}
+              <button
+                onClick={handleLike}
+                disabled={isLiking}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-200 ${
+                  isLiked
+                    ? ' text-red-600'
+                    : ' text-gray-700 '
+                } ${isLiking ? 'scale-95' : 'hover:scale-105'} ${
+                  !user ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+                title={!user ? 'Login to like guides' : isLiked ? 'Unlike' : 'Like'}
+              >
+                {isLiked ? (
+                  <IoIosHeart className="w-5 h-5" />
+                ) : (
+                  <IoIosHeartEmpty className="w-5 h-5" />
+                )}
+                <span>{formatCount(likesCount)}</span>
+              </button>
+            </div>
+
+           
+
+            {/* Description */}
+            {guide.description && (
+              <p className="mt-6 text-lg md:text-xl text-gray-700 leading-relaxed">
+                {guide.description}
+              </p>
+            )}
+          </div>
+
+          {/* Content Sections */}
+          <div className="px-0 md:px-10 py-8 md:py-10">
+           {guide.content?.sections?.length > 0 ? (
+              <div className="prose prose-lg max-w-none">
+                {groupConsecutiveLinkSections(guide.content.sections).map((section, idx) => 
+                  renderSection(section, idx)
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No content available for this guide.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Tags */}
+          {Array.isArray(guide.content?.tags) && guide.content.tags.length > 0 && (
+            <div className="px-6 md:px-10 py-6 border-t border-gray-100 bg-gray-50">
+              <div className="flex flex-wrap gap-2">
+                {guide.content.tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white rounded-full border border-gray-200 hover:border-blue-300 transition-colors"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </article>
+      </div>
     </div>
   );
 }
