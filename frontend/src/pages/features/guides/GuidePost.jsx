@@ -306,7 +306,7 @@ export default function GuideEditor() {
       if (error) throw error;
 
       alert('Guide created successfully!');
-      navigate(`/guides/${data.id}`);
+      navigate(`/guides/guide/${data.id}`);
     } catch (error) {
       console.error('Save error:', error);
       alert('Failed to save guide. Please try again.');
