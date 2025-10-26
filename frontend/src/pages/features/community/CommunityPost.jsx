@@ -162,7 +162,7 @@ export default function CommunityPost() {
             value={formData.description}
             onChange={handleChange}
             rows="3"
-            maxLength="350"
+            maxLength="180"
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Describe your community group"
           />
