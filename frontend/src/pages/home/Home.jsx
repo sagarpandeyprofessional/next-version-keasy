@@ -553,7 +553,7 @@ export default function Home() {
     { id: 2, image: '/hero-korean-market.jpg', heading: 'Discover Local Stores', description: 'Find the best deals nearby', buttonText1: 'Shop Now', buttonLink1: '/marketplace', buttonText2: 'View Guides', buttonLink2: '/guides' },
     { id: 3, image: '/hero-jeju-coast.jpg', heading: 'Connect with Community', description: 'Meet and share with other expats', buttonText1: 'Join Groups', buttonLink1: '/community', buttonText2: 'Attend Events', buttonLink2: '/events' },
     { id: 4, image: '/hero-gyeongbokgung.jpg', heading: 'Learn & Grow', description: 'Access guides, tips, and resources', buttonText1: 'Read Guides', buttonLink1: '/guides', buttonText2: 'Watch Tutorials', buttonLink2: '/guides' },
-    { id: 5, image: '/delivery.jpg', heading: 'Foreign Order', description: 'Learn how to get PCC code', buttonText1: 'Read Guides', buttonLink1: '/guides/guide/60', buttonText2: 'Watch Tutorials', buttonLink2: '/guides/guide/1' },
+    { id: 5, image: '/delivery.jpg', heading: 'Foreign Order', description: 'Learn how to get PCC code', buttonText1: 'Read Guides', buttonLink1: '/guides/guide/50', buttonText2: 'Watch Tutorials', buttonLink2: '/guides/guide/1' },
   ];
 
   useEffect(() => {

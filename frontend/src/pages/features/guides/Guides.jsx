@@ -49,7 +49,8 @@ const Guides = () => {
   useEffect(() => {
     const fetchGuides = async () => {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      let query = supabase
         .from('guide')
         .select(`
           id, 
@@ -61,7 +62,15 @@ const Guides = () => {
           category,
           view,
           like
-        `);
+        `)
+        .eq('approved', true);
+
+      // Filter by category if not 'All'
+      if (activeCategory !== 'All') {
+        query = query.eq('category', activeCategory);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error fetching guides:', error.message);
@@ -72,7 +81,7 @@ const Guides = () => {
       }
     };
     fetchGuides();
-  }, []);
+  }, [activeCategory]);
 
   const handleLike = async (guideId) => {
     if (!user) {
@@ -154,6 +163,57 @@ const Guides = () => {
     <div className="">
       <section className="pb-16 pt-6">
         <div className="">
+          {/* Header Section */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2 ml-4">Guides</h1>
+                <p className="text-gray-600 ml-4">Discover and explore helpful guides from our community</p>
+              </div>
+              
+               {/* Create Guide Button - Desktop Only */}
+              <Link
+                to={user ? "/guides/new" : "/signin"}
+                className="hidden sm:inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg"
+              >
+                <svg 
+                  className="w-5 h-5" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    d="M12 4v16m8-8H4" 
+                  />
+                </svg>
+                Create Guide
+              </Link>
+            </div>
+          </div>
+
+          {/* Floating Action Button - Mobile Only */}
+          <Link
+            to={user ? "/guides/new" : "/signin"}
+            className="sm:hidden fixed bottom-18 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+          >
+            <svg 
+              className="w-6 h-6" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                d="M12 4v16m8-8H4" 
+              />
+            </svg>
+          </Link>
+
           <ExploreSection
             title="Explore Guides"
             setActiveCategory={setActiveCategory}
@@ -500,28 +560,7 @@ const ExploreCard = ({
         </div>
       </Link>
 
-      <Link to="/guides/new"
-          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 
-                    w-14 h-14 bg-blue-600 hover:bg-blue-700 rounded-full 
-                    shadow shadow-blue-200 hover:shadow-2xl 
-                    transition-all duration-300 hover:scale-110 group 
-                    flex items-center justify-center"
-          aria-label="Create New Guide"
-        >
-          <svg 
-            className="w-6 h-6 text-white transition-transform group-hover:rotate-90" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              d="M12 4v16m8-8H4" 
-            />
-          </svg>
-        </Link>
+      
 
             </div>
   );

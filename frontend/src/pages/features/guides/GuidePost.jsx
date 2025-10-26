@@ -898,7 +898,7 @@ export default function GuideEditor() {
 
         {/* Mobile Add Button - Floating */}
         {blocks.length > 0 && (
-          <div className="md:hidden fixed bottom-6 right-6 z-40">
+          <div className="md:hidden fixed bottom-18 left-1/2 transform -translate-x-1/2 z-40">
             <button
               onClick={() => setActiveDropdown(activeDropdown === 'mobile-add' ? null : 'mobile-add')}
               className="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
@@ -906,7 +906,7 @@ export default function GuideEditor() {
               <Plus className="w-6 h-6" />
             </button>
             {activeDropdown === 'mobile-add' && (
-              <div className="absolute bottom-16 right-0 mb-2">
+              <div className="absolute bottom-80 right-0 mb-2">
                 <BlockMenu blockIndex={blocks.length - 1} />
               </div>
             )}
