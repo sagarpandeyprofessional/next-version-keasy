@@ -37,8 +37,8 @@ import EventUpdate from './pages/features/events/EventUpdate';
 import MapComponent from './pages/features/events/EventPost'
 import Marketplace from './pages/features/marketplace/Marketplace'
 import MarketplaceItem from './pages/features/marketplace/MarketplaceItem'
-import EditMarketplaceItemPage from './pages/features/marketplace/MarketplaceItemEdit'
-import PostMarketplaceItem from './pages/features/marketplace/MarketplacePost'
+import MarketplaceEditPage from './pages/features/marketplace/MarketplaceItemEdit'
+import MarketplacePostPage from './pages/features/marketplace/MarketplacePost'
 import MyListingsPage from './pages/features/marketplace/MyListings'
 import SettingsPage from './pages/Settings'
 
@@ -99,8 +99,8 @@ function App() {
 
         <Route element={<Layout><Marketplace /></Layout>} path='/marketplace' />
         <Route element={<Layout><MarketplaceItem /></Layout>} path='/marketplace/:id' />
-        <Route element={<Layout><EditMarketplaceItemPage /></Layout>} path='/marketplace/edit/:id'/> 
-        <Route element={<Layout><PostMarketplaceItem /></Layout>} path='/marketplace/post' />
+        <Route element={<Layout><MarketplaceEditPage /></Layout>} path='/marketplace/edit/:id'/> 
+        <Route element={<Layout><MarketplacePostPage /></Layout>} path='/marketplace/post' />
         <Route element={<Layout><MyListingsPage /></Layout>} path='/marketplace/my' />
         <Route element={<Layout><SettingsPage/></Layout>} path='/settings'/>
       </Routes>

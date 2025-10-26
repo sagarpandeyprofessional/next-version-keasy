@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../api/supabase-client";
-import { FiHeart, FiEye, FiSearch } from "react-icons/fi";
+import { FiHeart, FiEye, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
 
@@ -127,7 +127,7 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 };
 
 // =========================
-// SearchBar component (NEW)
+// SearchBar component
 // =========================
 const SearchBar = ({ searchTerm, setSearchTerm }) => {
   return (
@@ -199,7 +199,7 @@ const FilterSidebar = ({
       {isMobile && (
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-black">Filters</h3>
-          <button onClick={onClose} className="text-black">
+          <button onClick={onClose} className="text-black text-2xl">
             &times;
           </button>
         </div>
@@ -333,10 +333,18 @@ const FilterSidebar = ({
 // MarketplacePage Component
 // =========================
 export default function Marketplace() {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [filters, setFilters] = useState({
+    category_id: "",
+    brand_id: "",
+    condition: [],
+    priceRange: { min: null, max: null },
+    location: "",
+  });
+  const [appliedFilters, setAppliedFilters] = useState({
     category_id: "",
     brand_id: "",
     condition: [],
@@ -358,13 +366,13 @@ export default function Marketplace() {
     fetchUser();
   }, []);
 
-  // Load categories, brands, and items
+  // Load categories, brands, and items (only verified items)
   useEffect(() => {
     const fetchData = async () => {
       const [catRes, brandRes, itemsRes] = await Promise.all([
         supabase.from("marketplace_category").select("id,name"),
         supabase.from("marketplace_brand").select("id,name"),
-        supabase.from("marketplace").select("*"),
+        supabase.from("marketplace").select("*").eq("verified", true),
       ]);
 
       if (!catRes.error) setCategories(catRes.data || []);
@@ -391,34 +399,40 @@ export default function Marketplace() {
     fetchData();
   }, []);
 
-  // Apply filters
-  const applyFilters = useCallback(() => {
+  // Apply filters (called when button is clicked)
+  const applyFiltersManually = useCallback(() => {
+    setAppliedFilters({ ...filters });
+    if (isMobile) setIsFilterDrawerOpen(false);
+  }, [filters, isMobile]);
+
+  // Filter items based on applied filters and search term
+  useEffect(() => {
     let filtered = [...allItems];
 
-    // Category, brand, etc
-    if (filters.category_id)
+    // Apply filters
+    if (appliedFilters.category_id)
       filtered = filtered.filter(
-        (item) => item.category_id === parseInt(filters.category_id)
+        (item) => item.category_id === parseInt(appliedFilters.category_id)
       );
 
-    if (filters.brand_id)
+    if (appliedFilters.brand_id)
       filtered = filtered.filter(
-        (item) => item.brand_id === parseInt(filters.brand_id)
+        (item) => item.brand_id === parseInt(appliedFilters.brand_id)
       );
 
-    if (filters.condition.length > 0)
-      filtered = filtered.filter((item) => filters.condition.includes(item.condition));
+    if (appliedFilters.condition.length > 0)
+      filtered = filtered.filter((item) => appliedFilters.condition.includes(item.condition));
 
-    if (filters.priceRange.min !== null)
-      filtered = filtered.filter((item) => item.price >= filters.priceRange.min);
+    if (appliedFilters.priceRange.min !== null)
+      filtered = filtered.filter((item) => item.price >= appliedFilters.priceRange.min);
 
-    if (filters.priceRange.max !== null)
-      filtered = filtered.filter((item) => item.price <= filters.priceRange.max);
+    if (appliedFilters.priceRange.max !== null)
+      filtered = filtered.filter((item) => item.price <= appliedFilters.priceRange.max);
 
-    if (filters.location)
-      filtered = filtered.filter((item) => item.location === filters.location);
+    if (appliedFilters.location)
+      filtered = filtered.filter((item) => item.location === appliedFilters.location);
 
-    // Apply search term
+    // Apply search term (real-time)
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
@@ -429,16 +443,7 @@ export default function Marketplace() {
     }
 
     setItems(filtered);
-    if (isMobile) setIsFilterDrawerOpen(false);
-  }, [filters, allItems, searchTerm, isMobile]);
-
-  // Real-time search (debounced)
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      applyFilters();
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [searchTerm, applyFilters]);
+  }, [appliedFilters, allItems, searchTerm]);
 
   // Handle like
   const handleToggleLike = async (item) => {
@@ -477,15 +482,16 @@ export default function Marketplace() {
 
   // Clear filters
   const handleClearFilters = () => {
-    setFilters({
+    const emptyFilters = {
       category_id: "",
       brand_id: "",
       condition: [],
       priceRange: { min: null, max: null },
       location: "",
-    });
+    };
+    setFilters(emptyFilters);
+    setAppliedFilters(emptyFilters);
     setSearchTerm("");
-    setItems(allItems);
   };
 
   // Responsive
@@ -501,30 +507,35 @@ export default function Marketplace() {
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col md:flex-row md:items-center md:gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-black md:text-4xl">Marketplace</h1>
-              <p className="mt-2 text-lg text-gray-600">
-                Buy, sell, or give away items within the community.
-              </p>
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold text-black md:text-4xl">Marketplace</h1>
+            <p className="mt-2 text-lg text-gray-600">
+              Buy, sell, or give away items within the community.
+            </p>
           </div>
+          {/* Desktop List Product Button */}
+          <button
+            onClick={() => navigate("/marketplace/create")}
+            className="hidden md:flex items-center gap-2 mt-4 md:mt-0 rounded-md bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+          >
+            <FiPlus className="text-lg" />
+            List a Product
+          </button>
         </div>
 
         {/* Search */}
         <div className="flex items-center justify-between mb-6">
-  <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-  {isMobile && (
-    <button
-      onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
-      className="flex items-center justify-center rounded-lg bg-white px-5 text-base font-medium text-black hover:bg-gray-100 active:scale-95 translate-y-[-12.5px]"
-    >
-      <CiFilter className="text-xl mr-1" />
-      Filter
-    </button>
-  )}
-</div>
-
+          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          {isMobile && (
+            <button
+              onClick={() => setIsFilterDrawerOpen(!isFilterDrawerOpen)}
+              className="flex items-center justify-center rounded-lg bg-white border border-gray-300 px-4 py-2 text-base font-medium text-black hover:bg-gray-100 active:scale-95 translate-y-[-12.5px]"
+            >
+              <CiFilter className="text-xl mr-1" />
+              Filter
+            </button>
+          )}
+        </div>
 
         <div className="flex flex-col md:flex-row">
           {/* Sidebar */}
@@ -535,22 +546,22 @@ export default function Marketplace() {
               setFilters={setFilters}
               categories={categories}
               brands={brands}
-              onApplyFilters={applyFilters}
+              onApplyFilters={applyFiltersManually}
               onClear={handleClearFilters}
             />
           </div>
 
           {/* Mobile drawer */}
           {isMobile && isFilterDrawerOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div className="w-full max-w-md backdrop-blur-md bg-white/70 rounded-lg shadow-lg">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+              <div className="w-full max-w-md bg-white rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
                 <FilterSidebar
                   filters={filters}
                   setFilters={setFilters}
                   categories={categories}
                   brands={brands}
                   isMobile
-                  onApplyFilters={applyFilters}
+                  onApplyFilters={applyFiltersManually}
                   onClear={handleClearFilters}
                   onClose={() => setIsFilterDrawerOpen(false)}
                 />
@@ -568,7 +579,7 @@ export default function Marketplace() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((item) => (
                   <MarketplaceItem
                     key={item.id}
@@ -582,6 +593,16 @@ export default function Marketplace() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Floating Add Button */}
+      {isMobile && (
+        <button
+          onClick={() => navigate("/marketplace/create")}
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-black text-white shadow-lg hover:bg-gray-800 active:scale-95 transition-all z-40"
+        >
+          <FiPlus className="text-2xl" />
+        </button>
+      )}
     </div>
   );
 }
