@@ -321,7 +321,8 @@ export default function MarketplacePostPage() {
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
               <FiAlertCircle className="text-red-500 mt-0.5 flex-shrink-0" />
-              <p className="text-red-700 text-sm">{error}</p>
+              {/* <p className="text-red-700 text-sm">{error}</p> */}
+              <p className="text-red-700 text-sm">Upload failed. Please review your entries, avoid AI-generated titles, and ensure all fields are filled accurately.</p>
             </div>
           )}
 

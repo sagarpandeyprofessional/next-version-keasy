@@ -516,7 +516,7 @@ export default function Marketplace() {
           {/* Desktop List Product Button */}
           <button
             onClick={() => navigate("/marketplace/post")}
-            className="hidden md:flex items-center gap-2 mt-4 md:mt-0 rounded-md bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+            className="hidden md:flex items-center gap-2 mt-4 md:mt-0 rounded-md bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
             <FiPlus className="text-lg" />
             List a Product

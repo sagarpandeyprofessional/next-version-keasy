@@ -293,7 +293,7 @@ export default function MarketplaceItemPage() {
               <>
                 {/* Desktop: Text Button */}
                 <button
-                  onClick={() => navigate(`/marketplace/${id}/edit`)}
+                  onClick={() => navigate(`/marketplace/edit/${id}`)}
                   className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-lg font-medium hover:bg-gray-200 transition-colors"
                 >
                   <FiEdit />
@@ -428,15 +428,7 @@ export default function MarketplaceItemPage() {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
-            {/* Edit button - only show if user owns this item */}
-            {userId === item.user_id && (
-              <button
-                onClick={() => navigate(`/marketplace/edit/${id}/`)}
-                className="px-6 py-3 bg-gray-100 text-gray-800 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-              >
-                Edit Listing
-              </button>
-            )}
+            
             
             {item.seller_contact ? (
               <button
