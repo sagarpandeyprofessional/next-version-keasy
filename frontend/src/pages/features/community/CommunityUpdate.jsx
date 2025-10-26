@@ -248,13 +248,13 @@ export default function CommunityUpdate() {
         {/* Description */}
         <div className="mb-6">
           <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-            Description <span className="text-red-500">*</span>
+            Description <span className="text-red-500">*</span>170~180 <span className="text-gray-400 font-normal">({formData.description.length} characters)</span>
           </label>
           <textarea
             id="description"
             name="description"
             required
-            maxLength="200"
+            maxLength="180"
             minLength="170"
             value={formData.description}
             onChange={handleChange}
