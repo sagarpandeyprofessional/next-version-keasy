@@ -163,7 +163,7 @@ export default function MarketplacePostPage() {
     setError(""); // Clear error when removing images
   };
 
-  const uploadImages = async () => {
+  const uploadImages = async (productTitle) => {
     if (imageFiles.length === 0) return [];
     
     setUploadingImages(true);
@@ -173,7 +173,9 @@ export default function MarketplacePostPage() {
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
         const fileExt = file.name.split(".").pop();
-        const fileName = `${userId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const timestamp = Date.now();
+        const randomStr = Math.random().toString(36).substring(7);
+        const fileName = `${userId}/${productTitle}/${timestamp}_${randomStr}.${fileExt}`;
         
         // Upload file
         const { error: uploadError } = await supabase.storage
@@ -214,6 +216,12 @@ export default function MarketplacePostPage() {
       if (!formData.title.trim()) {
         throw new Error("Title is required");
       }
+      if (formData.title.length > 100) {
+        throw new Error("Title must be 100 characters or less");
+      }
+      if (formData.description.length > 1000) {
+        throw new Error("Description must be 1000 characters or less");
+      }
       if (!formData.price || parseFloat(formData.price) <= 0) {
         throw new Error("Valid price is required");
       }
@@ -230,9 +238,9 @@ export default function MarketplacePostPage() {
         throw new Error("Contact information is required");
       }
 
-      // Upload images first
+      // Upload images first with the actual title
       console.log(`Uploading ${imageFiles.length} images...`);
-      const imageUrls = await uploadImages();
+      const imageUrls = await uploadImages(formData.title.trim());
       
       if (imageUrls.length === 0) {
         throw new Error("Failed to upload images");
@@ -257,11 +265,10 @@ export default function MarketplacePostPage() {
         condition: formData.condition,
         seller_contact_type: formData.seller_contact_type,
         seller_contact: contactLink,
-        images: { images: imageUrls }, // Wrap in object as per your original schema
+        images: { images: imageUrls },
         views: 0,
         chat: 0,
-        favourites: { favourites: [] } // Wrap in object as per your original schema
-        // Remove status field - let database use its default value or omit if not needed
+        favourites: { favourites: [] }
       };
 
       console.log("Inserting marketplace data:", marketplaceData);
@@ -379,6 +386,9 @@ export default function MarketplacePostPage() {
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                 Title <span className="text-red-500">*</span>
+                <span className="text-gray-500 font-normal ml-2">
+                  ({formData.title.length}/100)
+                </span>
               </label>
               <input
                 type="text"
@@ -386,6 +396,7 @@ export default function MarketplacePostPage() {
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
+                maxLength={100}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="e.g., iPhone 13 Pro Max 256GB"
                 required
@@ -582,12 +593,16 @@ export default function MarketplacePostPage() {
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                 Description
+                <span className="text-gray-500 font-normal ml-2">
+                  ({formData.description.length}/1000)
+                </span>
               </label>
               <textarea
                 id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
+                maxLength={1000}
                 rows="8"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent resize-none"
                 placeholder="Describe your item in detail...&#10;&#10;You can use multiple lines.&#10;Press Enter for new lines."
