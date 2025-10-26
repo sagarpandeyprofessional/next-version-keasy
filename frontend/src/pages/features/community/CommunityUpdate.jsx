@@ -106,8 +106,6 @@ export default function CommunityUpdate() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log(formData);
     
     if (!user) {
       navigate('/signin');
@@ -136,7 +134,7 @@ export default function CommunityUpdate() {
         members: formData.members ? parseInt(formData.members) : null,
         chat_link: formData.chat_link
       })
-      .eq('user_id', user.id) // Extra safety check
+      .eq('user_id', user.id).eq('id', id) // Extra safety check
       .select();
 
     setSubmitting(false);
@@ -256,6 +254,8 @@ export default function CommunityUpdate() {
             id="description"
             name="description"
             required
+            maxLength="200"
+            minLength="170"
             value={formData.description}
             onChange={handleChange}
             rows="4"
