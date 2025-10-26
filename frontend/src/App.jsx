@@ -26,6 +26,8 @@ import FAQ from './pages/static/faq/FAQ'
 //features pages
 import Nearby from './pages/features/nearby/Nearby'
 import Community from './pages/features/community/Community'
+import CommunityPost from './pages/features/community/CommunityPost'
+import CommunityUpdate from './pages/features/community/CommunityUpdate'
 import Blog from './pages/features/blog/Blog'
 
 import Events from './pages/features/events/Events'
@@ -39,6 +41,7 @@ import EditMarketplaceItemPage from './pages/features/marketplace/MarketplaceIte
 import PostMarketplaceItem from './pages/features/marketplace/MarketplacePost'
 import MyListingsPage from './pages/features/marketplace/MyListings'
 import SettingsPage from './pages/Settings'
+
 import GuideDetail from './pages/features/guides/GuideDetail'
 import Guides from './pages/features/guides/Guides'
 import GuideEditor from './pages/features/guides/GuidePost';
@@ -87,6 +90,8 @@ function App() {
         <Route element={<Layout><GuideEditor/></Layout>} path="/guides/new" />
         
         <Route element={<Layout><Community/></Layout>} path="/community" />
+        <Route element={<Layout><CommunityPost/></Layout>} path="/community/new" />
+        <Route element={<Layout><CommunityUpdate/></Layout>} path="/community/edit/:id" />
 
         <Route element={<Layout><Events /></Layout>} path='/events' />
         <Route element={<Layout><MapComponent /></Layout>} path='/events/new' />
