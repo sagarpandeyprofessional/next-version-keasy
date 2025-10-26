@@ -515,7 +515,7 @@ export default function Marketplace() {
           </div>
           {/* Desktop List Product Button */}
           <button
-            onClick={() => navigate("/marketplace/create")}
+            onClick={() => navigate("/marketplace/post")}
             className="hidden md:flex items-center gap-2 mt-4 md:mt-0 rounded-md bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
             <FiPlus className="text-lg" />
@@ -597,8 +597,8 @@ export default function Marketplace() {
       {/* Mobile Floating Add Button */}
       {isMobile && (
         <button
-          onClick={() => navigate("/marketplace/create")}
-          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-black text-white shadow-lg hover:bg-gray-800 active:scale-95 transition-all z-40"
+          onClick={() => navigate("/marketplace/post")}
+          className="fixed bottom-18   left-1/2 transform -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-gray-800 active:scale-95 transition-all z-40"
         >
           <FiPlus className="text-2xl" />
         </button>
