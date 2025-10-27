@@ -287,7 +287,6 @@ export default function GuideEditor() {
         sections: processedSections,
         tags: tags
       };
-
       const { data, error } = await supabase
         .from('guide')
         .insert({
@@ -295,7 +294,7 @@ export default function GuideEditor() {
           description: description || '',
           img_url: coverImageUrl,
           content: content,
-          category: selectedCategory.id,
+          category: selectedCategory,
           created_by: user.id,
           view: 0,
           like: {}
