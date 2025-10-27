@@ -516,7 +516,7 @@ export default function Marketplace() {
           {/* Desktop List Product Button */}
           <button
             onClick={() => navigate("/marketplace/post")}
-            className="hidden md:flex items-center gap-2 mt-4 md:mt-0 rounded-md bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+            className="hidden md:flex items-center gap-2 mt-4 md:mt-0 rounded-md bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-800 transition-colors"
           >
             <FiPlus className="text-lg" />
             List a Product
@@ -598,7 +598,7 @@ export default function Marketplace() {
       {isMobile && (
         <button
           onClick={() => navigate("/marketplace/post")}
-          className="fixed bottom-18   left-1/2 transform -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-gray-800 active:scale-95 transition-all z-40"
+          className="fixed bottom-18   left-1/2 transform -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-800 active:scale-95 transition-all z-40"
         >
           <FiPlus className="text-2xl" />
         </button>

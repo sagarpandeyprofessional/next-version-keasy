@@ -7,7 +7,10 @@ const Profile = () => {
   const { username: usernameFromUrl } = useParams();
   const [userExist, setUserExist] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [userId, setUserId] = useState('');
 
+  // Check User
   useEffect(() => {
     const checkUser = async () => {
       const { data, error } = await supabase
@@ -25,7 +28,22 @@ const Profile = () => {
     if (usernameFromUrl) checkUser();
   }, [usernameFromUrl]);
 
-  const [activeTab, setActiveTab] = useState("posts");
+// Fetch User ID
+  useEffect(() => {
+    const getUser = async() => {
+      const {data:userData, error:userError} = await supabase.from('profiles').select('user_id').eq('username', usernameFromUrl);
+      if(userError){
+        setError(userError.message)
+      }
+      else{
+        setUserId(userData[0].user_id || '')
+      }
+    }
+
+    getUser();
+  }, [usernameFromUrl])
+
+  const [activeTab, setActiveTab] = useState("listings");
 
   if (loading) return <p className="text-center mt-12 text-gray-500">Loading...</p>;
   if (!userExist) return <p className="text-center mt-12 text-red-500">User not found</p>;
@@ -36,7 +54,7 @@ const Profile = () => {
 
       {/* Tabs */}
       <div className="flex justify-center mt-8 border-b border-gray-300">
-        {["posts", "events"].map((tab) => (
+        {["listings", "events", "community", "guides"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 -mb-px font-medium ${
@@ -53,12 +71,25 @@ const Profile = () => {
 
       {/* Tab Content */}
       <div className="mt-6">
-        {activeTab === "posts" ? (
-          <UserPosts usernameFromUrl={usernameFromUrl} />
-        ) : (
-          <UserReels usernameFromUrl={usernameFromUrl} />
-        )}
+        {(() => {
+          switch (activeTab) {
+            case "community":
+              return <UserCommunities userId={userId} setError={setError} />;
+            case "events":
+              return <UserEvents userId={userId} setError={setError} />;
+            case "guides":
+              return <UserGuides userId={userId} setError={setError} />;
+            case "listings":
+              return <UserListings userId={userId} setError={setError} />;
+            default:
+              return null;
+          }
+        })()}
       </div>
+
+      
+        
+        {/* <p>{error}</p> */}
     </div>
   );
 };
@@ -146,24 +177,111 @@ const ProfileHeader = ({ usernameFromUrl }) => {
   );
 };
 
-const UserPosts = ({ usernameFromUrl }) => {
+const UserListings = ({userId, setError}) => {
+  const [listings, setListings] = useState([])
+
+  useEffect(() => {
+    const getListings = async() => {
+      const {data: listingsData, error: listingsError} = await supabase.from('marketplace').select('*').eq('user_id', userId)
+      if(listingsError){
+        setError(listingsError)
+      }
+      else{
+        setListings(listingsData)
+      }
+    }
+    // getListings()
+  },[userId])
+
   return (
     <div className="space-y-4">
       <div className="p-6 border rounded-lg bg-white shadow-sm text-gray-700">
-        <p>Posts coming soon for @{usernameFromUrl}...</p>
+        <p>Upload Product to see your Listings on this page!</p>
+      
+      </div>
+    </div>
+  )
+}
+
+const UserEvents = ({ userId, setError }) => {
+  
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    const getEvents = async() => {
+      const {data:eventData, error:eventError} = await supabase.from('events').select('*').eq('user_id', userId);
+      if(eventError){
+        setError(eventError);
+      }
+      else{
+        setEvents(eventData);
+        console.log(eventData);
+      }
+    } 
+      // getEvents()
+  }, [userId])
+
+  return (
+    <div className="space-y-4">
+      <div className="p-6 border rounded-lg bg-white shadow-sm text-gray-700">
+        <p>Create an Event to see Events on your page!</p>
       </div>
     </div>
   );
 };
 
-const UserReels = ({ usernameFromUrl }) => {
+const UserCommunities = ({ userId, setError }) => {
+  const [community, setCommunity] = useState([])
+
+  useEffect(() => {
+    const getCommunity = async() =>{
+      const {data: communityData, error: communityError} = await supabase.from('community').select('*').eq('user_id', userId);
+      if(communityError){
+        setError(communityError)
+      }
+      else {
+        setCommunity(communityData)
+      }
+    }
+    // getCommunity()
+  }, [])
+  
   return (
     <div className="space-y-4">
       <div className="p-6 border rounded-lg bg-white shadow-sm text-gray-700">
-        <p>Events coming soon for @{usernameFromUrl}...</p>
+        <p>Create community to see your Communities on this page!</p>
+      
       </div>
     </div>
   );
 };
+
+const UserGuides = ({userId, setError}) => {
+  const [guides, setGuides] = useState([]);
+
+  useEffect(() => {
+    const getGuides = async() => {
+      const {data: GuideData, error: GuideError} = await supabase.from('guide').select('*').eq('created_by',userId);
+      if(GuideError){
+        setError(GuideError)
+      }
+      else{
+        setGuides(GuideData)
+      }
+    }
+    // getGuides()
+
+  }, [userId])
+
+  return(
+    <div className="space-y-4">
+      <div className="p-6 border rounded-lg bg-white shadow-sm text-gray-700">
+        <p>Create guide to see your Guides on this page!</p>
+      
+      </div>
+    </div>
+  )
+}
+
 
 export default Profile;
