@@ -295,7 +295,7 @@ export default function GuideEditor() {
           description: description || '',
           img_url: coverImageUrl,
           content: content,
-          category_id: selectedCategory.id,
+          category: selectedCategory.id,
           created_by: user.id,
           view: 0,
           like: {}
