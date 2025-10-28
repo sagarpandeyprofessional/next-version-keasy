@@ -12,6 +12,8 @@ import { RiShoppingBag2Fill } from "react-icons/ri";
 import { BiParty } from "react-icons/bi";
 import { MdOutlineExplore } from "react-icons/md";
 
+import { X, MessageCircle, Star, Send } from 'lucide-react';
+
 import { motion, AnimatePresence } from "framer-motion";
 
 /* Utility function for placeholder images */
@@ -83,7 +85,6 @@ const Carousel = ({ title, children, className = '' }) => {
 };
 
 // FeatureCard
-// FeatureCard
 const FeatureCard = ({ title, description, icon, href, linkText }) => {
   return (
     <Link to={href} className="h-full">
@@ -103,8 +104,6 @@ const FeatureCard = ({ title, description, icon, href, linkText }) => {
     </Link>
   );
 };
-
-
 
 // HeroCarousel
 const HeroCarousel = () => {
@@ -183,9 +182,7 @@ const HeroCarousel = () => {
   );
 };
 
-
 // CoolCarousel Component
-
 const CoolCarousel = ({ slides = [], intervalMs = 4000 }) => {
   const containerRef = useRef(null);
   const teleportTimeoutRef = useRef(null);
@@ -446,6 +443,264 @@ const GuidesCard = ({ id, name, description, img_url, created_by, like = {}, onL
   );
 };
 
+const FeedbackCard = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [feedback, setFeedback] = useState('');
+  const [feedbackType, setFeedbackType] = useState('general');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  const feedbackTypes = [
+    { id: 'general', label: 'General' },
+    { id: 'bug', label: 'Bug Report' },
+    { id: 'feature', label: 'Feature Request' },
+    { id: 'improvement', label: 'Improvement' }
+  ];
+
+  // Get current user on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setCurrentUserId(data?.user?.id || null);
+    };
+    fetchUser();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const feedbackData = {
+        rating,
+        feedback_type: feedbackType,
+        feedback_text: feedback,
+        user_id: currentUserId // Will be null if not logged in
+      };
+
+      const { error: insertError } = await supabase
+        .from('feedback')
+        .insert([feedbackData]);
+
+      if (insertError) throw insertError;
+
+      setIsSubmitted(true);
+      
+      // Reset form after 2 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setRating(0);
+        setFeedback('');
+        setFeedbackType('general');
+        setIsOpen(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Error submitting feedback:', err);
+      setError('Failed to submit feedback. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      {/* Floating Feedback Button */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-20 right-2 z-50 flex items-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300"
+      >
+        <MessageCircle className="w-5 h-5" />
+        <span className="hidden sm:inline font-medium">Feedback</span>
+      </motion.button>
+
+      {/* Feedback Modal */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            />
+
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-lg bg-white rounded-2xl shadow-2xl z-50 overflow-hidden"
+            >
+              {!isSubmitted ? (
+                <>
+                  {/* Header */}
+                  <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                    <h2 className="text-2xl font-bold text-gray-900">Share Your Feedback</h2>
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                      <X className="w-5 h-5 text-gray-500" />
+                    </button>
+                  </div>
+
+                  {/* Form */}
+                  <div className="p-6 space-y-6">
+                    {/* Error Message */}
+                    {error && (
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                        {error}
+                      </div>
+                    )}
+
+                    {/* Feedback Type */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        What's this about?
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {feedbackTypes.map((type) => (
+                          <button
+                            key={type.id}
+                            type="button"
+                            onClick={() => setFeedbackType(type.id)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                              feedbackType === type.id
+                                ? 'bg-blue-600 text-white shadow-md'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            {type.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Rating */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        How would you rate your experience?
+                      </label>
+                      <div className="flex gap-2 justify-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setRating(star)}
+                            onMouseEnter={() => setHoveredRating(star)}
+                            onMouseLeave={() => setHoveredRating(0)}
+                            className="transition-transform hover:scale-110"
+                          >
+                            <Star
+                              className={`w-8 h-8 sm:w-10 sm:h-10 transition-colors ${
+                                star <= (hoveredRating || rating)
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'fill-gray-200 text-gray-200'
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Feedback Text */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Tell us more
+                      </label>
+                      <textarea
+                        value={feedback}
+                        onChange={(e) => setFeedback(e.target.value)}
+                        placeholder="Share your thoughts, suggestions, or report issues..."
+                        rows={4}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-400"
+                      />
+                    </div>
+
+                    {/* User Status Info */}
+                    {!currentUserId && (
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+                        💡 You're submitting as a guest. Sign in to track your feedback!
+                      </div>
+                    )}
+
+                    {/* Submit Button */}
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={!rating || !feedback.trim() || isSubmitting}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium shadow-lg hover:bg-blue-700 transition-all duration-300 hover:shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:shadow-lg"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          Submit Feedback
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* Success Message */
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-12 text-center"
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                    className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4"
+                  >
+                    <svg
+                      className="w-8 h-8 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    Thank You!
+                  </h3>
+                  <p className="text-gray-600">
+                    Your feedback helps us improve Keasy for everyone.
+                  </p>
+                </motion.div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+
 
 
 
@@ -527,6 +782,7 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
           View Details
         </Link>
       </div>
+
     </div>
   );
 };
@@ -862,6 +1118,9 @@ const handleToggleLike = async (item) => {
           </motion.div>
         </div>
       </section>
+
+      
+      <FeedbackCard />
     </div>
   );
 }
