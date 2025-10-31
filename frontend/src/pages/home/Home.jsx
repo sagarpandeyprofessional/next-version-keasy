@@ -827,7 +827,7 @@ const ChatForm = ({ onSubmit, isLoading }) => {
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={handleKeyPress}
         placeholder="Type your message..."
-        className="flex-1 px-4 py-2.5 bg-none border-none rounded-full outline-none text-gray-800 placeholder-gray-500 text-sm"
+        className="flex-1 px-4 py-2.5 bg-none border-none rounded-full outline-none text-gray-800 placeholder-gray-500 text-base md:text-sm"
         disabled={isLoading}
       />
       <button
@@ -986,7 +986,7 @@ const AIChatbot = ({currentUserId}) => {
                 y: 20
               }}
               animate={{ 
-                opacity: 1,
+                opacity: 0.95,
                 scale: 1,
                 y: 0
               }}
