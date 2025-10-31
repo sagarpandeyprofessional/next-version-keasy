@@ -961,7 +961,7 @@ const AIChatbot = ({currentUserId}) => {
         onClick={handlePopUp}
         className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
       >
-        <MessageCircle className="w-5 h-5" />
+        <Sparkles className="w-5 h-5 text-white" />
         <span className="hidden sm:inline font-medium">keasy AI</span>
       </motion.button>
 
