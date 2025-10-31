@@ -2,87 +2,27 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { supabase } from "../../api/supabase-client";
 
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiUser } from 'react-icons/fi';
 import { FiHeart, FiEye } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
+
+import { FaRegUser } from "react-icons/fa";
 
 import { LuMessageCircleMore } from "react-icons/lu";
 import { RiShoppingBag2Fill } from "react-icons/ri";
 import { BiParty } from "react-icons/bi";
 import { MdOutlineExplore } from "react-icons/md";
 
-import { X, MessageCircle, Star, Send } from 'lucide-react';
+import { X, MessageCircle, Star, Send, Sparkles } from 'lucide-react';
 
 import { motion, AnimatePresence } from "framer-motion";
+
 
 /* Utility function for placeholder images */
 const getPlaceholderImage = (id) =>
   `https://picsum.photos/400/300?random=${id}`;
 
-// Carousel Component
-const Carousel = ({ title, children, className = '' }) => {
-  const scrollContainerRef = useRef(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
-
-  const handleScroll = () => {
-    if (!scrollContainerRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    setShowLeftArrow(scrollLeft > 0);
-    setShowRightArrow(scrollLeft + clientWidth < scrollWidth - 10);
-  };
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll);
-      handleScroll();
-      return () => scrollContainer.removeEventListener('scroll', handleScroll);
-    }
-  }, []);
-
-  const scroll = (direction) => {
-    if (!scrollContainerRef.current) return;
-    const container = scrollContainerRef.current;
-    const scrollAmount = container.clientWidth * 0.8;
-    container.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-  };
-
-  return (
-    <div className={className}>
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white md:text-3xl dark:text-white">{title}</h2>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => scroll('left')}
-            disabled={!showLeftArrow}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
-              showLeftArrow ? 'text-black hover:bg-gray-100' : 'cursor-default text-gray-300'
-            }`}
-          >
-            &#8592;
-          </button>
-          <button
-            onClick={() => scroll('right')}
-            disabled={!showRightArrow}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors ${
-              showRightArrow ? 'text-black hover:bg-gray-100' : 'cursor-default text-gray-300'
-            }`}
-          >
-            &#8594;
-          </button>
-        </div>
-      </div>
-      <div
-        className="flex -mx-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide"
-        ref={scrollContainerRef}
-      >
-        {children}
-      </div>
-    </div>
-  );
-};
 
 // FeatureCard
 const FeatureCard = ({ title, description, icon, href, linkText }) => {
@@ -105,85 +45,9 @@ const FeatureCard = ({ title, description, icon, href, linkText }) => {
   );
 };
 
-// HeroCarousel
-const HeroCarousel = () => {
-  const slides = [
-    { id: 1, image: '/hero-seoul-sunset.jpg', heading: 'Welcome to Keasy', description: 'Making life in South Korea easier for foreigners', buttonText1: 'Explore Marketplace', buttonLink1: '/marketplace', buttonText2: 'Find Events', buttonLink2: '/events' },
-    { id: 2, image: '/hero-korean-market.jpg', heading: 'Discover Local Stores', description: 'Find the best deals nearby', buttonText1: 'Shop Now', buttonLink1: '/marketplace', buttonText2: 'View Guides', buttonLink2: '/guides' },
-    { id: 3, image: '/hero-jeju-coast.jpg', heading: 'Connect with Community', description: 'Meet and share with other expats', buttonText1: 'Join Groups', buttonLink1: '/community', buttonText2: 'Attend Events', buttonLink2: '/events' },
-    { id: 4, image: '/hero-gyeongbokgung.jpg', heading: 'Learn & Grow', description: 'Access guides, tips, and resources', buttonText1: 'Read Guides', buttonLink1: '/guides', buttonText2: 'Watch Tutorials', buttonLink2: '/guides' }
-  ];
-
-  const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => nextSlide(), 6000);
-    return () => clearInterval(interval);
-  }, [current]);
-
-  const nextSlide = () => { setDirection(1); setCurrent((prev) => (prev + 1) % slides.length); };
-  const prevSlide = () => { setDirection(-1); setCurrent((prev) => (prev - 1 + slides.length) % slides.length); };
-
-  const variants = { enter: (dir) => ({ x: dir > 0 ? 1000 : -1000, opacity: 0 }), center: { x: 0, opacity: 1 }, exit: (dir) => ({ x: dir < 0 ? 1000 : -1000, opacity: 0 }) };
-
-  return (
-    <div className="relative w-full h-[60vh] sm:h-[10vh] md:h-[10vh] min-h-[500px] overflow-hidden rounded-b-3xl">
-      <AnimatePresence initial={false} custom={direction}>
-        <motion.div key={slides[current].id} custom={direction} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }} className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${slides[current].image})` }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-          <div className="relative z-10 flex flex-col justify-end h-full px-6 md:px-12 lg:px-20 text-left text-white lg:pb-10 pb-0">
-            <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
-                className="text-4xl md:text-5xl lg:text-5xl font-medium mb-6 drop-shadow-lg text-white"
-              >
-                {slides[current].heading}
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-                className="text-lg md:text-xl mb-8 drop-shadow-md text-white"
-              >
-                {slides[current].description}
-              </motion.p>
-              {/* <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.8 }} className="flex flex-wrap justify-left gap-4">
-              <Link to={slides[current].buttonLink1} className="inline-flex items-center gap-2 px-6 py-3 bg-white/95 backdrop-blur-sm text-black rounded-lg font-medium shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 hover:scale-105">{slides[current].buttonText1}</Link>
-              <Link to={slides[current].buttonLink2} className="inline-flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-sm text-black rounded-lg font-medium border border-white/20 hover:bg-white hover:shadow-md transition-all duration-300 hover:scale-105">{slides[current].buttonText2}</Link>
-            </motion.div> */}
-          </div>
-        </motion.div>
-      </AnimatePresence>
-      <motion.div
-          key={current}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.4 }}
-          className="absolute bottom-3 right-3 z-20"
-        >
-          <div className="bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-            {current + 1} / {slides.length}
-          </div>
-        </motion.div>
-
-
-      {/* <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
-        {slides.map((_, index) => (
-          <motion.button key={index} whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }} className={`h-3 w-3 rounded-full transition-all duration-300 ${current === index ? "bg-white shadow-white/50 shadow-lg scale-125" : "bg-white/40 hover:bg-white/60"}`} onClick={() => setCurrent(index)} />
-        ))}
-      </div> */}
-    </div>
-  );
-};
 
 // CoolCarousel Component
-const CoolCarousel = ({ slides = [], intervalMs = 4000 }) => {
+const Carousel = ({ slides = [], intervalMs = 4000 }) => {
   const containerRef = useRef(null);
   const teleportTimeoutRef = useRef(null);
 
@@ -443,8 +307,9 @@ const GuidesCard = ({ id, name, description, img_url, created_by, like = {}, onL
   );
 };
 
-const FeedbackCard = () => {
-  const [isOpen, setIsOpen] = useState(false);
+
+
+const FeedbackSection = () => {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [feedback, setFeedback] = useState('');
@@ -461,7 +326,7 @@ const FeedbackCard = () => {
     { id: 'improvement', label: 'Improvement' }
   ];
 
-  // Get current user on mount
+  // Simulated user fetch - replace with your actual Supabase call
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
@@ -480,7 +345,7 @@ const FeedbackCard = () => {
         rating,
         feedback_type: feedbackType,
         feedback_text: feedback,
-        user_id: currentUserId // Will be null if not logged in
+        user_id: currentUserId
       };
 
       const { error: insertError } = await supabase
@@ -489,16 +354,18 @@ const FeedbackCard = () => {
 
       if (insertError) throw insertError;
 
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       setIsSubmitted(true);
       
-      // Reset form after 2 seconds
+      // Reset form after 3 seconds
       setTimeout(() => {
         setIsSubmitted(false);
         setRating(0);
         setFeedback('');
         setFeedbackType('general');
-        setIsOpen(false);
-      }, 2000);
+      }, 3000);
     } catch (err) {
       console.error('Error submitting feedback:', err);
       setError('Failed to submit feedback. Please try again.');
@@ -507,199 +374,176 @@ const FeedbackCard = () => {
     }
   };
 
+  const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
+
   return (
-    <>
-      {/* Floating Feedback Button */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-20 right-2 z-50 flex items-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300"
-      >
-        <MessageCircle className="w-5 h-5" />
-        <span className="hidden sm:inline font-medium">Feedback</span>
-      </motion.button>
+    <section className="py-20 bg-none">
+      {/*  bg-gradient-to-b from-gray-50 to-gray-100 */}
+      <div className="container mx-auto px-4 max-w-4xl">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeUp}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Share Your Feedback
+          </h2>
+          <p className="text-lg text-gray-600">
+            Your feedback helps us improve Keasy for everyone
+          </p>
+        </motion.div>
 
-      {/* Feedback Modal */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-            />
-
-            {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-lg bg-white rounded-2xl shadow-2xl z-50 overflow-hidden"
-            >
-              {!isSubmitted ? (
-                <>
-                  {/* Header */}
-                  <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-900">Share Your Feedback</h2>
-                    <button
-                      onClick={() => setIsOpen(false)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-
-                  {/* Form */}
-                  <div className="p-6 space-y-6">
-                    {/* Error Message */}
-                    {error && (
-                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                        {error}
-                      </div>
-                    )}
-
-                    {/* Feedback Type */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        What's this about?
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {feedbackTypes.map((type) => (
-                          <button
-                            key={type.id}
-                            type="button"
-                            onClick={() => setFeedbackType(type.id)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                              feedbackType === type.id
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                          >
-                            {type.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Rating */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        How would you rate your experience?
-                      </label>
-                      <div className="flex gap-2 justify-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setRating(star)}
-                            onMouseEnter={() => setHoveredRating(star)}
-                            onMouseLeave={() => setHoveredRating(0)}
-                            className="transition-transform hover:scale-110"
-                          >
-                            <Star
-                              className={`w-8 h-8 sm:w-10 sm:h-10 transition-colors ${
-                                star <= (hoveredRating || rating)
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'fill-gray-200 text-gray-200'
-                              }`}
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Feedback Text */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Tell us more
-                      </label>
-                      <textarea
-                        value={feedback}
-                        onChange={(e) => setFeedback(e.target.value)}
-                        placeholder="Share your thoughts, suggestions, or report issues..."
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-400"
-                      />
-                    </div>
-
-                    {/* User Status Info */}
-                    {!currentUserId && (
-                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
-                        💡 You're submitting as a guest. Sign in to track your feedback!
-                      </div>
-                    )}
-
-                    {/* Submit Button */}
-                    <button
-                      type="button"
-                      onClick={handleSubmit}
-                      disabled={!rating || !feedback.trim() || isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium shadow-lg hover:bg-blue-700 transition-all duration-300 hover:shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:shadow-lg"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Submitting...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5" />
-                          Submit Feedback
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </>
-              ) : (
-                /* Success Message */
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-12 text-center"
-                >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                    className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4"
-                  >
-                    <svg
-                      className="w-8 h-8 text-green-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </motion.div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    Thank You!
-                  </h3>
-                  <p className="text-gray-600">
-                    Your feedback helps us improve Keasy for everyone.
-                  </p>
-                </motion.div>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeUp}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="bg-white rounded-2xl shadow-xl p-8 md:p-12"
+        >
+          {!isSubmitted ? (
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Error Message */}
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {error}
+                </div>
               )}
+
+              {/* Feedback Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  What's this about?
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {feedbackTypes.map((type) => (
+                    <button
+                      key={type.id}
+                      type="button"
+                      onClick={() => setFeedbackType(type.id)}
+                      className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        feedbackType === type.id
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {type.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Rating */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-4 text-center">
+                  How would you rate your experience?
+                </label>
+                <div className="flex gap-3 justify-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      onMouseEnter={() => setHoveredRating(star)}
+                      onMouseLeave={() => setHoveredRating(0)}
+                      className="transition-transform hover:scale-110"
+                    >
+                      <Star
+                        className={`w-10 h-10 md:w-12 md:h-12 transition-colors ${
+                          star <= (hoveredRating || rating)
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'fill-gray-200 text-gray-200'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Feedback Text */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Tell us more
+                </label>
+                <textarea
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  placeholder="Share your thoughts, suggestions, or report issues..."
+                  rows={5}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-400"
+                  required
+                />
+              </div>
+
+              {/* User Status Info */}
+              {!currentUserId && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+                  💡 You're submitting as a guest. Sign in to track your feedback!
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={!rating || !feedback.trim() || isSubmitting}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-lg font-medium shadow-lg hover:bg-blue-700 transition-all duration-300 hover:shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:shadow-lg"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Submit Feedback
+                  </>
+                )}
+              </button>
+            </form>
+          ) : (
+            /* Success Message */
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-16 text-center"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6"
+              >
+                <svg
+                  className="w-10 h-10 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </motion.div>
+              <h3 className="text-3xl font-bold text-gray-900 mb-3">
+                Thank You!
+              </h3>
+              <p className="text-lg text-gray-600">
+                Your feedback helps us improve Keasy for everyone.
+              </p>
             </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
+          )}
+        </motion.div>
+      </div>
+    </section>
   );
 };
-
 
 
 
@@ -784,6 +628,424 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
       </div>
 
     </div>
+  );
+};
+
+const companyInfo = `
+Introduction:
+Hey there! I'm your friendly Keasy chatbot — your digital companion for navigating life in South Korea 🇰🇷. Whether you're an 
+international student, expat, or newcomer, I'm here to guide you through your new life, help you find communities, and make your experience smoother, easier, and more connected.
+
+Details:
+Keasy is a modern community platform designed to support international people living in South Korea. We bring together everything you need to 
+live, connect, and thrive abroad — all in one place. From local guides and events to a marketplace for buying and selling goods, Keasy makes settling in feel like home.
+
+Our platform offers:
+- AI-powered assistance for real-time guidance and translation.
+- Marketplace to buy and sell new or used items safely.
+- Events & Activities listings to help you explore your city.
+- Community groups and chats where you can connect with others.
+- Blog and resources for legal advice, cultural tips, and local insights.
+
+Keasy's goal is simple: make life easier for foreigners in South Korea through community, technology, and meaningful support.
+
+Based in Daejeon, South Korea, Keasy was founded by a group of international students who experienced the challenges of living abroad firsthand — and decided to build a solution.
+
+Stay connected with us:
+- Website: https://www.koreaeasy.org
+- Instagram: https://www.instagram.com/keasy_community
+
+For partnerships, inquiries, or feedback, reach out to us at keasy.contact@gmail.com
+
+At Keasy, we believe in more than just technology — we believe in community. Together, we make Korea feel like home 💙
+`;
+
+const ChatbotIcon = () => (
+  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+    <Sparkles className="w-5 h-5 text-white" />
+  </div>
+);
+
+const ChatMessage = ({ chat }) => {
+  const renderFormattedText = (text) => {
+    // Split text into lines
+    const lines = text.split('\n');
+    
+    return lines.map((line, lineIndex) => {
+      // Skip empty lines but preserve spacing
+      if (line.trim() === '') {
+        return <br key={lineIndex} />;
+      }
+
+      // Handle bullet points (•, -, *, numbered lists)
+      const bulletMatch = line.match(/^(\s*)([-•*]|\d+\.)\s+(.+)$/);
+      if (bulletMatch) {
+        const [, indent, bullet, content] = bulletMatch;
+        return (
+          <div key={lineIndex} className="flex gap-2 my-1" style={{ marginLeft: `${indent.length * 8}px` }}>
+            <span className="flex-shrink-0 font-medium">{bullet}</span>
+            <span>{formatInlineText(content)}</span>
+          </div>
+        );
+      }
+
+      // Handle headers (lines that end with :)
+      if (line.match(/^[^:]+:$/)) {
+        return (
+          <div key={lineIndex} className="font-semibold mt-2 mb-1">
+            {formatInlineText(line)}
+          </div>
+        );
+      }
+
+      // Regular paragraph
+      return (
+        <div key={lineIndex} className="my-1">
+          {formatInlineText(line)}
+        </div>
+      );
+    });
+  };
+
+ // Format inline text (bold, italic, links, inline code only)
+  const formatInlineText = (text) => {
+    // Split by inline code, bold, italic, and URLs (NO multiline code blocks here)
+    const parts = text.split(/(`[^`\n]+`|\*\*\*[^*\n]+\*\*\*|\*\*[^*\n]+\*\*|\*[^*\n]+\*|https?:\/\/[^\s]+)/g);
+    
+    return parts.map((part, index) => {
+      if (!part) return null;
+
+      // Inline code (`code`) - single line only
+      if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+        return (
+          <code key={index} className="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
+            {part.slice(1, -1)}
+          </code>
+        );
+      }
+
+      // Bold + Italic (***text***)
+      if (part.startsWith('***') && part.endsWith('***') && part.length > 6) {
+        return (
+          <strong key={index} className="font-bold italic">
+            {part.slice(3, -3)}
+          </strong>
+        );
+      }
+
+      // Bold (**text**)
+      if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+        return (
+          <strong key={index} className="font-semibold">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+
+      // Italic (*text*)
+      if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+        return (
+          <em key={index} className="italic">
+            {part.slice(1, -1)}
+          </em>
+        );
+      }
+
+      // URLs
+      if (part.match(/^https?:\/\/[^\s]+$/)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+
+      return <span key={index}>{part}</span>;
+    });
+  };
+
+  if (chat.hideInChat) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`flex gap-3 ${chat.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+    >
+      {chat.role === 'model' && <ChatbotIcon />}
+      
+      <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+        chat.role === 'user' 
+          ? 'bg-blue-600 text-white rounded-br-sm' 
+          : 'bg-gray-100 text-gray-900 rounded-bl-sm'
+      }`}>
+        <div className="text-sm leading-relaxed">
+          {chat.role === 'model' ? renderFormattedText(chat.text) : chat.text}
+        </div>
+      </div>
+
+      {chat.role === 'user' && (
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
+          <FiUser/>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+const ChatForm = ({ onSubmit, isLoading }) => {
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const userMessage = message.trim();
+    if (!userMessage || isLoading) return;
+    
+    onSubmit(userMessage);
+    setMessage('');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  return (
+    <div className="flex gap-2 items-center w-full">
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={handleKeyPress}
+        placeholder="Type your message..."
+        className="flex-1 px-4 py-2.5 bg-none border-none rounded-full outline-none text-gray-800 placeholder-gray-500 text-sm"
+        disabled={isLoading}
+      />
+      <button
+        onClick={handleSubmit}
+        disabled={!message.trim() || isLoading}
+        className="flex-shrink-0  w-10 h-10 my-1 bg-purple-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+      >
+        <Send className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};
+
+const AIChatbot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState([
+    {
+      hideInChat: true,
+      role: 'model',
+      text: companyInfo
+    }
+  ]);
+  const chatBodyRef = useRef();
+
+  // Generate AI response using Gemini API
+  const generateBotResponse = async (history) => {
+    try {
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        throw new Error("Gemini API key is missing");
+      }
+
+      // Format history for Gemini API
+      const formattedHistory = history.map(({ role, text }) => ({
+        role: role === 'user' ? 'user' : 'model',
+        parts: [{ text }]
+      }));
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: formattedHistory,
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
+            }
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                         "I apologize, but I couldn't generate a response. Please try again.";
+
+      setChatHistory(prev => [
+        ...prev.filter(msg => msg.text !== 'Thinking...'),
+        { role: 'model', text: botResponse }
+      ]);
+    } catch (error) {
+      console.error('Error generating bot response:', error);
+      setChatHistory(prev => [
+        ...prev.filter(msg => msg.text !== 'Thinking...'),
+        { role: 'model', text: "I apologize, but I'm having trouble responding right now. Please check your internet connection and try again." }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendMessage = (userMessage) => {
+    const newMessage = { role: 'user', text: userMessage };
+    setChatHistory(prev => [...prev, newMessage]);
+    
+    setIsLoading(true);
+    setTimeout(() => {
+      setChatHistory(prev => [...prev, { role: 'model', text: 'Thinking...' }]);
+      
+      generateBotResponse([
+        ...chatHistory,
+        newMessage,
+        { role: 'user', text: `Using the details provided above if needed, please address this query: ${userMessage}` }
+      ]);
+    }, 600);
+  };
+
+  useEffect(() => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTo({
+        top: chatBodyRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, [chatHistory]);
+
+  const handlePopUp = () => {
+    if(isOpen == true) {
+      setIsOpen(false)
+      setChatHistory([])
+    }
+    else setIsOpen(true);
+  }
+
+  return (
+    <>
+      {/* Floating Chat Button */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={handlePopUp}
+        className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
+      >
+        <MessageCircle className="w-5 h-5" />
+        <span className="hidden sm:inline font-medium">keasy AI</span>
+      </motion.button>
+
+      {/* Chat Popup */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Backdrop for mobile */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
+            />
+
+            {/* Chat Container */}
+            <motion.div
+              initial={{ 
+                opacity: 0,
+                scale: 0.95,
+                y: 20
+              }}
+              animate={{ 
+                opacity: 1,
+                scale: 1,
+                y: 0
+              }}
+              exit={{ 
+                opacity: 0,
+                scale: 0.95,
+                y: 20
+              }}
+              transition={{ 
+                type: "spring",
+                damping: 25,
+                stiffness: 300
+              }}
+              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden
+                md:bottom-24 md:right-6 md:w-[400px] md:h-[600px]
+                inset-4 md:inset-auto"
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <ChatbotIcon />
+                  <div>
+                    <h3 className="font-semibold text-lg text-white">keasy AI</h3>
+                    <p className="text-xs text-blue-100">Always here to help</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handlePopUp}
+                  className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Chat Body */}
+              <div
+                ref={chatBodyRef}
+                className="flex-1 overflow-y-auto p-4 bg-white"
+                style={{ height: 'calc(100% - 130px)' }}
+              >
+                {/* Welcome Message */}
+                <div className="flex gap-3 mb-4">
+                  <ChatbotIcon />
+                  <div className="max-w-[80%] bg-gray-100 text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3">
+                    <p className="text-sm leading-relaxed">
+                      Hey there 👋<br/>
+                      How can I help you today?
+                    </p>
+                  </div>
+                </div>
+
+                {/* Chat History */}
+                {chatHistory.map((chat, index) => (
+                  <ChatMessage key={index} chat={chat} />
+                ))}
+              </div>
+
+              {/* Chat Footer */}
+              <div className="py-3 pt-1 px-1 bg-white border-t border-gray-200">
+                <ChatForm onSubmit={handleSendMessage} isLoading={isLoading} />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
@@ -922,7 +1184,7 @@ const handleToggleLike = async (item) => {
   return (
     <div>
       {/* Hero Carousel */}
-      <CoolCarousel slides={slides} className='mx-2'/>
+      <Carousel slides={slides} className='mx-2'/>
 
       {/* Features Section */}
       <section className="py-16">
@@ -966,38 +1228,38 @@ const handleToggleLike = async (item) => {
       </section>
 
       {/* Join Keasy Section — only visible if user is not signed in */}
-{!currentUserId && (
-  <section className="py-20 bg-gradient-to-b from-gray-50 to-white text-center">
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
-      className="container mx-auto px-6"
-    >
-      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
-        Join Keasy Today
-      </h2>
-      <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
-        Become part of Korea’s most supportive expat community — connect, share, and explore together.
-      </p>
-      <div className="flex flex-col sm:flex-row justify-center gap-4">
-        <Link
-          to="/signup"
-          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-2xl hover:bg-blue-950 transition-all duration-300"
-        >
-          Sign Up
-        </Link>
-        <Link
-          to="/login"
-          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black border border-gray-300 rounded-xl font-semibold shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
-        >
-          Sign In
-        </Link>
-      </div>
-    </motion.div>
-  </section>
-)}
+      {!currentUserId && (
+        <section className="py-20 bg-gradient-to-b from-gray-50 to-white text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="container mx-auto px-6"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
+              Join Keasy Today
+            </h2>
+            <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
+              Become part of Korea’s most supportive expat community — connect, share, and explore together.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-2xl hover:bg-blue-950 transition-all duration-300"
+              >
+                Sign Up
+              </Link>
+              <Link
+                to="/login"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black border border-gray-300 rounded-xl font-semibold shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              >
+                Sign In
+              </Link>
+            </div>
+          </motion.div>
+        </section>
+      )}
 
 
        {/* Guides Carousel */}
@@ -1119,8 +1381,10 @@ const handleToggleLike = async (item) => {
         </div>
       </section>
 
+      <FeedbackSection />
+
       
-      <FeedbackCard />
+      <AIChatbot />
     </div>
   );
 }
