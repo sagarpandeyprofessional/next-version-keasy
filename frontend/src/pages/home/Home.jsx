@@ -841,7 +841,7 @@ const ChatForm = ({ onSubmit, isLoading }) => {
   );
 };
 
-const AIChatbot = () => {
+const AIChatbot = ({currentUserId}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState([
@@ -852,6 +852,7 @@ const AIChatbot = () => {
     }
   ]);
   const chatBodyRef = useRef();
+  const navigate = useNavigate();
 
   // Generate AI response using Gemini API
   const generateBotResponse = async (history) => {
@@ -936,11 +937,17 @@ const AIChatbot = () => {
   }, [chatHistory]);
 
   const handlePopUp = () => {
-    if(isOpen == true) {
-      setIsOpen(false)
-      setChatHistory([])
+    if(currentUserId){
+      if(isOpen == true) {
+        setIsOpen(false)
+        setChatHistory([])
+      }
+      else setIsOpen(true);
     }
-    else setIsOpen(true);
+    else {
+      alert("Please sign in to use the AI Chatbot.");
+      navigate('/signin')
+    };
   }
 
   return (
@@ -1384,7 +1391,7 @@ const handleToggleLike = async (item) => {
       <FeedbackSection />
 
       
-      <AIChatbot />
+      <AIChatbot currentUserId={currentUserId}/>
     </div>
   );
 }
