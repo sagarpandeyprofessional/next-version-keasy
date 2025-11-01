@@ -302,7 +302,7 @@ export default function MarketplaceItemPage() {
                 
                 {/* Mobile: Icon Only */}
                 <button
-                  onClick={() => navigate(`/marketplace/${id}/edit`)}
+                  onClick={() => navigate(`/marketplace/edit/${id}`)}
                   className="sm:hidden p-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
                   aria-label="Edit listing"
                 >

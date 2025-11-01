@@ -292,8 +292,65 @@ export default function MarketplacePostPage() {
 
       console.log("Listing created successfully:", data);
 
+      const updatedContactLink = (contactLink, productId) => {
+        if (!contactLink || !contactLink.trim()) return null;
+
+        const trimmedLink = contactLink.trim();
+        const encodedMessage = encodeURIComponent(
+          `hey, i wanna buy --> https://koreaeasy.org/marketplace/${productId}`
+        );
+
+        try {
+          const lowerLink = trimmedLink.toLowerCase();
+
+          if (lowerLink.includes("wa.me") || lowerLink.includes("whatsapp.com")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+          }
+
+          if (lowerLink.includes("t.me")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+          }
+
+          if (lowerLink.startsWith("sms:")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}body=${encodedMessage}`;
+          }
+
+          if (lowerLink.startsWith("mailto:")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}body=${encodedMessage}`;
+          }
+
+          if (lowerLink.includes("m.me")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+          }
+
+          // Unsupported or no text support
+          return trimmedLink;
+
+        } catch (err) {
+          console.error("Invalid contact link:", trimmedLink, err);
+          return trimmedLink;
+        }
+      };
+
+      // Then in handleSubmit, after the insert:
+      const updatedContact = updatedContactLink(data.seller_contact, data.id);
+
+      if (updatedContact) {
+        const { error: updateError } = await supabase
+          .from("marketplace")
+          .update({
+            seller_contact: updatedContact,
+          })
+          .eq("id", data.id);
+
+        if (updateError) {
+          console.error("Error updating contact link:", updateError);
+          // Decide if you want to throw an error or just log it
+        }
+      }
+
       // Redirect to item page
-      navigate(`/marketplace/${data.id}`);
+      if(updatedContact) navigate(`/marketplace/${data.id}`);
     } catch (err) {
       setError(err.message || "Failed to create listing");
       console.error("Error creating listing:", err);

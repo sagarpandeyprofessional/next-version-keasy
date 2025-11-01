@@ -33,6 +33,37 @@ export default function MarketplaceEditPage() {
     seller_contact: "",
   });
 
+  // Extract original contact info from link
+  const extractContactFromLink = (link, type) => {
+    if (!link) return "";
+    
+    try {
+      // Remove query parameters first
+      const baseLink = link.split('?')[0];
+      
+      switch(type) {
+        case "message":
+          return baseLink.replace("sms:", "");
+        case "telegram":
+          return baseLink.replace("https://t.me/", "");
+        case "whatsapp":
+          return baseLink.replace("https://wa.me/", "");
+        case "instagram":
+          return baseLink.replace("https://instagram.com/", "");
+        case "kakao talk":
+          return baseLink.replace("https://open.kakao.com/o/", "");
+        case "messenger":
+          return baseLink.replace("https://m.me/", "");
+        case "email":
+          return baseLink.replace("mailto:", "");
+        default:
+          return baseLink;
+      }
+    } catch {
+      return link;
+    }
+  };
+
   // Check authentication and ownership
   useEffect(() => {
     const checkAuthAndOwnership = async () => {
@@ -92,34 +123,6 @@ export default function MarketplaceEditPage() {
     checkAuthAndOwnership();
   }, [navigate, id]);
 
-  // Extract original contact info from link
-  const extractContactFromLink = (link, type) => {
-    if (!link) return "";
-    
-    try {
-      switch(type) {
-        case "message":
-          return link.replace("sms:", "");
-        case "telegram":
-          return link.replace("https://t.me/", "");
-        case "whatsapp":
-          return link.replace("https://wa.me/", "");
-        case "instagram":
-          return link.replace("https://instagram.com/", "");
-        case "kakao talk":
-          return link.replace("https://open.kakao.com/o/", "");
-        case "messenger":
-          return link.replace("https://m.me/", "");
-        case "email":
-          return link.replace("mailto:", "");
-        default:
-          return link;
-      }
-    } catch {
-      return link;
-    }
-  };
-
   // Fetch categories and brands
   useEffect(() => {
     const fetchData = async () => {
@@ -147,6 +150,7 @@ export default function MarketplaceEditPage() {
     }));
   };
 
+  // Generate contact link based on type and input
   const generateContactLink = (type, contact) => {
     if (!contact || !contact.trim()) return null;
     
@@ -321,16 +325,19 @@ export default function MarketplaceEditPage() {
       }
 
       // Upload new images with the actual title
+      console.log(`Uploading ${imageFiles.length} new images...`);
       const newImageUrls = await uploadImages(formData.title.trim());
       
       // Combine existing and new images
       const allImageUrls = [...existingImages, ...newImageUrls];
 
+      console.log("All images:", allImageUrls);
+
       // Generate contact link
       const contactLink = generateContactLink(formData.seller_contact_type, formData.seller_contact);
 
       // Update marketplace item
-      const { error: updateError } = await supabase
+      const { data, error: updateError } = await supabase
         .from("marketplace")
         .update({
           title: formData.title.trim(),
@@ -346,11 +353,71 @@ export default function MarketplaceEditPage() {
           seller_contact: contactLink,
           images: { images: allImageUrls },
         })
-        .eq("id", parseInt(id));
+        .eq("id", parseInt(id))
+        .select()
+        .single();
 
       if (updateError) {
         console.error("Update error:", updateError);
         throw new Error(updateError.message || "Failed to update listing");
+      }
+
+      console.log("Listing updated successfully:", data);
+
+      // Update contact link with product ID (same as post page)
+      const updatedContactLink = (contactLink, productId) => {
+        if (!contactLink || !contactLink.trim()) return null;
+
+        const trimmedLink = contactLink.trim();
+        const encodedMessage = encodeURIComponent(
+          `hey, i wanna buy --> https://koreaeasy.org/marketplace/${productId}`
+        );
+
+        try {
+          const lowerLink = trimmedLink.toLowerCase();
+
+          if (lowerLink.includes("wa.me") || lowerLink.includes("whatsapp.com")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+          }
+
+          if (lowerLink.includes("t.me")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+          }
+
+          if (lowerLink.startsWith("sms:")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}body=${encodedMessage}`;
+          }
+
+          if (lowerLink.startsWith("mailto:")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}body=${encodedMessage}`;
+          }
+
+          if (lowerLink.includes("m.me")) {
+            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+          }
+
+          // Unsupported or no text support
+          return trimmedLink;
+
+        } catch (err) {
+          console.error("Invalid contact link:", trimmedLink, err);
+          return trimmedLink;
+        }
+      };
+
+      const updatedContact = updatedContactLink(data.seller_contact, data.id);
+
+      if (updatedContact) {
+        const { error: contactUpdateError } = await supabase
+          .from("marketplace")
+          .update({
+            seller_contact: updatedContact,
+          })
+          .eq("id", data.id);
+
+        if (contactUpdateError) {
+          console.error("Error updating contact link:", contactUpdateError);
+        }
       }
 
       // Delete removed images from storage
@@ -359,7 +426,7 @@ export default function MarketplaceEditPage() {
       }
 
       // Redirect to item page
-      navigate(`/marketplace/${id}`);
+      if(updatedContact) navigate(`/marketplace/${id}`);
     } catch (err) {
       setError(err.message || "Failed to update listing");
       console.error("Error updating listing:", err);
@@ -788,4 +855,5 @@ export default function MarketplaceEditPage() {
         </div>
       </div>
     </div>
-  )}
+  );
+}

@@ -30,6 +30,8 @@ import CommunityPost from './pages/features/community/CommunityPost'
 import CommunityUpdate from './pages/features/community/CommunityUpdate'
 import Blog from './pages/features/blog/Blog'
 
+import Talent from './pages/features/talent/Talent'
+
 import Events from './pages/features/events/Events'
 import EventPost from './pages/features/events/EventPost';
 import EventUpdate from './pages/features/events/EventUpdate';
@@ -92,6 +94,8 @@ function App() {
         <Route element={<Layout><Community/></Layout>} path="/community" />
         <Route element={<Layout><CommunityPost/></Layout>} path="/community/new" />
         <Route element={<Layout><CommunityUpdate/></Layout>} path="/community/edit/:id" />
+
+        <Route element={<Layout><Talent /></Layout>} path='/talents' />
 
         <Route element={<Layout><Events /></Layout>} path='/events' />
         <Route element={<Layout><MapComponent /></Layout>} path='/events/new' />
