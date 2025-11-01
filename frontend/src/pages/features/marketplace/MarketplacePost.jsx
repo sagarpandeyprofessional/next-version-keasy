@@ -297,7 +297,7 @@ export default function MarketplacePostPage() {
 
         const trimmedLink = contactLink.trim();
         const encodedMessage = encodeURIComponent(
-          `hey, i wanna buy --> https://koreaeasy.org/marketplace/${productId}`
+          `Hello, I am interested in your ${data.title} listed on the Marketplace. Product Link - https://koreaeasy.org/marketplace/${productId}`
         );
 
         try {
