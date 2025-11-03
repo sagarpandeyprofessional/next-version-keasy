@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @import url('https://unpkg.com/leaflet/dist/leaflet.css');
+@import 'leaflet/dist/leaflet.css';
 
 .leaflet-container {
   width: 100%;

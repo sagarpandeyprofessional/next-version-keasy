@@ -31,6 +31,9 @@ import CommunityUpdate from './pages/features/community/CommunityUpdate'
 import Blog from './pages/features/blog/Blog'
 
 import Talent from './pages/features/talent/Talent'
+import TalentDetail from './pages/features/talent/TalentDetail'
+import TalentPost from './pages/features/talent/TalentPost'
+import TalentEdit from './pages/features/talent/TalentEdit'
 
 import Events from './pages/features/events/Events'
 import EventPost from './pages/features/events/EventPost';
@@ -49,6 +52,7 @@ import Guides from './pages/features/guides/Guides'
 import GuideEditor from './pages/features/guides/GuidePost';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import ProShowcase from './pages/features/pros/Pros';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -95,7 +99,12 @@ function App() {
         <Route element={<Layout><CommunityPost/></Layout>} path="/community/new" />
         <Route element={<Layout><CommunityUpdate/></Layout>} path="/community/edit/:id" />
 
+        <Route element={<Layout><ProShowcase /></Layout>} path='/pros' />
+
         <Route element={<Layout><Talent /></Layout>} path='/talents' />
+        <Route element={<Layout><TalentDetail /></Layout>} path='/talents/:id' />
+        <Route element={<Layout><TalentPost /></Layout>} path='/talents/new' />
+        <Route element={<Layout><TalentEdit /></Layout>} path='/talents/edit/:id' />
 
         <Route element={<Layout><Events /></Layout>} path='/events' />
         <Route element={<Layout><MapComponent /></Layout>} path='/events/new' />
