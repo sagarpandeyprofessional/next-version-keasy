@@ -1,251 +1,315 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FiSearch, FiX, FiUser } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
+import { supabase } from "../../api/supabase-client"; // Adjust the import path as needed
 
-const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const userMenuRef = useRef(null);
+const SearchModal = ({ isOpen, onClose, searchQuery, setSearchQuery }) => {
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const { profile, user, signOut, loading } = useAuth();
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const toggleUserMenu = () => {
-    if (!loading) setIsUserMenuOpen(!isUserMenuOpen);
-  };
-
-  // Close user menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setIsUserMenuOpen(false);
+    const searchData = async () => {
+      if (!searchQuery.trim()) {
+        setResults([]);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const searchTerm = `%${searchQuery.toLowerCase()}%`;
+
+        // Search all tables at once and wait for all to complete
+        const [marketplaceData, profilesData, communityData, eventsData, guidesData] = await Promise.all([
+          // Search Marketplace
+          supabase
+            .from("marketplace")
+            .select("id, title, location")
+            .or(`title.ilike.${searchTerm},location.ilike.${searchTerm}`)
+            .limit(5)
+            .then(response => response)
+            .catch(() => ({ data: [], error: null })),
+          
+          // Search Profiles
+          supabase
+            .from("profiles")
+            .select("id, username, pfp_url")
+            .ilike("username", searchTerm)
+            .limit(5)
+            .then(response => response)
+            .catch(() => ({ data: [], error: null })),
+          
+          // Search Community
+          supabase
+            .from("community")
+            .select("id, name, description")
+            .or(`name.ilike.${searchTerm},description.ilike.${searchTerm}`)
+            .limit(5)
+            .then(response => response)
+            .catch(() => ({ data: [], error: null })),
+          
+          // Search Events
+          supabase
+            .from("events")
+            .select("id, name, description, location")
+            .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},location.ilike.${searchTerm}`)
+            .limit(5)
+            .then(response => response)
+            .catch(() => ({ data: [], error: null })),
+          
+          // Search Guides
+          supabase
+            .from("guide")
+            .select("id, name, description")
+            .or(`name.ilike.${searchTerm},description.ilike.${searchTerm}`)
+            .limit(5)
+            .then(response => response)
+            .catch(() => ({ data: [], error: null })),
+        ]);
+
+        // Combine all results at once after all queries complete
+        const allResults = [
+          ...(marketplaceData.data || []).map(item => ({
+            id: `marketplace-${item.id}`,
+            type: "marketplace",
+            title: item.title,
+            category: "Marketplace",
+            data: item
+          })),
+          ...(profilesData.data || []).map(item => ({
+            id: `profile-${item.id}`,
+            type: "profile",
+            title: item.username,
+            category: "Users",
+            data: item
+          })),
+          ...(communityData.data || []).map(item => ({
+            id: `community-${item.id}`,
+            type: "community",
+            title: item.name,
+            category: "Community",
+            data: item
+          })),
+          ...(eventsData.data || []).map(item => ({
+            id: `event-${item.id}`,
+            type: "event",
+            title: item.name,
+            category: "Events",
+            data: item
+          })),
+          ...(guidesData.data || []).map(item => ({
+            id: `guide-${item.id}`,
+            type: "guide",
+            title: item.name,
+            category: "Guides",
+            data: item
+          })),
+        ];
+
+        setResults(allResults);
+      } catch (error) {
+        console.error("Search error:", error);
+        setResults([]);
+      } finally {
+        setLoading(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      setIsUserMenuOpen(false);
-    } catch (error) {
-      console.error('Error signing out from navbar:', error);
-    }
+    // Debounce search - wait 1 second after user stops typing
+    const timeoutId = setTimeout(searchData, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
-  const getUserDisplayName = () => (profile?.username ? `@${profile.username}` : 'User');
-  const getUserInitials = () => (profile?.username ? profile.username.substring(0, 2).toUpperCase() : 'U');
-  const isAuthenticated = user !== null && !loading;
+  const handleResultClick = (result) => {
+    // Navigate based on result type
+    switch (result.type) {
+      case "guide":
+        navigate(`/guides/guide/${result.data.id}`);
+        break;
+      case "event":
+        navigate(`/events/`);
+        break;
+      case "marketplace":
+        navigate(`/marketplace/${result.data.id}`);
+        break;
+      case "profile":
+        navigate(`/profile/${result.data.username}`);
+        break;
+      case "community":
+        navigate(`/community/`);
+        break;
+      default:
+        console.log("Clicked:", result);
+    }
+    onClose();
+  };
+
+  if (!isOpen) return null;
 
   return (
-    <header className="bg-white shadow-sm dark:bg-gray-900">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <span className="text-xl font-bold text-black dark:text-white">keasy</span>
-            </Link>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-blue-600/5 backdrop-blur-md"
+        onClick={onClose}
+      />
 
-          {/* Desktop Menu */}
-          <nav className="hidden md:flex md:space-x-8">
-            <Link to="/" className="font-medium text-black hover:underline dark:text-white">Home</Link>
-            <Link to="/marketplace" className="font-medium text-black hover:underline dark:text-white">Marketplace</Link>
-            <Link to="/events" className="font-medium text-black hover:underline dark:text-white">Events</Link>
-            <Link to="/blog" className="font-medium text-black hover:underline dark:text-white">Blog</Link>
-            <Link to="/community" className="font-medium text-black hover:underline dark:text-white">Community</Link>
-            <Link to="/nearby" className="font-medium text-black hover:underline dark:text-white">Nearby</Link>
-          </nav>
-
-          {/* Auth / User Menu (Desktop) */}
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            {loading ? (
-              <div className="flex items-center space-x-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-black dark:border-gray-600 dark:text-white">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-black dark:border-gray-600 dark:border-t-white"></div>
-                <span>Verifying...</span>
-              </div>
-            ) : isAuthenticated ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={toggleUserMenu}
-                  className="flex items-center space-x-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-black hover:bg-gray-100 dark:border-gray-600 dark:text-white dark:hover:bg-gray-800"
-                >
-                  {profile?.pfp_url ? (
-                    <div className="relative h-6 w-6 overflow-hidden rounded-full">
-                      <img
-                        src={profile.pfp_url}
-                        alt={getUserDisplayName()}
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement.className =
-                            'flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white dark:bg-gray-700';
-                          e.currentTarget.parentElement.textContent = getUserInitials();
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white dark:bg-gray-700">
-                      {getUserInitials()}
-                    </div>
-                  )}
-                  <span>{getUserDisplayName()}</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-
-                {isUserMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-gray-900 dark:ring-gray-700 z-50">
-                    <Link
-                      to={`/profile/${profile?.username || 'user'}`}
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                    >
-                      My Profile
-                    </Link>
-                    <Link
-                      to="/marketplace/my"
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                    >
-                      My Listings
-                    </Link>
-                    <Link
-                      to="/settings"
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                    >
-                      Settings
-                    </Link>
-                    <button
-                      onClick={handleSignOut}
-                      className="block w-full px-4 py-2 text-left text-sm text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <Link
-                  to="/signin"
-                  className="rounded-md px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  to="/signup"
-                  className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden">
+      {/* Modal Content */}
+      <div className="relative w-full max-w-2xl mx-4 bg-white/50 rounded-2xl shadow-2xl overflow-hidden">
+        {/* Search Input */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="relative">
+            <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search guides, events, marketplace, users, community..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="w-full pl-12 pr-12 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-black/80"
+              autoFocus
+            />
             <button
-              onClick={toggleMenu}
-              className="inline-flex items-center justify-center rounded-md p-2 text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
+              onClick={onClose}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <span className="sr-only">Open Main Menu</span>
-              {!isMenuOpen ? (
-                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              ) : (
-                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
+              <FiX className="h-5 w-5 text-gray-600" />
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-2">
-            <div className="space-y-1 px-2 pt-2 pb-3">
-              <Link to="/" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Home</Link>
-              <Link to="/marketplace" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Marketplace</Link>
-              <Link to="/events" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Events</Link>
-              <Link to="/blog" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Blog</Link>
-              <Link to="/community" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Community</Link>
-              <Link to="/nearby" className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-gray-100 hover:underline dark:text-white dark:hover:bg-gray-800">Nearby</Link>
-
-              {/* Mobile Auth */}
-              <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
-                {isAuthenticated ? (
-                  <div className="relative" ref={userMenuRef}>
-                    <button
-                      onClick={toggleUserMenu}
-                      className="flex items-center space-x-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-black hover:bg-gray-100 dark:border-gray-600 dark:text-white dark:hover:bg-gray-800"
-                    >
-                      {profile?.pfp_url ? (
-                        <div className="relative h-6 w-6 overflow-hidden rounded-full">
-                          <img src={profile.pfp_url} alt={getUserDisplayName()} className="h-full w-full object-cover" />
-                        </div>
-                      ) : (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white dark:bg-gray-700">{getUserInitials()}</div>
-                      )}
-                      <span>{getUserDisplayName()}</span>
-                    </button>
-
-                    {isUserMenuOpen && (
-                      <div className="absolute right-0 top-full mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-gray-900 dark:ring-gray-700 z-50">
-                        <Link
-                          to={`/profile/${profile?.username || 'user'}`}
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                        >
-                          My Profile
-                        </Link>
-                        <Link
-                          to="/marketplace/my"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                        >
-                          My Listings
-                        </Link>
-                        <Link
-                          to="/settings"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                        >
-                          Settings
-                        </Link>
-                        <button
-                          onClick={handleSignOut}
-                          className="block w-full px-4 py-2 text-left text-sm text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
+        {/* Search Results */}
+        <div className="max-h-96 overflow-y-auto">
+          {loading ? (
+            <div className="p-8 text-center text-gray-500">
+              <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+              <p>Searching...</p>
+            </div>
+          ) : searchQuery && results.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <p>No results found for "{searchQuery}"</p>
+            </div>
+          ) : results.length > 0 ? (
+            <div className="p-4">
+              {results.map((result) => (
+                <button
+                  key={result.id}
+                  onClick={() => handleResultClick(result)}
+                  className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center overflow-hidden">
+                    {result.type === "profile" && result.data.pfp_url ? (
+                      <img 
+                        src={result.data.pfp_url} 
+                        alt={result.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : result.type === "profile" ? (
+                      <img
+                        src="https://ltfgerwmkbyxfaebxucc.supabase.co/storage/v1/object/public/app_bucket/pfp_logo.jpg"
+                        alt="Default Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <FiSearch className="h-5 w-5 text-blue-600" />
                     )}
                   </div>
-                ) : (
-                  <>
-                    <Link to="/signin" className="block rounded-md px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800">Sign in</Link>
-                    <Link to="/signup" className="block rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">Sign Up</Link>
-                  </>
-                )}
-              </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">{result.title}</h3>
+                    <p className="text-sm text-gray-500">{result.category}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center text-gray-500">
+              <FiSearch className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>Start typing to search...</p>
+            </div>
+          )}
+        </div>
+
+        
+      </div>
+    </div>
+  );
+};
+
+const Navbar = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const { profile, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleUserClick = () => {
+    if (user) {
+      navigate(`/profile/${profile?.username || "user"}`);
+    } else {
+      navigate("/signin");
+    }
+  };
+
+  return (
+    <>
+      <nav className="sticky top-0 z-50 bg-white shadow-sm dark:bg-white">
+        <div className="container mx-auto px-4 lg:pl-24">
+          <div className="flex justify-between items-center h-16 gap-4">
+            {/* Logo */}
+            <Link to="/" className="flex flex-shrink-0 lg:-ml-18">
+              <div className="text-2xl font-bold text-blue-600">Keasy</div>
+            </Link>
+
+            {/* Search + User */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 rounded-lg transition-colors"
+              >
+                <FiSearch className="h-5 w-5 text-blue-600" />
+              </button>
+
+              {/* User */}
+<button
+  onClick={handleUserClick}
+  className="flex flex-col items-center justify-center h-12 w-12 rounded-full text-blue-600 hover:bg-blue-50 transition-all duration-200"
+>
+  {user && profile?.pfp_url ? (
+    <img
+      src={profile.pfp_url}
+      alt={profile.username}
+      className="h-10 w-10 rounded-full object-cover border border-blue-200"
+    />
+  ) : (
+    <>
+      <FiUser className="h-6 w-6 mb-0.5" />
+      {/* <span className="text-[10px] font-medium leading-tight text-gray-600">
+        Sign up
+      </span> */}
+    </>
+  )}
+</button>
+
             </div>
           </div>
-        )}
-      </div>
-    </header>
+        </div>
+      </nav>
+
+      {/* Search Modal */}
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => {
+          setIsSearchOpen(false);
+          setSearchQuery("");
+        }}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
+    </>
   );
 };
 

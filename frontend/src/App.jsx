@@ -1,11 +1,11 @@
 // lib
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
+
+// hooks for google analytics
+import useAnalytics from "./hooks/useAnalytics";
 
 // context
-import { AuthProvider, useAuth } from './context/AuthContext'
-
-// private route
-import PrivateRoute from './components/privateRoute/PrivateRoute'
+import { AuthProvider } from './context/AuthContext'
 
 // components
 import Layout from './components/layout/Layout'
@@ -14,6 +14,7 @@ import Layout from './components/layout/Layout'
 import Home from './pages/home/Home'
 import SignIn from './pages/auth/SignIn'
 import SignUp from './pages/auth/SignUp'
+import UsernameRegistration from './pages/auth/UsernameRegister'
 import Profile from './pages/profile/Profile'
 import EditProfile from './pages/profile/EditProfile'
 
@@ -21,59 +22,114 @@ import EditProfile from './pages/profile/EditProfile'
 import About from './pages/static/about/About'
 import Contact from './pages/static/contact/Contact'
 import FAQ from './pages/static/faq/FAQ'
+import PrivacyPolicy from './pages/static/policies/PrivacyPolicy'
+import TermsOfService from './pages/static/policies/TermsOfService'
+import MembershipTermsOfService from './pages/static/policies/MembershipTermsOfService';
 
 //features pages
 import Nearby from './pages/features/nearby/Nearby'
 import Community from './pages/features/community/Community'
+import CommunityPost from './pages/features/community/CommunityPost'
+import CommunityUpdate from './pages/features/community/CommunityUpdate'
 import Blog from './pages/features/blog/Blog'
+
+import Talent from './pages/features/talent/Talent'
+import TalentDetail from './pages/features/talent/TalentDetail'
+import TalentPost from './pages/features/talent/TalentPost'
+import TalentEdit from './pages/features/talent/TalentEdit'
+
 import Events from './pages/features/events/Events'
+import EventPost from './pages/features/events/EventPost';
+import EventUpdate from './pages/features/events/EventUpdate';
+import MapComponent from './pages/features/events/EventPost'
+
 import Marketplace from './pages/features/marketplace/Marketplace'
 import MarketplaceItem from './pages/features/marketplace/MarketplaceItem'
-import EditMarketplaceItemPage from './pages/features/marketplace/MarketplaceItemEdit'
-import PostMarketplaceItem from './pages/features/marketplace/MarketplacePost'
+import MarketplaceEditPage from './pages/features/marketplace/MarketplaceItemEdit'
+import MarketplacePostPage from './pages/features/marketplace/MarketplacePost'
 import MyListingsPage from './pages/features/marketplace/MyListings'
 import SettingsPage from './pages/Settings'
-import GuideDetail from './pages/features/nearby/guides/guideDetail'
+
+import GuideDetail from './pages/features/guides/GuideDetail'
+import Guides from './pages/features/guides/Guides'
+import GuideEditor from './pages/features/guides/GuidePost';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import ProShowcase from './pages/features/pros/Pros';
+
+
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', // or 'auto' if you want instant scroll
+    });
+  }, [pathname]);
+
+  return null;
+};
 
 function App() {
+  // func for google analytics
+  useAnalytics();
+
   return (
     <AuthProvider>
-      <Router>
-          <Routes>
-            {/* Main Pages */}
-            <Route element={<Layout><Home/></Layout>} path="/" />
-            <Route element={<Layout><SignIn/></Layout>} path="/signin" />
-            <Route element={<Layout><SignUp/></Layout>} path="/signup" />
-            <Route element={<Layout><PrivateRoute><Profile/></PrivateRoute></Layout>} path="/profile/:username" />
-            <Route element={<Layout><PrivateRoute><EditProfile/></PrivateRoute></Layout>} path="/edit-profile" />
-            
-            {/* Static Pages */}
-            <Route element={<Layout><About/></Layout>} path="/about" />
-            <Route element={<Layout><Contact/></Layout>} path="/contact" />
-            <Route element={<Layout><FAQ/></Layout>} path="/faq" />
-            
-            {/* Features Pages  */}
-            <Route element={<Layout><Blog/></Layout>} path="/blog" />
-            
-            
-            <Route element={<Layout><Nearby/></Layout>} path="/nearby" />
-            <Route element={<Layout><GuideDetail/></Layout>} path="/nearby/guide/:id" />
-            
-            <Route element={<Layout><Community/></Layout>} path="/community" />
-            <Route element={<Layout><Events /></Layout>} path='/events' />
+      <ScrollToTop />
+      <Routes>
+        {/* All routes now just use Layout - Layout handles all auth/username logic */}
+        <Route element={<Layout><Home/></Layout>} path="/" />
+        <Route element={<Layout><SignIn/></Layout>} path="/signin" />
+        <Route element={<Layout><SignUp/></Layout>} path="/signup" />
+        <Route element={<Layout><UsernameRegistration/></Layout>} path="/username-registration" />
+        <Route element={<Layout><Profile/></Layout>} path="/profile/:username" />
+        <Route element={<Layout><EditProfile/></Layout>} path="/edit-profile" />
+        
+        {/* Static Pages */}
+        <Route element={<Layout><About/></Layout>} path="/about" />
+        <Route element={<Layout><Contact/></Layout>} path="/contact" />
+        <Route element={<Layout><FAQ/></Layout>} path="/faq" />
 
+        {/* Policies */}
+        <Route element={<Layout><PrivacyPolicy /></Layout>} path='/privacy_policy' />
+        <Route element={<Layout><TermsOfService /></Layout>} path='/terms_of_service' />
+        {/* <Route element={<Layout><MembershipTermsOfService /></Layout>} path='/membership_terms_of_service' /> */}
+        
+        {/* Features Pages */}
+        <Route element={<Layout><Blog/></Layout>} path="/blog" />
+        <Route element={<Layout><Nearby/></Layout>} path="/nearby" />
 
-            <Route element={<Layout><Marketplace /></Layout>} path='/marketplace' />
-            <Route element={<Layout><MarketplaceItem /></Layout>} path='/marketplace/:id' />
-            <Route element={<Layout><PrivateRoute><EditMarketplaceItemPage /></PrivateRoute></Layout>} path='/marketplace/edit/:id'/> 
-            <Route element={<Layout><PrivateRoute>  <PostMarketplaceItem />  </PrivateRoute></Layout>} path='/marketplace/post' />
-            <Route element={<Layout><PrivateRoute><MyListingsPage /></PrivateRoute></Layout>} path='/marketplace/my' />
-            <Route element={<Layout><PrivateRoute><SettingsPage/></PrivateRoute></Layout>} path='/settings'/>
+        <Route element={<Layout><Guides/></Layout>} path="/guides" />
+        <Route element={<Layout><GuideDetail/></Layout>} path="/guides/guide/:id" />
+        <Route element={<Layout><GuideEditor/></Layout>} path="/guides/new" />
+        
+        <Route element={<Layout><Community/></Layout>} path="/community" />
+        <Route element={<Layout><CommunityPost/></Layout>} path="/community/new" />
+        <Route element={<Layout><CommunityUpdate/></Layout>} path="/community/edit/:id" />
 
-          </Routes>
-      </Router>
+        <Route element={<Layout><ProShowcase /></Layout>} path='/pros' />
+
+        <Route element={<Layout><Talent /></Layout>} path='/talents' />
+        <Route element={<Layout><TalentDetail /></Layout>} path='/talents/:id' />
+        <Route element={<Layout><TalentPost /></Layout>} path='/talents/new' />
+        <Route element={<Layout><TalentEdit /></Layout>} path='/talents/edit/:id' />
+
+        <Route element={<Layout><Events /></Layout>} path='/events' />
+        <Route element={<Layout><MapComponent /></Layout>} path='/events/new' />
+        <Route path="/events/edit/:id" element={<EventUpdate />} />
+
+        <Route element={<Layout><Marketplace /></Layout>} path='/marketplace' />
+        <Route element={<Layout><MarketplaceItem /></Layout>} path='/marketplace/:id' />
+        <Route element={<Layout><MarketplaceEditPage /></Layout>} path='/marketplace/edit/:id'/> 
+        <Route element={<Layout><MarketplacePostPage /></Layout>} path='/marketplace/post' />
+        <Route element={<Layout><MyListingsPage /></Layout>} path='/marketplace/my' />
+        <Route element={<Layout><SettingsPage/></Layout>} path='/settings'/>
+      </Routes>
     </AuthProvider>
   )
 }
 
 export default App
+

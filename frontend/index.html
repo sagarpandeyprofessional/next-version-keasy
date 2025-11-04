@@ -2,10 +2,78 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@4.2.0/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Site Icons -->
+    <!-- SVG for modern browsers -->
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <!-- PNG fallbacks -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/logo.png" />
+    <!-- Apple touch icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
+
+    <!-- Theme color -->
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://koreaeasy.org/" />
+
+    <!-- SEO -->
+    <title>Keasy – Life in Korea Made Easier</title>
+    <meta name="description" content="Keasy helps foreigners in South Korea with marketplace, events, guides, and community connections." />
+    <meta name="keywords" content="Korea, foreigners, marketplace, events, community, guides, expats" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Keasy – Life in Korea Made Easier" />
+    <meta property="og:description" content="A community platform for foreigners in South Korea. Explore marketplace, events, guides, and more." />
+    <meta property="og:image" content="https://koreaeasy.org/logo.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://koreaeasy.org" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Keasy – Life in Korea Made Easier" />
+    <meta name="twitter:description" content="Join Keasy to explore marketplace, events, and guides for foreigners in South Korea." />
+    <meta name="twitter:image" content="https://koreaeasy.org/logo.png" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "KEasy",
+        "url": "https://koreaeasy.org",
+        "logo": "https://koreaeasy.org/logo.png",
+        "sameAs": [
+          "https://www.facebook.com/keasy",
+          "https://www.instagram.com/keasy",
+          "https://twitter.com/keasy"
+        ]
+      }
+    </script>
+
+    <!-- Preloads -->
+    <!-- Only preload if you are sure the logo is used above the fold (like in a hero image) -->
+    <link rel="preload" href="/logo.svg" as="image" />
+    <link rel="preload" href="/logo.png" as="image" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@4.2.0/dist/tailwind.min.css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SG78SLJ5XN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-SG78SLJ5XN');
+    </script>
   </head>
   <body>
     <div id="root"></div>

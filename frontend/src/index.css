@@ -1,31 +1,38 @@
 @import "tailwindcss";
 
+@import url('https://unpkg.com/leaflet/dist/leaflet.css');
+@import 'leaflet/dist/leaflet.css';
+
+.leaflet-container {
+  width: 100%;
+  height: 500px; /* adjust height */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
+    background-color: white;
+
   }
   
-  .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-  }
   
   body {
-    @apply bg-white text-black dark:bg-black dark:text-white;
+    @apply bg-gray-50 text-black ;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: #F8FAFB;
   }
   
   a {
-    @apply text-black hover:underline dark:text-white;
+    @apply text-black ;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply text-black dark:text-white font-bold;
+    @apply text-black  font-bold;
   }
   
   button {
-    @apply text-black dark:text-white;
+    @apply text-black ;
   }
 }
 

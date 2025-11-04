@@ -117,6 +117,46 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+// Handle Google OAuth signup/signin
+const handleGoogleAuth = async (redirectTo = '/') => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}${redirectTo}`
+    }
+  });
+  
+  if (error) throw error;
+};
+
+// Create/Update profile for users who signed up via Google
+const createOrUpdateProfile = async (profileData) => {
+  if (!session?.user) throw new Error('No user logged in');
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert({
+      user_id: session.user.id,
+      ...profileData,
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  setProfile(data);
+  localStorage.setItem("profile", JSON.stringify(data));
+  return data;
+};
+
+// Check if user has completed profile setup (has username)
+const hasCompletedProfile = () => {
+  return profile && profile.username;
+};
+
   return (
     <AuthContext.Provider
       value={{
@@ -129,6 +169,9 @@ export const AuthProvider = ({ children }) => {
         signOut,
         fetchUserProfile,
         refreshSession,
+        handleGoogleAuth,
+        createOrUpdateProfile,
+        hasCompletedProfile,
       }}
     >
       {children}
