@@ -111,7 +111,8 @@ const UsernameRegistration = () => {
         .upsert({
           user_id: session.user.id,
           username: username,
-          // Only add fields that exist in your profiles table
+          privacy_policy: true,
+          terms_of_service: true
         })
         .select()
         .single();
