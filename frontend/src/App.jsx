@@ -22,6 +22,9 @@ import EditProfile from './pages/profile/EditProfile'
 import About from './pages/static/about/About'
 import Contact from './pages/static/contact/Contact'
 import FAQ from './pages/static/faq/FAQ'
+import PrivacyPolicy from './pages/static/policies/PrivacyPolicy'
+import TermsOfService from './pages/static/policies/TermsOfService'
+import MembershipTermsOfService from './pages/static/policies/MembershipTermsOfService';
 
 //features pages
 import Nearby from './pages/features/nearby/Nearby'
@@ -53,6 +56,8 @@ import GuideEditor from './pages/features/guides/GuidePost';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProShowcase from './pages/features/pros/Pros';
+
+
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -86,6 +91,11 @@ function App() {
         <Route element={<Layout><About/></Layout>} path="/about" />
         <Route element={<Layout><Contact/></Layout>} path="/contact" />
         <Route element={<Layout><FAQ/></Layout>} path="/faq" />
+
+        {/* Policies */}
+        <Route element={<Layout><PrivacyPolicy /></Layout>} path='/privacy_policy' />
+        <Route element={<Layout><TermsOfService /></Layout>} path='/terms_of_service' />
+        {/* <Route element={<Layout><MembershipTermsOfService /></Layout>} path='/membership_terms_of_service' /> */}
         
         {/* Features Pages */}
         <Route element={<Layout><Blog/></Layout>} path="/blog" />
