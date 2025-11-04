@@ -38,8 +38,8 @@ import TalentEdit from './pages/features/talent/TalentEdit'
 import Events from './pages/features/events/Events'
 import EventPost from './pages/features/events/EventPost';
 import EventUpdate from './pages/features/events/EventUpdate';
-
 import MapComponent from './pages/features/events/EventPost'
+
 import Marketplace from './pages/features/marketplace/Marketplace'
 import MarketplaceItem from './pages/features/marketplace/MarketplaceItem'
 import MarketplaceEditPage from './pages/features/marketplace/MarketplaceItemEdit'
