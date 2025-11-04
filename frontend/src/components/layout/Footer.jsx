@@ -45,12 +45,22 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/faq" className="text-sm text-gray-300 hover:text-white hover:underline">
-                  FAQ
+                  FAQs
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-sm text-gray-300 hover:text-white hover:underline">
                   Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy_policy" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms_of_service" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Terms of Service
                 </Link>
               </li>
             </ul>

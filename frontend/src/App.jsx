@@ -19,12 +19,12 @@ import Profile from './pages/profile/Profile'
 import EditProfile from './pages/profile/EditProfile'
 
 // static pages
-import About from './pages/static/about/About'
+import AboutUs from './pages/static/about/About'
 import Contact from './pages/static/contact/Contact'
-import FAQ from './pages/static/faq/FAQ'
+import FAQPage from './pages/static/faq/FAQ'
+import Error404Page from './pages/static/notFound/NotFound';
 import PrivacyPolicy from './pages/static/policies/PrivacyPolicy'
 import TermsOfService from './pages/static/policies/TermsOfService'
-import MembershipTermsOfService from './pages/static/policies/MembershipTermsOfService';
 
 //features pages
 import Nearby from './pages/features/nearby/Nearby'
@@ -88,14 +88,14 @@ function App() {
         <Route element={<Layout><EditProfile/></Layout>} path="/edit-profile" />
         
         {/* Static Pages */}
-        <Route element={<Layout><About/></Layout>} path="/about" />
+        <Route element={<Layout><AboutUs/></Layout>} path="/about" />
         <Route element={<Layout><Contact/></Layout>} path="/contact" />
-        <Route element={<Layout><FAQ/></Layout>} path="/faq" />
+        <Route element={<Layout><FAQPage/></Layout>} path="/faq" />
+        <Route element={<Layout><Error404Page/></Layout>} path="*" />
 
         {/* Policies */}
         <Route element={<Layout><PrivacyPolicy /></Layout>} path='/privacy_policy' />
         <Route element={<Layout><TermsOfService /></Layout>} path='/terms_of_service' />
-        {/* <Route element={<Layout><MembershipTermsOfService /></Layout>} path='/membership_terms_of_service' /> */}
         
         {/* Features Pages */}
         <Route element={<Layout><Blog/></Layout>} path="/blog" />
