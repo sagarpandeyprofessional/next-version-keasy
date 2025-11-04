@@ -78,25 +78,26 @@ const talents = [
 ];
 
 const ProCard = ({ talent, onClick }) => {
+  
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer  rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+      className="cursor-pointer rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 transition-all duration-300 hover:scale-105 hover:shadow-xl w-full"
     >
-      <div className="relative ">
+      <div className="relative aspect-[3/4] w-full">
         <img
           src={talent.image}
           alt={talent.name}
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6">
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-6">
           <div className="bg-green-400 text-green-900 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2">
             {talent.quote}
           </div>
-          <h3 className="text-white text-xl font-bold mb-1 md:">{talent.name}</h3>
+          <h3 className="text-white text-lg sm:text-xl font-bold mb-1">{talent.name}</h3>
           <p className="text-white/90 text-sm">{talent.role}</p>
         </div>
-        <button className="absolute bottom-6 right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors">
+        <button className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors">
           <svg className="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
             <path d="M6.3 5.7a1 1 0 011.4 0l4 4a1 1 0 010 1.4l-4 4a1 1 0 01-1.4-1.4L9.6 10 6.3 6.7a1 1 0 010-1.4z"/>
           </svg>
@@ -249,7 +250,7 @@ export default function ProShowcase() {
               key={talent.id}
               talent={talent}
               onClick={() => setSelectedTalent(talent)}
-              className="h-[500px] w-[766px]"
+              className="h-[762px] w-[658px]"
             />
           ))}
         </div>
