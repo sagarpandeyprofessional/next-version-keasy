@@ -364,6 +364,7 @@ export default function Marketplace() {
       setUserId(data?.user?.id || null);
     };
     fetchUser();
+    
   }, []);
 
   // Load categories, brands, and items (only verified items)
