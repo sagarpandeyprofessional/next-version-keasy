@@ -364,6 +364,7 @@ export default function Marketplace() {
       setUserId(data?.user?.id || null);
     };
     fetchUser();
+    
   }, []);
 
   // Load categories, brands, and items (only verified items)
@@ -372,7 +373,7 @@ export default function Marketplace() {
       const [catRes, brandRes, itemsRes] = await Promise.all([
         supabase.from("marketplace_category").select("id,name"),
         supabase.from("marketplace_brand").select("id,name"),
-        supabase.from("marketplace").select("*").eq("verified", true).eq('avaliable', true),
+        supabase.from("marketplace").select("*").eq("verified", true).eq('available', true),
       ]);
 
       if (!catRes.error) setCategories(catRes.data || []);
