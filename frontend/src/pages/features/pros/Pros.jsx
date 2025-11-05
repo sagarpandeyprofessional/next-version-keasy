@@ -78,7 +78,6 @@ const talents = [
 ];
 
 const ProCard = ({ talent, onClick }) => {
-
   return (
     <div
       onClick={onClick}
@@ -220,6 +219,7 @@ const ProModal = ({ talent, isOpen, onClose, isMobile }) => {
 export default function ProShowcase() {
   const [selectedTalent, setSelectedTalent] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeTab, setActiveTab] = useState('professionals');
 
   useEffect(() => {
     const checkMobile = () => {
@@ -233,14 +233,42 @@ export default function ProShowcase() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
-      <div className="container mx-auto px-15 py-12 md:py-16">
+      <div className="container mx-auto px-15 pt-4 pb-12 md:pb-16">
+        {/* Tabs */}
+        <div className="flex justify-center gap-2 mb-8">
+          <button
+            onClick={() => setActiveTab('talents')}
+            className={`px-6 py-2 rounded-full font-semibold transition-all ${
+              activeTab === 'talents'
+                ? 'bg-green-700 text-white shadow-md'
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            Talents
+          </button>
+          <button
+            onClick={() => setActiveTab('professionals')}
+            className={`px-6 py-2 rounded-full font-semibold transition-all ${
+              activeTab === 'professionals'
+                ? 'bg-green-700 text-white shadow-md'
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            Professionals
+          </button>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
-            We've helped 2,000+ members reach their goals
+            {activeTab === 'professionals' 
+              ? "We've helped 2,000+ members reach their goals"
+              : "Discover amazing talents ready to work with you"}
           </h1>
           <p className="text-lg md:text-xl text-gray-600">
-            Don't just take it from us. Hear their inspiring stories.*
+            {activeTab === 'professionals'
+              ? "Don't just take it from us. Hear their inspiring stories.*"
+              : "Connect with skilled professionals across various fields"}
           </p>
         </div>
 
@@ -251,18 +279,17 @@ export default function ProShowcase() {
               key={talent.id}
               talent={talent}
               onClick={() => setSelectedTalent(talent)}
-              className="h-[762px] w-[658px]"
             />
           ))}
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-xs md:text-sm text-gray-500 mt-12 max-w-4xl mx-auto">
-          some text
+        {activeTab === 'professionals' && (
+          <p className="text-center text-xs md:text-sm text-gray-500 mt-12 max-w-4xl mx-auto">
+            some text
           </p>
+        )}
       </div>
-      {/* These are current Members we paid in cash for participating in this series. This could create a conflict of interest. Each video is edited to be clear, concise and reflect the experiences of an individual Member, not others, at the time of filming. These testimonials don't guarantee future performance or success.
-        </p> */}
 
       {/* Modal */}
       <ProModal
