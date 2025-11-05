@@ -78,7 +78,7 @@ const talents = [
 ];
 
 const ProCard = ({ talent, onClick }) => {
-  
+
   return (
     <div
       onClick={onClick}
@@ -94,6 +94,7 @@ const ProCard = ({ talent, onClick }) => {
           <div className="bg-green-400 text-green-900 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2">
             {talent.quote}
           </div>
+          
           <h3 className="text-white text-lg sm:text-xl font-bold mb-1">{talent.name}</h3>
           <p className="text-white/90 text-sm">{talent.role}</p>
         </div>
