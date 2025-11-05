@@ -353,6 +353,19 @@ const SignUp = () => {
                 )}
               </div>
 
+              {/* Terms and Privacy Policy Notice */}
+              <p className="text-xs text-gray-600 text-center">
+                By clicking on Sign up, you agree to keasy's{" "}
+                <a href="/terms_of_service" className="text-black hover:underline">
+                  Terms of Service
+                </a>
+                . To learn more about how keasy collects, uses, and protects your personal data, please see our{" "}
+                <a href="/privacy_policy" className="text-black hover:underline">
+                  Privacy Policy
+                </a>
+                .
+              </p>
+
               {/* Submit Button */}
               <button
                 type="submit"

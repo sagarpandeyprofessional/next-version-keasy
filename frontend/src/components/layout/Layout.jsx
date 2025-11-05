@@ -20,10 +20,11 @@ const Layout = ({ children }) => {
 
   // Routes that don't require authentication at all
   const publicRoutes = [
+    '/privacy_policy',
+    '/terms_of_service',
     '/signin', 
     '/signup', 
     '/about', 
-    '/contact', 
     '/faq',
     '/blog',
     '/nearby',
