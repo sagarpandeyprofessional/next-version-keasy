@@ -11,7 +11,8 @@ const talents = [
     quote: "I have a clear roadmap.",
     description: "Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.",
     style: ["Analytical", "Patient", "Detail-oriented"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
+    rating: 5
   },
   {
     id: 2,
@@ -21,7 +22,8 @@ const talents = [
     quote: "It's given me a lot of peace and clarity around my finances.",
     description: "Amy specializes in helping small businesses optimize their operations and financial processes. With 8 years of consulting experience, she brings clarity and actionable strategies to complex business challenges.\n\nHer methodology involves deep-dive analysis of business operations, identifying inefficiencies, and implementing sustainable solutions that drive growth. Amy has worked with startups, family businesses, and mid-sized companies across various industries including retail, technology, and healthcare.\n\nWhat sets Amy apart is her hands-on approach. She doesn't just provide recommendations—she works alongside your team to ensure successful implementation. Her clients have reported average revenue increases of 35% within the first year of working together. Amy's expertise spans strategic planning, process optimization, financial management, and team development.",
     style: ["Strategic", "Supportive", "Results-driven"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
+    rating: 5
   },
   {
     id: 3,
@@ -31,7 +33,8 @@ const talents = [
     quote: "I don't feel like I'm flying by the seat of my pants.",
     description: "Eli helps professionals navigate career transitions and achieve their professional goals. His approach combines practical advice with motivational support to help clients find their true calling.\n\nWith a background in HR and organizational psychology, Eli understands the complexities of modern career paths. He specializes in helping mid-career professionals who feel stuck, recent graduates finding their direction, and executives preparing for leadership roles. His coaching program includes personality assessments, skills mapping, industry research, and strategic networking guidance.\n\nEli's clients have successfully transitioned into new industries, negotiated significant salary increases, and launched their own businesses. He provides ongoing support through resume optimization, interview preparation, and personal branding strategies. His holistic approach addresses both professional development and work-life balance, ensuring sustainable career success.",
     style: ["Motivational", "Empathetic", "Action-oriented"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
+    rating: 5
   },
   {
     id: 4,
@@ -41,7 +44,8 @@ const talents = [
     quote: "It has been pivotal with major life decisions.",
     description: "Kathleen specializes in helping individuals make confident decisions during life's major transitions. Her holistic approach integrates personal values with practical goal-setting strategies.\n\nWhether you're navigating a career change, relationship transition, relocation, or personal transformation, Kathleen provides the clarity and support you need. Her coaching philosophy centers on self-discovery, helping you identify what truly matters and creating actionable plans to get there.\n\nKathleen combines various methodologies including cognitive behavioral techniques, mindfulness practices, and values-based decision-making frameworks. She has guided hundreds of clients through major life transitions, helping them overcome self-doubt and fear of change. Her sessions create a safe space for exploring difficult emotions while maintaining focus on forward progress.\n\nClients describe Kathleen as intuitive, wise, and incredibly supportive. She has a gift for asking the right questions that lead to breakthrough moments.",
     style: ["Holistic", "Encouraging", "Insightful"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
+    rating: 5
   },
   {
     id: 5,
@@ -51,7 +55,8 @@ const talents = [
     quote: "Transforming brands into market leaders.",
     description: "David has helped over 50 companies scale their marketing efforts. He specializes in digital strategy, content marketing, and brand positioning for growing businesses.\n\nHis expertise spans SEO, social media marketing, email campaigns, content strategy, and marketing automation. David believes in data-driven decision making and builds campaigns that deliver measurable ROI. He's particularly skilled at identifying untapped market opportunities and creating strategies to capitalize on them.\n\nDavid's approach starts with deep market research and competitor analysis, followed by developing a unique brand voice and positioning strategy. He then creates integrated marketing campaigns that leverage multiple channels for maximum impact. His clients have experienced average growth rates of 150% in their marketing-driven revenue.\n\nBeyond strategy, David helps build in-house marketing capabilities, training teams and establishing processes that ensure long-term success. He stays ahead of industry trends and continuously adapts strategies to leverage emerging platforms and technologies.",
     style: ["Creative", "Data-driven", "Innovative"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
+    rating: 5
   },
   {
     id: 6,
@@ -61,7 +66,8 @@ const talents = [
     quote: "Health is wealth, and balance is key.",
     description: "Sarah combines nutrition science with mindfulness practices to help clients achieve holistic wellness. Her programs focus on sustainable lifestyle changes rather than quick fixes.\n\nWith a Master's degree in Nutrition and certifications in yoga and meditation instruction, Sarah offers a comprehensive approach to health. She recognizes that true wellness encompasses physical health, mental clarity, emotional balance, and spiritual fulfillment. Her programs are customized to each client's unique needs, preferences, and lifestyle.\n\nSarah specializes in helping busy professionals who struggle to prioritize self-care, individuals recovering from burnout, and anyone seeking to establish healthier habits. Her methodology includes personalized nutrition plans, stress management techniques, movement practices, and sleep optimization strategies.\n\nClients working with Sarah report increased energy levels, better stress management, improved sleep quality, and a more positive relationship with food and exercise. She emphasizes progress over perfection and creates supportive accountability structures that make lasting change achievable.",
     style: ["Compassionate", "Knowledgeable", "Balanced"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
+    rating: 4.5
   },
   {
     id: 7,
@@ -71,7 +77,8 @@ const talents = [
     quote: "Simplifying technology for everyone.",
     description: "Michael helps businesses adopt new technologies efficiently. With expertise in cloud solutions and digital transformation, he makes complex tech accessible to non-technical teams.\n\nHis consulting practice focuses on helping small to medium-sized businesses leverage technology to improve operations, reduce costs, and scale effectively. Michael specializes in cloud migration, cybersecurity, workflow automation, and software integration. He has successfully guided over 40 companies through digital transformation initiatives.\n\nWhat makes Michael exceptional is his ability to bridge the gap between technical possibilities and business needs. He takes time to understand your operations, pain points, and goals before recommending solutions. His implementations are pragmatic, focusing on tools that deliver immediate value while building toward long-term capabilities.\n\nMichael provides comprehensive support from initial assessment through implementation and training. He ensures your team feels confident using new systems and establishes processes for ongoing optimization. His clients appreciate his patient teaching style and his commitment to making technology an enabler rather than a source of frustration.",
     style: ["Patient", "Technical", "Pragmatic"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
+    rating: 3
   },
   {
     id: 8,
@@ -81,11 +88,59 @@ const talents = [
     quote: "Finding your perfect space is my mission.",
     description: "Jessica has guided hundreds of families through the home-buying process. Her market knowledge and negotiation skills help clients find their dream properties at the right price.\n\nWith 12 years of experience in residential real estate, Jessica brings deep expertise in market analysis, property valuation, and negotiation strategy. She represents both buyers and sellers, always prioritizing her clients' best interests. Her intimate knowledge of local neighborhoods, school districts, and market trends gives her clients a significant advantage.\n\nJessica's approach is consultative and educational. She takes time to understand your needs, preferences, and constraints before showing properties. For buyers, she guides you through every step from pre-approval to closing. For sellers, she develops comprehensive marketing strategies that showcase your property's best features and attract qualified buyers.\n\nHer clients value her responsiveness, attention to detail, and calm presence during what can be a stressful process. Jessica has consistently ranked in the top 5% of agents in her market and maintains a 98% client satisfaction rate. Many of her clients return to her for future transactions and refer their friends and family.",
     style: ["Attentive", "Trustworthy", "Proactive"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
+    rating: 3
   }
 ];
 
-const ProCard = ({ talent, onClick }) => {
+const ProCard = ({ talent, onClick, isMobile }) => {
+  // Mobile: Horizontal compact card
+  if (isMobile) {
+    return (
+      <div
+        onClick={onClick}
+        className="cursor-pointer rounded-3xl mx-3 overflow-hidden bg-white transition-all duration-300 hover:shadow-lg border-b border-gray-200 h-[140px] flex items-center"
+      >
+        {/* Left: Profile image */}
+        <div className="w-[120px] h-full flex-shrink-0">
+          <img
+            src={talent.image}
+            alt={talent.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        
+        {/* Right: Info */}
+        <div className="flex-1 px-4 py-3 flex flex-col justify-center">
+          <h3 className="text-base font-bold text-gray-900 mb-1 line-clamp-1">{talent.name}</h3>
+          <p className="text-sm text-gray-600 mb-2 line-clamp-1">{talent.role}</p>
+          <p className="text-sm text-gray-500 italic mb-2 line-clamp-2">"{talent.quote}"</p>
+          
+          {/* Star rating */}
+          <div className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <svg
+                key={star}
+                className={`w-4 h-4 ${
+                  star <= Math.floor(talent.rating)
+                    ? 'text-yellow-400 fill-current'
+                    : star <= talent.rating
+                    ? 'text-yellow-400 fill-current opacity-50'
+                    : 'text-gray-300 fill-current'
+                }`}
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            ))}
+            <span className="text-sm text-gray-600 ml-1 font-medium">{talent.rating}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop: Original card design
   return (
     <div
       onClick={onClick}
@@ -110,6 +165,14 @@ const ProCard = ({ talent, onClick }) => {
             <path d="M6.3 5.7a1 1 0 011.4 0l4 4a1 1 0 010 1.4l-4 4a1 1 0 01-1.4-1.4L9.6 10 6.3 6.7a1 1 0 010-1.4z"/>
           </svg>
         </button>
+
+        {/* Star rating - Top Right */}
+        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg flex items-center gap-1">
+          <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+          <span className="text-sm font-bold text-gray-900">{talent.rating}</span>
+        </div>
       </div>
     </div>
   );
@@ -342,7 +405,7 @@ const Professionals = ({isMobile}) => {
     <>
       <div className="text-center mb-12 md:mb-16">
         <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-          We've helped 2,000+ members reach their goals
+          We've helped thousands of members reach their goals
         </h1>
         <p className="text-sm md:text-xl text-gray-600">
           Don't just take it from us. Succeed with us!
@@ -355,6 +418,7 @@ const Professionals = ({isMobile}) => {
               key={talent.id}
               talent={talent}
               onClick={() => setSelectedTalent(talent)}
+              isMobile={isMobile}
             />
         ))}
       </div>
@@ -430,13 +494,14 @@ export default function ProShowcase() {
           </button>
         </div>
 
-        {/* Persistent structure with dynamic body */}
-        <div className="min-h-[400px] transition-all duration-300">
+        
+      </div>
+      {/* Persistent structure with dynamic body */}
+        <div className="min-h-[400px] transition-all duration-300 pb-10">
           {activeTab === 'professionals' && <Professionals isMobile={isMobile} />}
           {activeTab === 'freelancers' && <Freelancers />}
           {activeTab === 'projects' && <Projects />}
         </div>
-      </div>
     </div>
   );
 }

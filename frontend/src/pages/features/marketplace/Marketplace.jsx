@@ -4,6 +4,7 @@ import { supabase } from "../../../api/supabase-client";
 import { FiHeart, FiEye, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
+import { HiOutlineSave, HiSave } from "react-icons/hi";
 
 // =========================
 // Helpers
@@ -16,10 +17,8 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
-// =========================
 // MarketplaceItem component
-// =========================
-const MarketplaceItem = ({ item, userId, onToggleLike }) => {
+const MarketplaceItem = ({ item, userId, onToggleLike, isMobile }) => {
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
   const imageUrl = item?.images?.images?.[0] || "/no-image.png";
@@ -43,18 +42,80 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 
   const conditionStyles = {
     new: { label: "New", color: "bg-black" },
-    like_new: { label: "Like New", color: "bg-blue-600" },
     used: { label: "Used", color: "bg-gray-700" },
-    refurbished: { label: "Refurbished", color: "bg-green-600" },
-    damaged: { label: "Damaged", color: "bg-red-700" },
   };
 
+  // Mobile horizontal layout
+  if (isMobile) {
+    return (
+      <div
+        onClick={handleCardClick}
+        className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-all active:scale-[0.98] flex h-[120px]"
+      >
+        {/* Left Image */}
+        <div className="relative w-[120px] flex-shrink-0 bg-gray-50 flex justify-center items-center">
+          <img
+            src={imageUrl}
+            alt={item.title}
+            onError={() => setImageError(true)}
+            className="h-full w-full object-cover"
+          />
+        </div>
+
+        {/* Right Content */}
+        <div className="flex-1 p-3 flex flex-col justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-black line-clamp-1 mb-1">
+              {item.title}
+            </h3>
+            <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
+              <span>{item.category_name}</span>
+              <span>•</span>
+              <span>{item.location}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className={`inline-block rounded px-2 py-0.5 text-xs font-medium text-white ${
+                  conditionStyles[item.condition]?.color || "bg-gray-700"
+                }`}
+              >
+                {conditionStyles[item.condition]?.label || "Unknown"}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <p className="text-base font-bold text-black">
+                {formatCurrency(item.price)}
+              </p>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleLike(item);
+              }}
+              className="flex items-center gap-1 px-2 b-4"
+            >
+              {isLiked ? (
+                <FaHeart className="text-red-500 text-xl" />
+              ) : (
+                <FiHeart className="text-gray-600 text-xl" />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop vertical layout
   return (
     <div
       onClick={handleCardClick}
       className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1"
     >
-      <div className="relative w-full h-[250px] sm:h-[300px] md:h-48 bg-white flex justify-center items-center">
+      <div className="relative w-full h-48 bg-white flex justify-center items-center">
         <img
           src={imageUrl}
           alt={item.title}
@@ -476,6 +537,8 @@ export default function Marketplace() {
         .from("marketplace")
         .update({ favourites: { favourites: updatedFavourites } })
         .eq("id", item.id);
+
+      console.log(updatedFavourites)
     } catch (err) {
       console.error(err);
     }
@@ -583,6 +646,7 @@ export default function Marketplace() {
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((item) => (
                   <MarketplaceItem
+                    isMobile={isMobile}
                     key={item.id}
                     item={item}
                     userId={userId}
