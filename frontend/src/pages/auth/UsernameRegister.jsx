@@ -110,9 +110,7 @@ const UsernameRegistration = () => {
         .from("profiles")
         .upsert({
           user_id: session.user.id,
-          username: username,
-          privacy_policy: true,
-          terms_of_service: true
+          username: username
         })
         .select()
         .single();
