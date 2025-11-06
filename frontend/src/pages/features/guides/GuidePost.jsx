@@ -297,6 +297,19 @@ export default function GuideEditor() {
           category: selectedCategory,
           created_by: user.id,
           view: 0,
+
+
+
+
+
+
+// update
+
+
+
+
+
+
           like: {}
         })
         .select()

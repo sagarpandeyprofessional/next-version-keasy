@@ -266,9 +266,7 @@ export default function MarketplacePostPage() {
         seller_contact_type: formData.seller_contact_type,
         seller_contact: contactLink,
         images: { images: imageUrls },
-        views: 0,
-        chat: 0,
-        favourites: { favourites: [] }
+        views: 0
       };
 
       console.log("Inserting marketplace data:", marketplaceData);
