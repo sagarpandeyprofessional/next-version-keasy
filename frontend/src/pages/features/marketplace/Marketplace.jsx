@@ -4,7 +4,6 @@ import { supabase } from "../../../api/supabase-client";
 import { FiHeart, FiEye, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
-import { HiOutlineSave, HiSave } from "react-icons/hi";
 
 // =========================
 // Helpers
@@ -18,14 +17,12 @@ const formatCurrency = (amount) => {
 };
 
 // MarketplaceItem component
-const MarketplaceItem = ({ item, userId, onToggleLike, isMobile }) => {
+const MarketplaceItem = ({ item, userId, onToggleLike, isMobile, user_favourites }) => {
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
   const imageUrl = item?.images?.images?.[0] || "/no-image.png";
-
-  const favouritesList = item.favourites?.favourites || [];
-  const likesCount = favouritesList.length;
-  const isLiked = userId && favouritesList.includes(userId);
+  const likesCount = 0;
+  const isLiked = user_favourites.includes(item.id);
 
   const handleCardClick = async () => {
     try {
@@ -396,6 +393,7 @@ const FilterSidebar = ({
 export default function Marketplace() {
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
+  const [user_favourites, setUserFavourites] = useState([]);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [filters, setFilters] = useState({
@@ -420,13 +418,24 @@ export default function Marketplace() {
 
   // Load user
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUserId(data?.user?.id || null);
-    };
-    fetchUser();
-    
-  }, []);
+  const fetchUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    const uid = data?.user?.id || null;
+    setUserId(uid);
+
+    if (uid) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("favourites_marketplace")
+        .eq("user_id", uid)
+        .single();
+
+      setUserFavourites(profile?.favourites_marketplace || []);
+    }
+  };
+  fetchUser();
+}, []);
+
 
   // Load categories, brands, and items (only verified items)
   useEffect(() => {
@@ -509,40 +518,31 @@ export default function Marketplace() {
 
   // Handle like
   const handleToggleLike = async (item) => {
-    if (!userId) {
-      alert("Please log in to like items.");
-      return;
-    }
+  if (!userId) {
+    alert("Please log in to like items.");
+    return;
+  }
 
-    let favourites = item.favourites?.favourites || [];
-    if (!Array.isArray(favourites)) favourites = [];
+  try {
+    const isLiked = user_favourites.includes(item.id);
+    const updatedFavourites = isLiked
+      ? user_favourites.filter((id) => id !== item.id)
+      : [...user_favourites, item.id];
 
-    const updatedFavourites = favourites.includes(userId)
-      ? favourites.filter((id) => id !== userId)
-      : [...favourites, userId];
+    setUserFavourites(updatedFavourites); // ✅ local update
 
-    try {
-      setAllItems((prev) =>
-        prev.map((it) =>
-          it.id === item.id ? { ...it, favourites: { favourites: updatedFavourites } } : it
-        )
-      );
-      setItems((prev) =>
-        prev.map((it) =>
-          it.id === item.id ? { ...it, favourites: { favourites: updatedFavourites } } : it
-        )
-      );
+    const { error } = await supabase
+      .from("profiles")
+      .update({ favourites_marketplace: updatedFavourites })
+      .eq("user_id", userId);
 
-      await supabase
-        .from("marketplace")
-        .update({ favourites: { favourites: updatedFavourites } })
-        .eq("id", item.id);
+    if (error) throw error;
+  } catch (err) {
+    console.error("Error updating favourites:", err);
+  }
+};
 
-      console.log(updatedFavourites)
-    } catch (err) {
-      console.error(err);
-    }
-  };
+
 
   // Clear filters
   const handleClearFilters = () => {
@@ -646,6 +646,7 @@ export default function Marketplace() {
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((item) => (
                   <MarketplaceItem
+                    user_favourites = {user_favourites}
                     isMobile={isMobile}
                     key={item.id}
                     item={item}
