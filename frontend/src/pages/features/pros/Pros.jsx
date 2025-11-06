@@ -9,8 +9,9 @@ const talents = [
     role: "Financial Advisor",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
     quote: "I have a clear roadmap.",
-    description: "Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.",
-    style: ["Analytical", "Patient", "Detail-oriented"]
+    description: "Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.",
+    style: ["Analytical", "Patient", "Detail-oriented"],
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
   },
   {
     id: 2,
@@ -18,8 +19,9 @@ const talents = [
     role: "Business Consultant",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop",
     quote: "It's given me a lot of peace and clarity around my finances.",
-    description: "Amy specializes in helping small businesses optimize their operations and financial processes. With 8 years of consulting experience, she brings clarity and actionable strategies to complex business challenges.",
-    style: ["Strategic", "Supportive", "Results-driven"]
+    description: "Amy specializes in helping small businesses optimize their operations and financial processes. With 8 years of consulting experience, she brings clarity and actionable strategies to complex business challenges.\n\nHer methodology involves deep-dive analysis of business operations, identifying inefficiencies, and implementing sustainable solutions that drive growth. Amy has worked with startups, family businesses, and mid-sized companies across various industries including retail, technology, and healthcare.\n\nWhat sets Amy apart is her hands-on approach. She doesn't just provide recommendations—she works alongside your team to ensure successful implementation. Her clients have reported average revenue increases of 35% within the first year of working together. Amy's expertise spans strategic planning, process optimization, financial management, and team development.",
+    style: ["Strategic", "Supportive", "Results-driven"],
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
   },
   {
     id: 3,
@@ -27,8 +29,9 @@ const talents = [
     role: "Career Coach",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
     quote: "I don't feel like I'm flying by the seat of my pants.",
-    description: "Eli helps professionals navigate career transitions and achieve their professional goals. His approach combines practical advice with motivational support to help clients find their true calling.",
-    style: ["Motivational", "Empathetic", "Action-oriented"]
+    description: "Eli helps professionals navigate career transitions and achieve their professional goals. His approach combines practical advice with motivational support to help clients find their true calling.\n\nWith a background in HR and organizational psychology, Eli understands the complexities of modern career paths. He specializes in helping mid-career professionals who feel stuck, recent graduates finding their direction, and executives preparing for leadership roles. His coaching program includes personality assessments, skills mapping, industry research, and strategic networking guidance.\n\nEli's clients have successfully transitioned into new industries, negotiated significant salary increases, and launched their own businesses. He provides ongoing support through resume optimization, interview preparation, and personal branding strategies. His holistic approach addresses both professional development and work-life balance, ensuring sustainable career success.",
+    style: ["Motivational", "Empathetic", "Action-oriented"],
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
   },
   {
     id: 4,
@@ -36,8 +39,9 @@ const talents = [
     role: "Life Coach",
     image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop",
     quote: "It has been pivotal with major life decisions.",
-    description: "Kathleen specializes in helping individuals make confident decisions during life's major transitions. Her holistic approach integrates personal values with practical goal-setting strategies.",
-    style: ["Holistic", "Encouraging", "Insightful"]
+    description: "Kathleen specializes in helping individuals make confident decisions during life's major transitions. Her holistic approach integrates personal values with practical goal-setting strategies.\n\nWhether you're navigating a career change, relationship transition, relocation, or personal transformation, Kathleen provides the clarity and support you need. Her coaching philosophy centers on self-discovery, helping you identify what truly matters and creating actionable plans to get there.\n\nKathleen combines various methodologies including cognitive behavioral techniques, mindfulness practices, and values-based decision-making frameworks. She has guided hundreds of clients through major life transitions, helping them overcome self-doubt and fear of change. Her sessions create a safe space for exploring difficult emotions while maintaining focus on forward progress.\n\nClients describe Kathleen as intuitive, wise, and incredibly supportive. She has a gift for asking the right questions that lead to breakthrough moments.",
+    style: ["Holistic", "Encouraging", "Insightful"],
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
   },
   {
     id: 5,
@@ -45,8 +49,9 @@ const talents = [
     role: "Marketing Strategist",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
     quote: "Transforming brands into market leaders.",
-    description: "David has helped over 50 companies scale their marketing efforts. He specializes in digital strategy, content marketing, and brand positioning for growing businesses.",
-    style: ["Creative", "Data-driven", "Innovative"]
+    description: "David has helped over 50 companies scale their marketing efforts. He specializes in digital strategy, content marketing, and brand positioning for growing businesses.\n\nHis expertise spans SEO, social media marketing, email campaigns, content strategy, and marketing automation. David believes in data-driven decision making and builds campaigns that deliver measurable ROI. He's particularly skilled at identifying untapped market opportunities and creating strategies to capitalize on them.\n\nDavid's approach starts with deep market research and competitor analysis, followed by developing a unique brand voice and positioning strategy. He then creates integrated marketing campaigns that leverage multiple channels for maximum impact. His clients have experienced average growth rates of 150% in their marketing-driven revenue.\n\nBeyond strategy, David helps build in-house marketing capabilities, training teams and establishing processes that ensure long-term success. He stays ahead of industry trends and continuously adapts strategies to leverage emerging platforms and technologies.",
+    style: ["Creative", "Data-driven", "Innovative"],
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
   },
   {
     id: 6,
@@ -54,8 +59,9 @@ const talents = [
     role: "Wellness Coach",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
     quote: "Health is wealth, and balance is key.",
-    description: "Sarah combines nutrition science with mindfulness practices to help clients achieve holistic wellness. Her programs focus on sustainable lifestyle changes rather than quick fixes.",
-    style: ["Compassionate", "Knowledgeable", "Balanced"]
+    description: "Sarah combines nutrition science with mindfulness practices to help clients achieve holistic wellness. Her programs focus on sustainable lifestyle changes rather than quick fixes.\n\nWith a Master's degree in Nutrition and certifications in yoga and meditation instruction, Sarah offers a comprehensive approach to health. She recognizes that true wellness encompasses physical health, mental clarity, emotional balance, and spiritual fulfillment. Her programs are customized to each client's unique needs, preferences, and lifestyle.\n\nSarah specializes in helping busy professionals who struggle to prioritize self-care, individuals recovering from burnout, and anyone seeking to establish healthier habits. Her methodology includes personalized nutrition plans, stress management techniques, movement practices, and sleep optimization strategies.\n\nClients working with Sarah report increased energy levels, better stress management, improved sleep quality, and a more positive relationship with food and exercise. She emphasizes progress over perfection and creates supportive accountability structures that make lasting change achievable.",
+    style: ["Compassionate", "Knowledgeable", "Balanced"],
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
   },
   {
     id: 7,
@@ -63,8 +69,9 @@ const talents = [
     role: "Tech Consultant",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
     quote: "Simplifying technology for everyone.",
-    description: "Michael helps businesses adopt new technologies efficiently. With expertise in cloud solutions and digital transformation, he makes complex tech accessible to non-technical teams.",
-    style: ["Patient", "Technical", "Pragmatic"]
+    description: "Michael helps businesses adopt new technologies efficiently. With expertise in cloud solutions and digital transformation, he makes complex tech accessible to non-technical teams.\n\nHis consulting practice focuses on helping small to medium-sized businesses leverage technology to improve operations, reduce costs, and scale effectively. Michael specializes in cloud migration, cybersecurity, workflow automation, and software integration. He has successfully guided over 40 companies through digital transformation initiatives.\n\nWhat makes Michael exceptional is his ability to bridge the gap between technical possibilities and business needs. He takes time to understand your operations, pain points, and goals before recommending solutions. His implementations are pragmatic, focusing on tools that deliver immediate value while building toward long-term capabilities.\n\nMichael provides comprehensive support from initial assessment through implementation and training. He ensures your team feels confident using new systems and establishes processes for ongoing optimization. His clients appreciate his patient teaching style and his commitment to making technology an enabler rather than a source of frustration.",
+    style: ["Patient", "Technical", "Pragmatic"],
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
   },
   {
     id: 8,
@@ -72,8 +79,9 @@ const talents = [
     role: "Real Estate Advisor",
     image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop",
     quote: "Finding your perfect space is my mission.",
-    description: "Jessica has guided hundreds of families through the home-buying process. Her market knowledge and negotiation skills help clients find their dream properties at the right price.",
-    style: ["Attentive", "Trustworthy", "Proactive"]
+    description: "Jessica has guided hundreds of families through the home-buying process. Her market knowledge and negotiation skills help clients find their dream properties at the right price.\n\nWith 12 years of experience in residential real estate, Jessica brings deep expertise in market analysis, property valuation, and negotiation strategy. She represents both buyers and sellers, always prioritizing her clients' best interests. Her intimate knowledge of local neighborhoods, school districts, and market trends gives her clients a significant advantage.\n\nJessica's approach is consultative and educational. She takes time to understand your needs, preferences, and constraints before showing properties. For buyers, she guides you through every step from pre-approval to closing. For sellers, she develops comprehensive marketing strategies that showcase your property's best features and attract qualified buyers.\n\nHer clients value her responsiveness, attention to detail, and calm presence during what can be a stressful process. Jessica has consistently ranked in the top 5% of agents in her market and maintains a 98% client satisfaction rate. Many of her clients return to her for future transactions and refer their friends and family.",
+    style: ["Attentive", "Trustworthy", "Proactive"],
+    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ'
   }
 ];
 
@@ -90,15 +98,15 @@ const ProCard = ({ talent, onClick }) => {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-6">
-          <div className="bg-green-400 text-green-900 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2">
+          <div className="bg-blue-700/70 text-white/90 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2">
             {talent.quote}
           </div>
           
           <h3 className="text-white text-lg sm:text-xl font-bold mb-1">{talent.name}</h3>
           <p className="text-white/90 text-sm">{talent.role}</p>
         </div>
-        <button className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors">
-          <svg className="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+        <button className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-none hover:bg-black/10 rounded-full p-2 shadow-lg">
+          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path d="M6.3 5.7a1 1 0 011.4 0l4 4a1 1 0 010 1.4l-4 4a1 1 0 01-1.4-1.4L9.6 10 6.3 6.7a1 1 0 010-1.4z"/>
           </svg>
         </button>
@@ -113,10 +121,21 @@ const ProModal = ({ talent, isOpen, onClose, isMobile }) => {
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => setIsAnimating(true), 10);
+      // Prevent body scroll on mobile when modal is open
+      if (isMobile) {
+        document.body.style.overflow = 'hidden';
+      }
     } else {
       setIsAnimating(false);
+      if (isMobile) {
+        document.body.style.overflow = '';
+      }
     }
-  }, [isOpen]);
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, isMobile]);
 
   if (!isOpen) return null;
 
@@ -125,67 +144,75 @@ const ProModal = ({ talent, isOpen, onClose, isMobile }) => {
     setTimeout(onClose, 300);
   };
 
-  return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      onClick={handleClose}
-    >
-      {/* Backdrop */}
+  // Mobile layout (80% screen height from bottom)
+  if (isMobile) {
+    return (
       <div 
-        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-          isAnimating ? 'opacity-50' : 'opacity-0'
-        }`}
-      />
-      
-      {/* Modal */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={`relative bg-white shadow-2xl overflow-hidden transition-all duration-300 ${
-          isMobile 
-            ? `fixed left-0 right-0 rounded-t-2xl ${isAnimating ? 'translate-y-0' : 'translate-y-full'}`
-            : `w-full max-w-4xl mx-4 rounded-2xl ${isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`
-        }`}
-        style={isMobile ? { top: '32px', bottom: '-100px' } : { maxHeight: '90vh' }}
+        className="fixed inset-0 z-50"
+        onClick={handleClose}
       >
-        {/* Close button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+        {/* Backdrop */}
+        <div 
+          className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+            isAnimating ? 'opacity-50' : 'opacity-0'
+          }`}
+        />
+        
+        {/* Modal - 80% height from bottom */}
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className={`fixed left-0 right-0 bottom-0 bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${
+            isAnimating ? 'translate-y-0' : 'translate-y-full'
+          }`}
+          style={{ height: '80vh' }}
         >
-          <X className="w-5 h-5 text-gray-600" />
-        </button>
+          {/* Handle bar */}
+          <div className="flex justify-center pt-3 pb-2">
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+          </div>
 
-        {/* Scrollable content */}
-        <div className="h-full overflow-y-auto">
-          <div className="grid md:grid-cols-2 gap-0">
-            {/* Image section */}
-            <div className="relative h-64 md:h-full bg-gradient-to-br from-amber-50 to-orange-50">
-              <img
-                src={talent.image}
-                alt={talent.name}
-                className="w-full h-full object-cover"
+          {/* Close button */}
+          <button
+            onClick={handleClose}
+            className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
+
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto">
+            {/* Video section */}
+            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
+              <iframe
+                src={`https://www.youtube.com/embed/${
+                  new URL(talent.video).searchParams.get("v")
+                }?autoplay=1&modestbranding=1&rel=0`}
+                title={talent.name}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
               />
-              <div className="absolute bottom-4 left-4 bg-green-400 text-green-900 text-sm font-semibold px-4 py-2 rounded-full">
+              <div className="absolute bottom-4 left-4 bg-blue-700/70 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
                 {talent.quote}
               </div>
             </div>
 
             {/* Content section */}
-            <div className="p-8 md:p-10">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">{talent.name}</h2>
-              <p className="text-lg text-gray-600 mb-6">{talent.role}</p>
+            <div className="p-6 pb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-1">{talent.name}</h2>
+              <p className="text-base text-gray-600 mb-5">{talent.role}</p>
               
-              <p className="text-gray-700 leading-relaxed mb-8">
+              <p className="text-gray-700 leading-relaxed mb-6">
                 {talent.description}
               </p>
 
-              <div className="mb-8">
+              <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-900 mb-3">Style</h3>
                 <div className="flex flex-wrap gap-2">
                   {talent.style.map((s, idx) => (
                     <span
                       key={idx}
-                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
+                      className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
                     >
                       {s === "Supportive" && "👋 "}
                       {s === "Proactive" && "✅ "}
@@ -196,18 +223,101 @@ const ProModal = ({ talent, isOpen, onClose, isMobile }) => {
                 </div>
               </div>
 
-              <button className="w-full bg-green-700 text-white py-4 rounded-xl font-semibold hover:bg-green-800 transition-colors shadow-lg">
+              <button className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold transition-colors shadow-lg">
                 Choose {talent.name.split(' ')[0]}
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-              <div className="flex justify-between mt-6 text-sm text-gray-500">
-                <button className="hover:text-gray-700 transition-colors">
-                  ← Previous
-                </button>
-                <button className="hover:text-gray-700 transition-colors">
-                  Next →
-                </button>
+  // Desktop layout (slides from right, 60% width)
+  return (
+    <div 
+      className="fixed inset-0 z-50"
+      onClick={handleClose}
+    >
+      {/* Backdrop */}
+      <div 
+        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+          isAnimating ? 'opacity-50' : 'opacity-0'
+        }`}
+      />
+      
+      {/* Modal - slides from right */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`fixed top-0 right-0 h-full bg-white shadow-2xl transition-transform duration-300 overflow-hidden ${
+          isAnimating ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        style={{ width: '60%' }}
+      >
+        {/* Close button */}
+        <button
+          onClick={handleClose}
+          className="absolute top-6 right-6 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+        >
+          <X className="w-6 h-6 text-gray-600" />
+        </button>
+
+        {/* Scrollable content */}
+        <div className="h-full overflow-y-auto">
+          <div className="p-8 lg:p-12">
+            {/* Video section */}
+            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
+              <iframe
+                src={`https://www.youtube.com/embed/${
+                  new URL(talent.video).searchParams.get("v")
+                }?autoplay=1&modestbranding=1&rel=0`}
+                title={talent.name}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+              <div className="absolute bottom-4 left-4 bg-blue-700/70 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg">
+                {talent.quote}
               </div>
+            </div>
+
+
+            {/* Content section */}
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{talent.name}</h2>
+            <p className="text-lg text-gray-600 mb-8">{talent.role}</p>
+            
+            <p className="text-gray-700 leading-relaxed mb-8 text-base">
+              {talent.description}
+            </p>
+
+            <div className="mb-8">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">Style</h3>
+              <div className="flex flex-wrap gap-2">
+                {talent.style.map((s, idx) => (
+                  <span
+                    key={idx}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
+                  >
+                    {s === "Supportive" && "👋 "}
+                    {s === "Proactive" && "✅ "}
+                    {s === "Collaborative" && "🤝 "}
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <button className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-900/90 transition-colors shadow-lg mb-6">
+              Choose {talent.name.split(' ')[0]}
+            </button>
+
+            <div className="flex justify-between text-sm text-gray-500">
+              <button className="hover:text-gray-700 transition-colors">
+                ← Previous
+              </button>
+              <button className="hover:text-gray-700 transition-colors">
+                Next →
+              </button>
             </div>
           </div>
         </div>
@@ -216,8 +326,60 @@ const ProModal = ({ talent, isOpen, onClose, isMobile }) => {
   );
 };
 
-export default function ProShowcase() {
+// for independent talent.
+const Freelancers = () => {
+  return (
+    <>
+    freelancers upcoming
+    </>
+  )
+}
+
+// for professionals (lawyers, real estate agents, consultants).
+const Professionals = ({isMobile}) => {
   const [selectedTalent, setSelectedTalent] = useState(null);
+  return (
+    <>
+      <div className="text-center mb-12 md:mb-16">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+          We've helped 2,000+ members reach their goals
+        </h1>
+        <p className="text-sm md:text-xl text-gray-600">
+          Don't just take it from us. Succeed with us!
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+        {talents.map((talent) => (
+          <ProCard
+              key={talent.id}
+              talent={talent}
+              onClick={() => setSelectedTalent(talent)}
+            />
+        ))}
+      </div>
+
+      {/* Modal */}
+      <ProModal
+        talent={selectedTalent}
+        isOpen={!!selectedTalent}
+        onClose={() => setSelectedTalent(null)}
+        isMobile={isMobile}
+      />
+    </>
+  )
+}
+
+// for business and company-driven initiatives.
+const Projects = () => {
+  return (
+    <>
+    projects upcoming
+    </>
+  )
+}
+
+export default function ProShowcase() {
   const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState('professionals');
 
@@ -232,72 +394,49 @@ export default function ProShowcase() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
+    <div className="min-h-screen">
       <div className="container mx-auto px-15 pt-4 pb-12 md:pb-16">
         {/* Tabs */}
         <div className="flex justify-center gap-2 mb-8">
           <button
-            onClick={() => setActiveTab('talents')}
-            className={`px-6 py-2 rounded-full font-semibold transition-all ${
-              activeTab === 'talents'
-                ? 'bg-green-700 text-white shadow-md'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            Talents
-          </button>
-          <button
             onClick={() => setActiveTab('professionals')}
             className={`px-6 py-2 rounded-full font-semibold transition-all ${
               activeTab === 'professionals'
-                ? 'bg-green-700 text-white shadow-md'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200'
             }`}
           >
             Professionals
           </button>
+          <button
+            onClick={() => setActiveTab('freelancers')}
+            className={`px-6 py-2 rounded-full font-semibold transition-all ${
+              activeTab === 'freelancers'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200'
+            }`}
+          >
+            Freelancers
+          </button>
+          <button
+            onClick={() => setActiveTab('projects')}
+            className={`px-6 py-2 rounded-full font-semibold transition-all ${
+              activeTab === 'projects'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200'
+            }`}
+          >
+            Projects
+          </button>
         </div>
 
-        {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
-            {activeTab === 'professionals' 
-              ? "We've helped 2,000+ members reach their goals"
-              : "Discover amazing talents ready to work with you"}
-          </h1>
-          <p className="text-lg md:text-xl text-gray-600">
-            {activeTab === 'professionals'
-              ? "Don't just take it from us. Hear their inspiring stories.*"
-              : "Connect with skilled professionals across various fields"}
-          </p>
+        {/* Persistent structure with dynamic body */}
+        <div className="min-h-[400px] transition-all duration-300">
+          {activeTab === 'professionals' && <Professionals isMobile={isMobile} />}
+          {activeTab === 'freelancers' && <Freelancers />}
+          {activeTab === 'projects' && <Projects />}
         </div>
-
-        {/* Talent Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
-          {talents.map((talent) => (
-            <ProCard
-              key={talent.id}
-              talent={talent}
-              onClick={() => setSelectedTalent(talent)}
-            />
-          ))}
-        </div>
-
-        {/* Disclaimer */}
-        {activeTab === 'professionals' && (
-          <p className="text-center text-xs md:text-sm text-gray-500 mt-12 max-w-4xl mx-auto">
-            some text
-          </p>
-        )}
       </div>
-
-      {/* Modal */}
-      <ProModal
-        talent={selectedTalent}
-        isOpen={!!selectedTalent}
-        onClose={() => setSelectedTalent(null)}
-        isMobile={isMobile}
-      />
     </div>
   );
 }
