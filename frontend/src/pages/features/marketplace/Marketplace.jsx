@@ -428,7 +428,12 @@ export default function Marketplace() {
         .eq("user_id", uid)
         .single();
 
-      setUserFavourites(profile?.favourites_marketplace || []);
+      // Ensure favourites_marketplace is always an array
+      const favourites = profile?.favourites_marketplace;
+      setUserFavourites(Array.isArray(favourites) ? favourites : []);
+    } else {
+      // If no user is logged in, set to empty array
+      setUserFavourites([]);
     }
   };
   fetchUser();
