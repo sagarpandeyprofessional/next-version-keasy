@@ -152,10 +152,10 @@ const MarketplaceItem = ({ item, userId, onToggleLike, isMobile, user_favourites
 
         <h3 className="mb-2 text-lg font-semibold text-black">{item.title}</h3>
 
-        <div className="mb-2 flex items-center gap-1 text-gray-800 text-sm">
+        {/* <div className="mb-2 flex items-center gap-1 text-gray-800 text-sm">
           <FiEye />
           <span>{item.views || 0}</span>
-        </div>
+        </div> */}
 
         <div className="flex items-center justify-between">
           <p className="font-bold text-black">{formatCurrency(item.price)}</p>

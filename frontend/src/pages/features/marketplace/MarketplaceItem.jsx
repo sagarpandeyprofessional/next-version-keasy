@@ -50,6 +50,7 @@ export default function MarketplaceItemPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [userId, setUserId] = useState(null);
   const [userPfp, setUserPfp] = useState("");
+  const [chatCount, setChatCount] = useState(0);
 
   // Fetch logged-in user
   useEffect(() => {
@@ -125,6 +126,27 @@ export default function MarketplaceItemPage() {
     fetchItem();
   }, [id]);
 
+  // Fetch chat count - count how many profiles have this item.id in their chat_marketplace
+  useEffect(() => {
+    const checkItemInChats = async () => {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("chat_marketplace");
+      
+      if (profiles) {
+        const count = profiles.filter(profile => {
+          if (!profile.chat_marketplace) return false;
+          // Check if any value in the chat_marketplace object equals this item id
+          return Object.values(profile.chat_marketplace).includes(parseInt(id));
+        }).length;
+        
+        setChatCount(count);
+      }
+    };
+    
+    checkItemInChats();
+  }, [id]);
+
   // Fetch seller profile picture
   useEffect(() => {
     const checkUser = async () => {
@@ -182,23 +204,56 @@ export default function MarketplaceItemPage() {
         }
       };
 
-  // Contact Seller - now uses the seller_contact link from database
-  const handleContactSeller = () => {
+  // Contact Seller - adds to chat_marketplace in profiles table
+  const handleContactSeller = async () => {
     if (!item.seller_contact) {
       alert("Contact information not available.");
       return;
     }
 
-    // Open the contact link (already formatted from upload)
-    const newWindow = window.open(item.seller_contact, "_blank", "noopener,noreferrer");
-    if (newWindow) newWindow.focus();
+    if (!userId) {
+      alert("Please log in to contact seller.");
+      return;
+    }
 
-    // Increment chat count
-    supabase
-      .from("marketplace")
-      .update({ chat: (item.chat || 0) + 1 })
-      .eq("id", item.id)
-      .catch((err) => console.error(err));
+    try {
+      // Get current user's profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("chat_marketplace")
+        .eq("user_id", userId)
+        .single();
+
+      // Get current chat_marketplace or initialize as empty object
+      const currentChats = profile?.chat_marketplace || {};
+      
+      // Generate a unique key (you can use timestamp or a combination)
+      const chatKey = `chat_${Date.now()}`;
+      
+      // Add the item id to the chat_marketplace object
+      const updatedChats = {
+        ...currentChats,
+        [chatKey]: parseInt(id)
+      };
+
+      // Update the profile with new chat_marketplace
+      const { error } = await supabase
+        .from("profiles")
+        .update({ chat_marketplace: updatedChats })
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      // Update local chat count
+      setChatCount(prev => prev + 1);
+
+      // Open the contact link
+      const newWindow = window.open(item.seller_contact, "_blank", "noopener,noreferrer");
+      if (newWindow) newWindow.focus();
+
+    } catch (err) {
+      console.error("Error updating chat:", err);
+    }
   };
 
   const isLiked = user_favourites.includes(item.id)
@@ -387,15 +442,15 @@ export default function MarketplaceItemPage() {
           {/* Stats */}
           <div className="flex items-center space-x-5 text-gray-600 text-sm mb-6">
             <div className="flex items-center space-x-1">
-              <FiMessageCircle /> <span>{item.chat || 0}</span>
+              <FiMessageCircle /> <span>{chatCount}</span>
             </div>
             <div className="flex items-center space-x-1">
               {isLiked ? <FaHeart className="text-red-500" /> : <FiHeart />}
              
             </div>
-            <div className="flex items-center space-x-1">
+            {/* <div className="flex items-center space-x-1">
               <FiEye /> <span>{item.views || 0}</span>
-            </div>
+            </div> */}
             <div className="flex items-center space-x-1">
               <PiPackageLight /> <span>{item.stock || 0}</span>
             </div>
