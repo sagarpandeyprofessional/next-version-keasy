@@ -44,6 +44,7 @@ export default function MarketplaceItemPage() {
   const [categoryName, setCategoryName] = useState("");
   const [brandName, setBrandName] = useState("");
   const [username, setUsername] = useState("");
+  const [user_favourites, setUserFavourites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -53,10 +54,21 @@ export default function MarketplaceItemPage() {
   // Fetch logged-in user
   useEffect(() => {
     const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (!error) setUserId(data?.user?.id || null);
-    };
-    fetchUser();
+        const { data } = await supabase.auth.getUser();
+        const uid = data?.user?.id || null;
+        setUserId(uid);
+    
+        if (uid) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("favourites_marketplace")
+            .eq("user_id", uid)
+            .single();
+    
+          setUserFavourites(profile?.favourites_marketplace || []);
+        }
+      };
+      fetchUser();
   }, []);
 
   // Fetch item data
@@ -146,28 +158,29 @@ export default function MarketplaceItemPage() {
 
   // Toggle Favorite
   const handleFavourite = async () => {
-    if (!userId) {
-      alert("Please log in to save favorites.");
-      return;
-    }
-
-    let favourites = item.favourites?.favourites || [];
-    if (!Array.isArray(favourites)) favourites = [];
-
-    const updatedFavourites = favourites.includes(userId)
-      ? favourites.filter((id) => id !== userId)
-      : [...favourites, userId];
-
-    await supabase
-      .from("marketplace")
-      .update({ favourites: { favourites: updatedFavourites } })
-      .eq("id", item.id);
-
-    setItem((prev) => ({
-      ...prev,
-      favourites: { favourites: updatedFavourites },
-    }));
-  };
+        if (!userId) {
+          alert("Please log in to like items.");
+          return;
+        }
+    
+        try {
+          const isLiked = user_favourites.includes(item.id);
+          const updatedFavourites = isLiked
+            ? user_favourites.filter((id) => id !== item.id)
+            : [...user_favourites, item.id];
+    
+          setUserFavourites(updatedFavourites); // ✅ local update
+    
+          const { error } = await supabase
+            .from("profiles")
+            .update({ favourites_marketplace: updatedFavourites })
+            .eq("user_id", userId);
+    
+          if (error) throw error;
+        } catch (err) {
+          console.error("Error updating favourites:", err);
+        }
+      };
 
   // Contact Seller - now uses the seller_contact link from database
   const handleContactSeller = () => {
@@ -188,9 +201,7 @@ export default function MarketplaceItemPage() {
       .catch((err) => console.error(err));
   };
 
-  const favouritesList = item.favourites?.favourites || [];
-  const likesCount = favouritesList.length;
-  const isLiked = userId && favouritesList.includes(userId);
+  const isLiked = user_favourites.includes(item.id)
 
   // Render description with preserved formatting
   const renderDescription = (description) => {
@@ -380,7 +391,7 @@ export default function MarketplaceItemPage() {
             </div>
             <div className="flex items-center space-x-1">
               {isLiked ? <FaHeart className="text-red-500" /> : <FiHeart />}
-              <span>{likesCount}</span>
+             
             </div>
             <div className="flex items-center space-x-1">
               <FiEye /> <span>{item.views || 0}</span>

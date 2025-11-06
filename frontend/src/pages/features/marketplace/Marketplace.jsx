@@ -21,7 +21,6 @@ const MarketplaceItem = ({ item, userId, onToggleLike, isMobile, user_favourites
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
   const imageUrl = item?.images?.images?.[0] || "/no-image.png";
-  const likesCount = 0;
   const isLiked = user_favourites.includes(item.id);
 
   const handleCardClick = async () => {
@@ -135,14 +134,13 @@ const MarketplaceItem = ({ item, userId, onToggleLike, isMobile, user_favourites
             e.stopPropagation();
             onToggleLike(item);
           }}
-          className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-white/10 px-2 py-1 shadow-sm hover:bg-white/30"
+          className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-black/10 px-2 py-2 shadow-sm hover:bg-white/30"
         >
           {isLiked ? (
             <FaHeart className="text-red-500 text-lg" />
           ) : (
             <FiHeart className="text-gray-700 text-lg" />
           )}
-          <span className="text-xs text-gray-700">{likesCount}</span>
         </button>
       </div>
 
@@ -518,29 +516,29 @@ export default function Marketplace() {
 
   // Handle like
   const handleToggleLike = async (item) => {
-  if (!userId) {
-    alert("Please log in to like items.");
-    return;
-  }
+    if (!userId) {
+      alert("Please log in to like items.");
+      return;
+    }
 
-  try {
-    const isLiked = user_favourites.includes(item.id);
-    const updatedFavourites = isLiked
-      ? user_favourites.filter((id) => id !== item.id)
-      : [...user_favourites, item.id];
+    try {
+      const isLiked = user_favourites.includes(item.id);
+      const updatedFavourites = isLiked
+        ? user_favourites.filter((id) => id !== item.id)
+        : [...user_favourites, item.id];
 
-    setUserFavourites(updatedFavourites); // ✅ local update
+      setUserFavourites(updatedFavourites); // ✅ local update
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ favourites_marketplace: updatedFavourites })
-      .eq("user_id", userId);
+      const { error } = await supabase
+        .from("profiles")
+        .update({ favourites_marketplace: updatedFavourites })
+        .eq("user_id", userId);
 
-    if (error) throw error;
-  } catch (err) {
-    console.error("Error updating favourites:", err);
-  }
-};
+      if (error) throw error;
+    } catch (err) {
+      console.error("Error updating favourites:", err);
+    }
+  };
 
 
 
