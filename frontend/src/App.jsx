@@ -55,7 +55,9 @@ import Guides from './pages/features/guides/Guides'
 import GuideEditor from './pages/features/guides/GuidePost';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import ProShowcase from './pages/features/pros/Pros';
+import Connect from './pages/features/connect/Connect';
+import ProfessionalPostPage from './pages/features/connect/Professional/ProfessionalPost';
+import ProfessionalNew from './pages/features/connect/Professional/ProfessionalNew';
 
 
 
@@ -109,7 +111,9 @@ function App() {
         <Route element={<Layout><CommunityPost/></Layout>} path="/community/new" />
         <Route element={<Layout><CommunityUpdate/></Layout>} path="/community/edit/:id" />
 
-        <Route element={<Layout><ProShowcase /></Layout>} path='/pros' />
+        <Route element={<Layout><Connect /></Layout>} path='/connect' />
+        <Route element={<Layout><ProfessionalPostPage /></Layout>} path='/connect/pro/post' />
+        <Route element={<Layout><ProfessionalNew /></Layout>} path='/connect/pro/new' />
 
         <Route element={<Layout><Talent /></Layout>} path='/talents' />
         <Route element={<Layout><TalentDetail /></Layout>} path='/talents/:id' />
