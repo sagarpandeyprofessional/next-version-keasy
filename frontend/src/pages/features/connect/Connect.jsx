@@ -458,32 +458,28 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                   </div>
                   <div className="flex items-center text-sm text-gray-600 gap-2">
                     <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-                      {getIndustryDisplay(professional.industry)}
+                      {professional.experience}+ years in {getIndustryDisplay(professional.industry)}
                     </span>
+                    {professional.verified && (
+                      <span className="px-3 py-1.5  text-green-700 rounded-full text-sm font-semibold flex items-center gap-1">
+                        ✓
+                      </span>
+                     )}
                   </div>
                 </div>
-              </div>
-
-              {/* Experience */}
-              {professional.experience && (
-                <div className="flex items-center gap-2 text-sm text-gray-700 mb-4 bg-gray-50 rounded-lg p-3">
-                  <Calendar className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium">{professional.experience} years of experience</span>
-                </div>
-              )}
-
-              {/* Location */}
-              {professional.location?.url  && professional.location?.title && (
-                <a
+                {professional.location?.url  && professional.location?.title && (
+                <div className="">
+                  <a
                   href={professional.location.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-2 text-sm text-gray-700 mb-6 bg-gray-50 rounded-lg p-3"
+                  className="flex items-start rounded-4xl p-3 hover:bg-gray-100 transition border-1 border-blue-100/70"
                 >
                   <MapPin className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <span>{professional.location.title || 'View on Map'}</span>
                 </a>
+                </div>
               )}
+              </div>
 
               {/* Bio */}
               {professional.bio && (
@@ -608,7 +604,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
 
             {/* Header */}
             <div className="flex items-start gap-6 mb-8">
-              <img src={professional.img_url} alt={professional.full_name} className="w-28 h-28 rounded-2xl object-cover shadow-lg" />
+              <img src={professional.img_url} alt={professional.full_name} className="w-28 h-28 rounded-full object-cover shadow-lg border-2 border-violet-700/70" />
               <div className="flex-1">
                 <h2 className="text-4xl font-bold text-gray-900 mb-2">{professional.full_name}</h2>
                 <div className="flex items-center text-base text-gray-600 gap-2 mb-3">
@@ -616,45 +612,34 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                   <span className="font-medium">{professional.role}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">
-                    {getIndustryDisplay(professional.industry)}
-                  </span>
                   {professional.verified && (
-                    <span className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-semibold flex items-center gap-1">
-                      ✓ Verified
+                    <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold flex items-center gap-1">
+                      {professional.experience}+ years in {getIndustryDisplay(professional.industry)}
                     </span>
+                  )}
+                  {professional.verified && (
+                      <span className="px-3 py-1.5  text-green-700 rounded-full text-sm font-semibold flex items-center gap-1">
+                        ✓
+                      </span>
                   )}
                 </div>
               </div>
-            </div>
-
-            {/* Experience & Location */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {professional.experience && (
-                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4">
-                  <Calendar className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="text-sm text-gray-500">Experience</p>
-                    <p className="font-semibold text-gray-900">{professional.experience} years</p>
-                  </div>
-                </div>
-              )}
-              
               {professional.location?.url  && professional.location?.title && (
-                <a
+                <div className="">
+                  <a
                   href={professional.location.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-3 bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition"
+                  className="flex items-start lg:gap-3 bg-none bg-gray-50 rounded-4xl p-4 hover:bg-gray-100 md:hover:bg-blue-700 transition  border border-blue-600/50 md:hover:border-white md:bg-blue-600 lg:bg-white lg:hover:bg-gray-100/50 lg:border-gray-100/50"
                 >
-                  <MapPin className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <MapPin className="w-5 h-5 text-blue-600 mt-0.5 md:text-white lg:text-blue-600"/>
                   <div>
-                    <p className="text-sm text-gray-500">Location</p>
-                    <p className="font-semibold text-gray-900 text-sm">
+                    <p className="font-semibold text-gray-700 text-sm mt-0.5 md:hidden lg:block lg:text-blue-600 ">
                       {professional.location.title || 'View on Map'}
                     </p>
                   </div>
                 </a>
+                </div>
               )}
             </div>
 
@@ -667,19 +652,19 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
             )}
 
             {/* Professional Styles */}
-            {professional.style && professional.style.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Professional Style</h3>
-                <div className="flex flex-wrap gap-3">
-                  {professional.style.map((item, idx) => (
-                    <span key={idx} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-50 to-purple-50 text-gray-800 rounded-xl text-sm font-medium border border-blue-100">
-                      <span className="text-lg">{item.emoji}</span>
-                      <span>{item.text}</span>
-                    </span>
-                  ))}
+              {professional.style && professional.style.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Professional Style</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {professional.style.map((item, idx) => (
+                      <span key={idx} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-50 to-purple-50 text-gray-800 rounded-xl text-sm font-medium border border-blue-100">
+                        <span className="text-lg">{item.emoji}</span>
+                        <span>{item.text}</span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Social Links */}
             {hasSocials && (
