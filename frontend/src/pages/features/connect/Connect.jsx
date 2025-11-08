@@ -170,10 +170,16 @@ const Professionals = ({isMobile}) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Check if current user has a professional profile
+   // Check if current user has a professional profile
   useEffect(() => {
     const checkUserProfile = async () => {
-      if (!user?.id) {
+      // If user is undefined, still loading auth state
+      if (user === undefined) {
+        return;
+      }
+      
+      // If user is null or has no id, no user logged in
+      if (!user || !user.id) {
         setLoadingUserProfile(false);
         return;
       }
@@ -198,7 +204,7 @@ const Professionals = ({isMobile}) => {
     };
 
     checkUserProfile();
-  }, [user.id]);
+  }, [user]);
 
   // Load all professionals
   useEffect(() => {
