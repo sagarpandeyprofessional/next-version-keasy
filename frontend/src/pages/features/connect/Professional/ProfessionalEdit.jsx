@@ -1,12 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Upload, MapPin, Briefcase, Link, FileText, X, Check, Video } from 'lucide-react';
-import { supabase } from '../../../../api/supabase-client';
+import { Camera, Upload, MapPin, Briefcase, Link, FileText, X, Check, Video, Loader2 } from 'lucide-react';
 import { useAuth } from '../../../../context/AuthContext';
+import { supabase } from '../../../../api/supabase-client';
+import { useNavigate } from 'react-router';
 
-// Emoji picker data
-const STYLE_EMOJIS = ['💼', '🎯', '🚀', '💡', '⭐', '🔥', '✨', '🎨', '📈', '🏆', '💪', '🌟'];
+// Style options with emoji and text combinations
+const STYLE_OPTIONS = [
+  { emoji: '💼', text: 'Professional' },
+  { emoji: '🎯', text: 'Goal-Oriented' },
+  { emoji: '🚀', text: 'Innovative' },
+  { emoji: '💡', text: 'Creative' },
+  { emoji: '⭐', text: 'Excellence-Driven' },
+  { emoji: '🔥', text: 'Passionate' },
+  { emoji: '✨', text: 'Dynamic' },
+  { emoji: '🎨', text: 'Artistic' },
+  { emoji: '📈', text: 'Results-Focused' },
+  { emoji: '🏆', text: 'Achievement-Oriented' },
+  { emoji: '💪', text: 'Determined' },
+  { emoji: '🌟', text: 'Exceptional' },
+  { emoji: '🤝', text: 'Collaborative' },
+  { emoji: '💎', text: 'Premium' },
+  { emoji: '🎓', text: 'Expert' },
+  { emoji: '⚡', text: 'Energetic' },
+  { emoji: '🌱', text: 'Growth-Minded' },
+  { emoji: '🔑', text: 'Key Player' }
+];
 
-// Contact types from the image
+// Contact types
 const CONTACT_TYPES = [
   { value: 'message', label: 'Message', prefix: '' },
   { value: 'telegram', label: 'Telegram', prefix: 'https://t.me/' },
@@ -17,20 +37,38 @@ const CONTACT_TYPES = [
   { value: 'email', label: 'Email', prefix: 'mailto:' }
 ];
 
-const ProfessionalPostPage = () => {
-  const { user } = useAuth()
+// Industry types
+const INDUSTRY_TYPES = [
+  { value: 'real_estate', label: 'Real Estate' },
+  { value: 'technology', label: 'Technology' },
+  { value: 'finance', label: 'Finance' },
+  { value: 'healthcare', label: 'Healthcare' },
+  { value: 'education', label: 'Education' },
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'consulting', label: 'Consulting' },
+  { value: 'construction', label: 'Construction' },
+  { value: 'hospitality', label: 'Hospitality' },
+  { value: 'retail', label: 'Retail' },
+  { value: 'manufacturing', label: 'Manufacturing' },
+  { value: 'legal', label: 'Legal' },
+  { value: 'media', label: 'Media' },
+  { value: 'transportation', label: 'Transportation' },
+  { value: 'insurance', label: 'Insurance' },
+  { value: 'other', label: 'Other' }
+];
+
+const ProfessionalEdit = () => {
   const [formData, setFormData] = useState({
     full_name: '',
     quote: '',
     role: '',
     industry: 'real_estate',
     bio: '',
-    location: { lat: null, lng: null, address: '' },
+    location: { url: '', title: '' },
     experience: '',
     contact_type: 'email',
     contact_url: '',
-    style_emoji: '💼',
-    style_text: '',
+    selected_styles: [],
     img_url: null,
     video_url: '',
     banner_url: null,
@@ -42,72 +80,208 @@ const ProfessionalPostPage = () => {
     },
     business_data_url: []
   });
-
-  const [industries, setIndustries] = useState(['real_estate']);
-
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState(user.id);
-  const [uploadType, setUploadType] = useState('video'); // 'video' or 'banner'
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [fetchingProfile, setFetchingProfile] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [profileId, setProfileId] = useState(null);
+  const [uploadType, setUploadType] = useState('video');
   const [errors, setErrors] = useState({});
   const [imgPreview, setImgPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
   const [videoId, setVideoId] = useState(null);
+  
+  // Store old file paths for deletion
+  const [oldImgPath, setOldImgPath] = useState(null);
+  const [oldBannerPath, setOldBannerPath] = useState(null);
+  const navigate = useNavigate();
 
-  // Get user's location
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setFormData(prev => ({
-            ...prev,
-            location: {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-              address: prev.location.address
-            }
-          }));
-        },
-        (error) => {
-          console.error('Error getting location:', error);
+  // Extract contact value from URL
+  const extractContactValue = (contactUrl, contactType) => {
+    if (!contactUrl) return '';
+    const contactTypeObj = CONTACT_TYPES.find(ct => ct.value === contactType);
+    if (!contactTypeObj || !contactTypeObj.prefix) return contactUrl;
+    
+    if (contactUrl.startsWith(contactTypeObj.prefix)) {
+      return contactUrl.substring(contactTypeObj.prefix.length);
+    }
+    return contactUrl;
+  };
+
+  // Extract social usernames from URLs
+  const extractSocialUsernames = (socials) => {
+    if (!socials) return {
+      instagram_username: '',
+      tiktok_username: '',
+      facebook_username: '',
+      website_url: ''
+    };
+
+    return {
+      instagram_username: socials.instagram ? socials.instagram.replace('https://instagram.com/', '') : '',
+      tiktok_username: socials.tiktok ? socials.tiktok.replace('https://tiktok.com/@', '') : '',
+      facebook_username: socials.facebook ? socials.facebook.replace('https://facebook.com/', '') : '',
+      website_url: socials.website || ''
+    };
+  };
+
+  useEffect(() => {
+    if (!user?.id) {
+      navigate('/connect/');
+      return;
+    }
+
+    setUserId(user.id);
+
+    const fetchProfessionalProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('connect_professional')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+          navigate('/connect/professional/new');
+          return;
         }
+
+        if (data) {
+          setProfileId(data.id);
+          
+          // Parse location if it's stored as JSON string
+          let locationData = { url: '', title: '' };
+          if (data.location) {
+            if (typeof data.location === 'string') {
+              try {
+                locationData = JSON.parse(data.location);
+              } catch {
+                locationData = { url: '', title: data.location };
+              }
+            } else {
+              locationData = data.location;
+            }
+          }
+
+          setFormData({
+            full_name: data.full_name || '',
+            quote: data.quote || '',
+            role: data.role || '',
+            industry: data.industry || 'real_estate',
+            bio: data.bio || '',
+            location: locationData,
+            experience: data.experience?.toString() || '',
+            contact_type: data.contact_type || 'email',
+            contact_url: extractContactValue(data.contact_url, data.contact_type),
+            selected_styles: data.style || [],
+            img_url: data.img_url,
+            video_url: data.video_url || '',
+            banner_url: data.banner_url || null,
+            socials: extractSocialUsernames(data.socials),
+            business_data_url: data.business_data_url || []
+          });
+
+          // Set upload type based on existing data
+          if (data.show_type) {
+            setUploadType(data.show_type);
+          } else if (data.video_url) {
+            setUploadType('video');
+          } else if (data.banner_url) {
+            setUploadType('banner');
+          }
+
+          // Set previews
+          if (data.img_url) {
+            setImgPreview(data.img_url);
+          }
+          if (data.banner_url) {
+            setBannerPreview(data.banner_url);
+          }
+          if (data.video_url) {
+            const id = extractYouTubeId(data.video_url);
+            setVideoId(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        navigate('/connect/professional/new');
+      } finally {
+        setFetchingProfile(false);
+      }
+    };
+
+    fetchProfessionalProfile();
+  }, [user, navigate]);
+
+  // Handle style selection (max 3)
+  const toggleStyleSelection = (style) => {
+    setFormData(prev => {
+      const isSelected = prev.selected_styles.some(
+        s => s.emoji === style.emoji && s.text === style.text
       );
+      
+      if (isSelected) {
+        return {
+          ...prev,
+          selected_styles: prev.selected_styles.filter(
+            s => !(s.emoji === style.emoji && s.text === style.text)
+          )
+        };
+      } else {
+        if (prev.selected_styles.length < 3) {
+          return {
+            ...prev,
+            selected_styles: [...prev.selected_styles, style]
+          };
+        }
+        return prev;
+      }
+    });
+  };
+
+  const isStyleSelected = (style) => {
+    return formData.selected_styles.some(
+      s => s.emoji === style.emoji && s.text === style.text
+    );
+  };
+
+  // Delete file from Supabase storage
+  const deleteFile = async (bucket, path) => {
+    if (!path) return;
+    try {
+      const { error } = await supabase.storage.from(bucket).remove([path]);
+      if (error) throw error;
+      console.log(`Deleted file from ${bucket}: ${path}`);
+    } catch (error) {
+      console.error(`Error deleting file from ${bucket}:`, error);
     }
   };
 
-  // Validate image dimensions
-  const validateImageDimensions = (file, expectedRatio) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = URL.createObjectURL(file);
-      img.onload = () => {
-        URL.revokeObjectURL(img.src);
-        resolve({ width: img.width, height: img.height });
-      };
-    });
+  const safeDeleteFile = async (bucket, path) => {
+    if (!path) return;
+    try {
+      await deleteFile(bucket, path);
+    } catch (err) {
+      console.warn(`Delete failed for ${bucket}/${path}:`, err.message);
+    }
   };
 
   // Upload file to Supabase storage
   const uploadFile = async (file, bucket, path) => {
-    try {
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .upload(path, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: true,
+      });
 
-      if (error) throw error;
+    if (error) throw error;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(path);
-
-      return publicUrl;
-    } catch (error) {
-      console.error('Upload error:', error);
-      throw error;
-    }
+    const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(path);
+    return { publicUrl: publicData.publicUrl, path };
   };
 
   // Handle profile image upload
@@ -115,35 +289,33 @@ const ProfessionalPostPage = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show preview immediately
     const previewUrl = URL.createObjectURL(file);
     setImgPreview(previewUrl);
-
-    const dimensions = await validateImageDimensions(file, 3 / 4);
-    
-    // Check if image is close to 3:4 ratio (allow 10% tolerance)
-    const ratio = dimensions.width / dimensions.height;
-    if (Math.abs(ratio - 0.75) > 0.075) {
-      setErrors(prev => ({ ...prev, img_url: `Image should be in 3:4 ratio (e.g., 600x800, 900x1200). Current: ${dimensions.width}x${dimensions.height}` }));
-      // Don't return - keep the preview but show warning
-    } else {
-      setErrors(prev => ({ ...prev, img_url: null }));
-    }
 
     if (!userId) {
       setErrors(prev => ({ ...prev, img_url: 'Please log in to upload images' }));
       return;
     }
 
+    setErrors(prev => ({ ...prev, img_url: null }));
+    setUploadingImage(true);
+
     try {
-      const url = await uploadFile(
-        file,
-        'connect_professional_img',
-        `${userId}/img_${Date.now()}.${file.name.split('.').pop()}`
-      );
-      setFormData(prev => ({ ...prev, img_url: url }));
+      await safeDeleteFile('connect_professional_img', oldImgPath);
+
+      const fileName = `${Date.now()}_${file.name}`;
+      const filePath = `${userId}/${fileName}`;
+      const { publicUrl, path } = await uploadFile(file, 'connect_professional_img', filePath);
+
+      setFormData(prev => ({ ...prev, img_url: publicUrl }));
+      setOldImgPath(path);
+
+      console.log('✅ Image uploaded:', path);
     } catch (error) {
+      console.error('Image upload error:', error.message || error);
       setErrors(prev => ({ ...prev, img_url: 'Failed to upload image' }));
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -152,34 +324,33 @@ const ProfessionalPostPage = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show preview immediately
     const previewUrl = URL.createObjectURL(file);
     setBannerPreview(previewUrl);
 
-    const dimensions = await validateImageDimensions(file, 16 / 9);
-    
-    // Check if banner is 1920x1080 or proportional
-    if (dimensions.width !== 1920 || dimensions.height !== 1080) {
-      setErrors(prev => ({ ...prev, banner_url: `Banner should be 1920x1080 resolution. Current: ${dimensions.width}x${dimensions.height}` }));
-      // Don't return - keep the preview but show warning
-    } else {
-      setErrors(prev => ({ ...prev, banner_url: null }));
-    }
-
     if (!userId) {
-      setErrors(prev => ({ ...prev, banner_url: 'Please log in to upload banners' }));
+      setErrors(prev => ({ ...prev, banner_url: 'Please sign in to upload banners' }));
       return;
     }
 
+    setErrors(prev => ({ ...prev, banner_url: null }));
+    setUploadingBanner(true);
+
     try {
-      const url = await uploadFile(
-        file,
-        'connect_professional_banner',
-        `${userId}/banner_${Date.now()}.${file.name.split('.').pop()}`
-      );
-      setFormData(prev => ({ ...prev, banner_url: url }));
+      await safeDeleteFile('connect_professional_banner', oldBannerPath);
+
+      const fileName = `${Date.now()}_${file.name}`;
+      const filePath = `${userId}/${fileName}`;
+      const { publicUrl, path } = await uploadFile(file, 'connect_professional_banner', filePath);
+
+      setFormData(prev => ({ ...prev, banner_url: publicUrl }));
+      setOldBannerPath(path);
+
+      console.log('✅ Banner uploaded:', path);
     } catch (error) {
+      console.error('Banner upload error:', error.message || error);
       setErrors(prev => ({ ...prev, banner_url: 'Failed to upload banner' }));
+    } finally {
+      setUploadingBanner(false);
     }
   };
 
@@ -188,26 +359,44 @@ const ProfessionalPostPage = () => {
     const files = Array.from(e.target.files);
     if (!files.length || !userId) return;
 
+    setErrors(prev => ({ ...prev, business_data_url: null }));
+    const uploadErrors = [];
+    const uploadedUrls = [];
+
     try {
-      const uploadedUrls = [];
       for (const file of files) {
-        const url = await uploadFile(
-          file,
-          'connect_professional_business',
-          `${userId}/${file.name}`
-        );
-        uploadedUrls.push({ name: file.name, url });
+        try {
+          const fileName = `${Date.now()}_${file.name}`;
+          const filePath = `${userId}/${fileName}`;
+          const { publicUrl, path } = await uploadFile(file, 'connect_business_docs', filePath);
+          uploadedUrls.push({ name: file.name, url: publicUrl, path });
+          console.log('✅ Document uploaded:', path);
+        } catch (err) {
+          console.error(`Error uploading ${file.name}:`, err.message || err);
+          uploadErrors.push(file.name);
+        }
       }
-      setFormData(prev => ({
-        ...prev,
-        business_data_url: [...prev.business_data_url, ...uploadedUrls]
-      }));
+
+      if (uploadedUrls.length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          business_data_url: [...(prev.business_data_url || []), ...uploadedUrls],
+        }));
+      }
+
+      if (uploadErrors.length > 0) {
+        setErrors(prev => ({
+          ...prev,
+          business_data_url: `Failed to upload: ${uploadErrors.join(', ')}`,
+        }));
+      }
     } catch (error) {
+      console.error('Document upload error:', error.message || error);
       setErrors(prev => ({ ...prev, business_data_url: 'Failed to upload documents' }));
     }
   };
 
-  // Generate contact URL based on contact type
+  // Generate contact URL
   const generateContactUrl = (type, value) => {
     const contactType = CONTACT_TYPES.find(ct => ct.value === type);
     if (!contactType) return value;
@@ -217,22 +406,14 @@ const ProfessionalPostPage = () => {
   // Generate social links
   const generateSocialLinks = (socials) => {
     const links = {};
-    if (socials.instagram_username) {
-      links.instagram = `https://instagram.com/${socials.instagram_username}`;
-    }
-    if (socials.tiktok_username) {
-      links.tiktok = `https://tiktok.com/@${socials.tiktok_username}`;
-    }
-    if (socials.facebook_username) {
-      links.facebook = `https://facebook.com/${socials.facebook_username}`;
-    }
-    if (socials.website_url) {
-      links.website = socials.website_url;
-    }
+    if (socials.instagram_username) links.instagram = `https://instagram.com/${socials.instagram_username}`;
+    if (socials.tiktok_username) links.tiktok = `https://tiktok.com/@${socials.tiktok_username}`;
+    if (socials.facebook_username) links.facebook = `https://facebook.com/${socials.facebook_username}`;
+    if (socials.website_url) links.website = socials.website_url;
     return links;
   };
 
-  // Validate YouTube URL and extract video ID
+  // Extract YouTube ID
   const extractYouTubeId = (url) => {
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
@@ -244,10 +425,6 @@ const ProfessionalPostPage = () => {
       if (match) return match[1];
     }
     return null;
-  };
-
-  const isValidYouTubeUrl = (url) => {
-    return extractYouTubeId(url) !== null;
   };
 
   // Handle video URL change
@@ -262,16 +439,35 @@ const ProfessionalPostPage = () => {
     }
   };
 
+  // Handle upload type change
+  const handleUploadTypeChange = async (type) => {
+    setUploadType(type);
+    
+    // If switching to video, delete banner if exists
+    if (type === 'video' && oldBannerPath) {
+      await deleteFile('connect_professional_banner', oldBannerPath);
+      setBannerPreview(null);
+      setOldBannerPath(null);
+      setFormData(prev => ({ ...prev, banner_url: null }));
+    }
+    
+    // If switching to banner, clear video URL
+    if (type === 'banner') {
+      setVideoId(null);
+      setFormData(prev => ({ ...prev, video_url: '' }));
+    }
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation
     const newErrors = {};
     if (!formData.full_name.trim()) newErrors.full_name = 'Full name is required';
     if (formData.full_name.length > 100) newErrors.full_name = 'Full name must be 100 characters or less';
     if (formData.quote.length > 150) newErrors.quote = 'Quote must be 150 characters or less';
-    if (uploadType === 'video' && formData.video_url && !isValidYouTubeUrl(formData.video_url)) {
+    if (formData.selected_styles.length !== 3) newErrors.selected_styles = 'Please select exactly 3 professional styles';
+    if (uploadType === 'video' && formData.video_url && !extractYouTubeId(formData.video_url)) {
       newErrors.video_url = 'Please enter a valid YouTube URL';
     }
     if (!formData.contact_url.trim()) newErrors.contact_url = 'Contact information is required';
@@ -284,9 +480,7 @@ const ProfessionalPostPage = () => {
     setLoading(true);
     
     try {
-      // Prepare data for submission
-      const submissionData = {
-        user_id: userId,
+      const updateData = {
         full_name: formData.full_name,
         quote: formData.quote,
         role: formData.role,
@@ -299,69 +493,50 @@ const ProfessionalPostPage = () => {
         img_url: formData.img_url,
         video_url: uploadType === 'video' ? formData.video_url : null,
         banner_url: uploadType === 'banner' ? formData.banner_url : null,
-        style: {
-          emoji: formData.style_emoji,
-          text: formData.style_text
-        },
+        show_type: uploadType,
+        style: formData.selected_styles,
         socials: generateSocialLinks(formData.socials),
         business_data_url: formData.business_data_url,
-        verified: false,
-        show: true,
-        created_at: new Date().toISOString()
       };
 
-      // Submit to Supabase
       const { data, error } = await supabase
         .from('connect_professional')
-        .insert([submissionData])
+        .update(updateData)
+        .eq('id', profileId)
+        .eq('user_id', userId)
         .select();
 
       if (error) throw error;
 
-      alert('Professional profile created successfully!');
-      
-      // Reset form
-      setFormData({
-        full_name: '',
-        quote: '',
-        role: '',
-        industry: 'real_estate',
-        bio: '',
-        location: { lat: null, lng: null, address: '' },
-        experience: '',
-        contact_type: 'email',
-        contact_url: '',
-        style_emoji: '💼',
-        style_text: '',
-        img_url: null,
-        video_url: '',
-        banner_url: null,
-        socials: {
-          instagram_username: '',
-          tiktok_username: '',
-          facebook_username: '',
-          website_url: ''
-        },
-        business_data_url: []
-      });
-      setImgPreview(null);
-      setBannerPreview(null);
-      setVideoId(null);
+      console.log('Profile updated:', data);
+      alert('Professional profile updated successfully!');
+      navigate('/connect/');
       
     } catch (error) {
-      console.error('Submission error:', error);
-      alert('Failed to create profile. Please try again.');
+      console.error('Update error:', error);
+      alert('Failed to update profile: ' + (error.message || error));
     } finally {
       setLoading(false);
     }
   };
 
+  if (fetchingProfile) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Professional Profile</h1>
-          <p className="text-gray-600 mb-8">Share your expertise and connect with opportunities</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Professional Profile</h1>
+          <p className="text-gray-600 mb-8">Update your professional information</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Profile Image */}
@@ -380,7 +555,11 @@ const ProfessionalPostPage = () => {
                     />
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={async () => {
+                        if (oldImgPath) {
+                          await deleteFile('connect_professional_img', oldImgPath);
+                          setOldImgPath(null);
+                        }
                         setImgPreview(null);
                         setFormData(prev => ({ ...prev, img_url: null }));
                       }}
@@ -390,13 +569,23 @@ const ProfessionalPostPage = () => {
                     </button>
                   </div>
                 )}
-                <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition w-fit">
-                  <Upload className="w-4 h-4" />
-                  {imgPreview ? 'Change Image' : 'Upload Image'}
+                <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition w-fit disabled:opacity-50">
+                  {uploadingImage ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" />
+                      {imgPreview ? 'Change Image' : 'Upload Image'}
+                    </>
+                  )}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
+                    disabled={uploadingImage}
                     className="hidden"
                   />
                 </label>
@@ -421,46 +610,56 @@ const ProfessionalPostPage = () => {
               {errors.full_name && <p className="text-red-500 text-sm">{errors.full_name}</p>}
             </div>
 
-            {/* Style with Emoji */}
+            {/* Professional Styles - Select 3 */}
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-gray-700">
-                Professional Style
+                Professional Styles <span className="text-red-500">*</span>
+                <span className="text-gray-500 font-normal ml-2">
+                  (Select exactly 3 that best describe you)
+                </span>
               </label>
-              <div className="flex gap-2">
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className="w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-blue-500 transition flex items-center justify-center"
-                  >
-                    {formData.style_emoji}
-                  </button>
-                  {showEmojiPicker && (
-                    <div className="absolute top-14 left-0 bg-white border-2 border-gray-200 rounded-lg shadow-xl p-2 grid grid-cols-6 gap-1 z-10">
-                      {STYLE_EMOJIS.map(emoji => (
-                        <button
-                          key={emoji}
-                          type="button"
-                          onClick={() => {
-                            setFormData(prev => ({ ...prev, style_emoji: emoji }));
-                            setShowEmojiPicker(false);
-                          }}
-                          className="w-10 h-10 text-xl hover:bg-blue-100 rounded transition"
-                        >
-                          {emoji}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <input
-                  type="text"
-                  value={formData.style_text}
-                  onChange={(e) => setFormData(prev => ({ ...prev, style_text: e.target.value }))}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., Collaborative, Innovative, Strategic"
-                />
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {STYLE_OPTIONS.map((style, idx) => {
+                  const selected = isStyleSelected(style);
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => toggleStyleSelection(style)}
+                      className={`
+                        flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all
+                        ${selected 
+                          ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                          : 'border-gray-200 bg-white hover:border-gray-300'
+                        }
+                        ${formData.selected_styles.length >= 3 && !selected ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                      `}
+                      disabled={formData.selected_styles.length >= 3 && !selected}
+                    >
+                      <span className="text-xl">{style.emoji}</span>
+                      <span className="text-sm font-medium">{style.text}</span>
+                      {selected && <Check className="w-4 h-4 ml-auto text-blue-600" />}
+                    </button>
+                  );
+                })}
               </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-gray-600">Selected:</span>
+                <span className={`font-semibold ${formData.selected_styles.length === 3 ? 'text-green-600' : 'text-blue-600'}`}>
+                  {formData.selected_styles.length}/3
+                </span>
+              </div>
+              {formData.selected_styles.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.selected_styles.map((style, idx) => (
+                    <div key={idx} className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                      <span>{style.emoji}</span>
+                      <span>{style.text}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {errors.selected_styles && <p className="text-red-500 text-sm">{errors.selected_styles}</p>}
             </div>
 
             {/* Quote */}
@@ -505,9 +704,9 @@ const ProfessionalPostPage = () => {
                 onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                {industries.map(ind => (
-                  <option key={ind} value={ind}>
-                    {ind.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                {INDUSTRY_TYPES.map(ind => (
+                  <option key={ind.value} value={ind.value}>
+                    {ind.label}
                   </option>
                 ))}
               </select>
@@ -533,31 +732,28 @@ const ProfessionalPostPage = () => {
                 <MapPin className="inline w-4 h-4 mr-2" />
                 Location
               </label>
-              <div className="flex gap-2">
+              <div className="grid gap-2">
                 <input
                   type="text"
-                  value={formData.location.address}
+                  value={formData.location.title}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    location: { ...prev.location, address: e.target.value }
+                    location: { ...prev.location, title: e.target.value }
                   }))}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your location"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Location name (e.g., New York, USA)"
                 />
-                <button
-                  type="button"
-                  onClick={getLocation}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
-                >
-                  <MapPin className="w-4 h-4" />
-                  Get Location
-                </button>
+                <input
+                  type="url"
+                  value={formData.location.url}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    location: { ...prev.location, url: e.target.value }
+                  }))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Location URL (e.g., Google Maps link)"
+                />
               </div>
-              {formData.location.lat && (
-                <p className="text-xs text-gray-600">
-                  Coordinates: {formData.location.lat.toFixed(6)}, {formData.location.lng.toFixed(6)}
-                </p>
-              )}
             </div>
 
             {/* Experience */}
@@ -613,11 +809,7 @@ const ProfessionalPostPage = () => {
                     type="radio"
                     value="video"
                     checked={uploadType === 'video'}
-                    onChange={(e) => {
-                      setUploadType(e.target.value);
-                      setBannerPreview(null);
-                      setFormData(prev => ({ ...prev, banner_url: null }));
-                    }}
+                    onChange={(e) => handleUploadTypeChange(e.target.value)}
                     className="w-4 h-4"
                   />
                   <span>YouTube Video</span>
@@ -627,11 +819,7 @@ const ProfessionalPostPage = () => {
                     type="radio"
                     value="banner"
                     checked={uploadType === 'banner'}
-                    onChange={(e) => {
-                      setUploadType(e.target.value);
-                      setVideoId(null);
-                      setFormData(prev => ({ ...prev, video_url: '' }));
-                    }}
+                    onChange={(e) => handleUploadTypeChange(e.target.value)}
                     className="w-4 h-4"
                   />
                   <span>Banner Image (1920x1080)</span>
@@ -672,7 +860,11 @@ const ProfessionalPostPage = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => {
+                        onClick={async () => {
+                          if (oldBannerPath) {
+                            await deleteFile('connect_professional_banner', oldBannerPath);
+                            setOldBannerPath(null);
+                          }
                           setBannerPreview(null);
                           setFormData(prev => ({ ...prev, banner_url: null }));
                         }}
@@ -682,13 +874,23 @@ const ProfessionalPostPage = () => {
                       </button>
                     </div>
                   )}
-                  <label className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition w-fit">
-                    <Upload className="w-4 h-4" />
-                    {bannerPreview ? 'Change Banner' : 'Upload Banner'}
+                  <label className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition w-fit disabled:opacity-50">
+                    {uploadingBanner ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4" />
+                        {bannerPreview ? 'Change Banner' : 'Upload Banner'}
+                      </>
+                    )}
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleBannerUpload}
+                      disabled={uploadingBanner}
                       className="hidden"
                     />
                   </label>
@@ -771,10 +973,15 @@ const ProfessionalPostPage = () => {
                       {doc.name}
                       <button
                         type="button"
-                        onClick={() => setFormData(prev => ({
-                          ...prev,
-                          business_data_url: prev.business_data_url.filter((_, i) => i !== idx)
-                        }))}
+                        onClick={async () => {
+                          if (doc.path) {
+                            await deleteFile('connect_business_docs', doc.path);
+                          }
+                          setFormData(prev => ({
+                            ...prev,
+                            business_data_url: prev.business_data_url.filter((_, i) => i !== idx)
+                          }));
+                        }}
                         className="ml-auto text-red-600 hover:text-red-800"
                       >
                         <X className="w-4 h-4" />
@@ -789,14 +996,21 @@ const ProfessionalPostPage = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading || !userId}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || !userId || uploadingImage || uploadingBanner}
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? 'Creating Profile...' : 'Create Professional Profile'}
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Updating Profile...
+                </>
+              ) : (
+                'Update Professional Profile'
+              )}
             </button>
 
             {!userId && (
-              <p className="text-center text-red-500 text-sm">Please log in to create a profile</p>
+              <p className="text-center text-red-500 text-sm">Please log in to update your profile</p>
             )}
           </form>
         </div>
@@ -805,4 +1019,4 @@ const ProfessionalPostPage = () => {
   );
 };
 
-export default ProfessionalPostPage;
+export default ProfessionalEdit;

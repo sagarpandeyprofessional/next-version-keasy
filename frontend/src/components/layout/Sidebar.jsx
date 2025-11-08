@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { FiHome, FiShoppingBag, FiCalendar, FiUsers, FiBookOpen, FiMapPin } from "react-icons/fi";
+import { TbHttpConnect } from "react-icons/tb";
 
 const LeftSidebar = () => {
   const location = useLocation();
@@ -10,6 +11,7 @@ const LeftSidebar = () => {
     { name: "Events", path: "/events", icon: FiCalendar },
     { name: "Community", path: "/community", icon: FiUsers },
     { name: "Guides", path: "/guides", icon: FiBookOpen },
+    { name: "Connect", path: "/connect", icon: TbHttpConnect }
   ];
   {/* { name: "Nearby", path: "/nearby", icon: FiMapPin }, */}
 

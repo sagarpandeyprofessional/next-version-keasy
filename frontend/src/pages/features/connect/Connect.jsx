@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from '../../../api/supabase-client';
 import { X, MapPin, Briefcase, Calendar, Globe, Instagram, Facebook, Video as VideoIcon, FileText, ExternalLink } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
+import { useNavigate } from "react-router";
 // Mock data
 
 const id = "0d4d00cd-c74a-4fa7-b47c-f7f39a5647e2"
@@ -111,9 +113,9 @@ export default function Connect() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-15 pt-4 pb-12 md:pb-16">
+      <div className="container mx-auto px-15 pt-4 pb-4">
         {/* Tabs */}
-        <div className="flex justify-center gap-2 mb-8">
+        <div className="flex justify-center gap-2 mb-2">
           <button
             onClick={() => setActiveTab('professionals')}
             className={`px-6 py-2 rounded-full font-semibold transition-all ${
@@ -159,11 +161,46 @@ export default function Connect() {
 }
 
 // for professionals (lawyers, real estate agents, consultants).
+// Updated Professionals component with Edit/Create button
 const Professionals = ({isMobile}) => {
   const [selectedProfessional, setSelectedProfessional] = useState(null);
-  const [professionals, setProfessionals] = useState([])
+  const [professionals, setProfessionals] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
+  const [loadingUserProfile, setLoadingUserProfile] = useState(true);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  // load professionals
+  // Check if current user has a professional profile
+  useEffect(() => {
+    const checkUserProfile = async () => {
+      if (!user?.id) {
+        setLoadingUserProfile(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('connect_professional')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+          console.error('Error checking user profile:', error);
+        } else if (data) {
+          setUserProfile(data);
+        }
+      } catch (error) {
+        console.error('Error checking user profile:', error);
+      } finally {
+        setLoadingUserProfile(false);
+      }
+    };
+
+    checkUserProfile();
+  }, [user.id]);
+
+  // Load all professionals
   useEffect(() => {
     const getProfessionals = async () => {
       const { data, error } = await supabase
@@ -175,33 +212,87 @@ const Professionals = ({isMobile}) => {
         console.error('Error fetching professionals:', error.message);
       } else {
         setProfessionals(data);
-        console.log('Fetched professionals:', data);
       }
     };
 
     getProfessionals();
   }, []);
 
+  const handleProfileAction = () => {
+    if (userProfile) {
+      navigate('/connect/professional/edit');
+    } else {
+      navigate('/connect/professional/new');
+    }
+  };
 
   return (
     <>
-      <div className="text-center mb-12 md:mb-16">
+      <div className="text-center mb-12 md:mb-16 relative">
         <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
           We've helped thousands of members reach their goals
         </h1>
         <p className="text-sm md:text-xl text-gray-600">
           Don't just take it from us. Succeed with us!
         </p>
+
+        {/* Action Button */}
+        {!loadingUserProfile && user && (
+          <>
+            {/* Mobile: Icon Button (Top Right) */}
+            {isMobile ? (
+              <button
+                onClick={handleProfileAction}
+                className="fixed bottom-18 right-6 z-40 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all hover:scale-110"
+                title={userProfile ? 'Edit Profile' : 'Become Professional'}
+              >
+                {userProfile ? (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                )}
+              </button>
+            ) : (
+              /* Desktop: Text Button (Below Header) */
+              <div className="mt-6">
+                <button
+                  onClick={handleProfileAction}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                >
+                  {userProfile ? (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      <span>Edit My Profile</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      <span>Become a Professional</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6  w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4 md:px-8 lg:px-12 xl:px-20">
         {professionals.map((professional) => (
           <ProfessionalCard
-              key={professional.id}
-              professional={professional}
-              onClick={() => setSelectedProfessional(professional.id)}
-              isMobile={isMobile}
-            />
+            key={professional.id}
+            professional={professional}
+            onClick={() => setSelectedProfessional(professional.id)}
+            isMobile={isMobile}
+          />
         ))}
       </div>
 
@@ -213,8 +304,8 @@ const Professionals = ({isMobile}) => {
         isMobile={isMobile}
       />
     </>
-  )
-}
+  );
+};
 
 const ProfessionalCard = ({ professional, onClick, isMobile }) => {
   // Mobile: Horizontal compact card
@@ -277,7 +368,7 @@ const ProfessionalCard = ({ professional, onClick, isMobile }) => {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-6">
-          <div className="bg-blue-700/70 text-white/90 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2">
+          <div className="bg-blue-700/70 text-white/90 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2 md:hidden lg:hidden">
             {professional.quote}
           </div>
           
@@ -731,6 +822,12 @@ const Freelancers = ({isMobile}) => {
   const [selectedTalent, setSelectedTalent] = useState(null);
   return (
     <>
+      Freelancers Upcoming
+    </>
+  )
+}
+
+{/* <>
       <div className="text-center mb-12 md:mb-16">
         <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
           We've helped thousands of people reach their goals
@@ -751,16 +848,14 @@ const Freelancers = ({isMobile}) => {
         ))}
       </div>
 
-      {/* Modal */}
+      Modal
       <FreelancerModal
         talent={selectedTalent}
         isOpen={!!selectedTalent}
         onClose={() => setSelectedTalent(null)}
         isMobile={isMobile}
       />
-    </>
-  )
-}
+    </> */}
 
 const FreelancerCard = ({ talent, onClick, isMobile }) => {
   // Mobile: Horizontal compact card
@@ -1064,6 +1159,12 @@ const Projects = ({isMobile}) => {
   const [selectedTalent, setSelectedTalent] = useState(null);
   return (
     <>
+    Projects Upcoming
+    </>
+  )
+}
+
+{/* <>
       <div className="text-center mb-12 md:mb-16">
         <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
           We've helped thousands of people reach their goals
@@ -1084,16 +1185,14 @@ const Projects = ({isMobile}) => {
         ))}
       </div>
 
-      {/* Modal */}
+       Modal 
       <ProjectModal
         talent={selectedTalent}
         isOpen={!!selectedTalent}
         onClose={() => setSelectedTalent(null)}
         isMobile={isMobile}
       />
-    </>
-  )
-}
+    </> */}
 
 const ProjectCard = ({ talent, onClick, isMobile }) => {
   // Mobile: Horizontal compact card

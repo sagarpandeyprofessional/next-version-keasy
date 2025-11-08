@@ -104,24 +104,34 @@ useEffect(() => {
   setUserId(user.id);
 
   const checkProfessionalAccount = async () => {
-    const { data, error } = await supabase
-      .from('connect_professional')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('connect_professional')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
 
-    if (error) {
-      navigate('/connect/');
-      return;
-    }
+      // If there's an error OTHER than "no rows found", log it but don't redirect
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking professional account:', error);
+        return;
+      }
 
-    if (data) {
-      navigate('/connect/');
+      // If data exists (user already has a profile), redirect to edit page
+      if (data) {
+        navigate('/connect/professional/edit');
+      }
+      
+      // If no data and error code is PGRST116, user can proceed to create profile
+      // (no action needed, just stay on the page)
+      
+    } catch (error) {
+      console.error('Unexpected error:', error);
     }
   };
 
   checkProfessionalAccount();
-}, [user]);
+}, [user, navigate]);
 
 
 
