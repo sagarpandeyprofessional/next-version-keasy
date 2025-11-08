@@ -35,6 +35,8 @@ const Layout = ({ children }) => {
     '/events',
     '/marketplace',
     '/',
+    '/connect',
+    '/connect/'
   ];
 
   // Routes that allow partial access (can see guide/marketplace details without auth)
