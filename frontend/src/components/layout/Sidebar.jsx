@@ -6,6 +6,7 @@ const LeftSidebar = () => {
   const location = useLocation();
 
   const navItems = [
+    { name: "Home", path: "/", icon: FiHome },
     { name: "Marketplace", path: "/marketplace", icon: FiShoppingBag },
     { name: "Events", path: "/events", icon: FiCalendar },
     { name: "Community", path: "/community", icon: FiUsers },
@@ -13,8 +14,6 @@ const LeftSidebar = () => {
     { name: "Connect", path: "/connect", icon: TbHttpConnect }
   ];
   {/* { name: "Nearby", path: "/nearby", icon: FiMapPin }, */}
-  
-    // { name: "Home", path: "/", icon: FiHome },
 
   return (
     <>

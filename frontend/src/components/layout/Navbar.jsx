@@ -261,7 +261,9 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-16 gap-4">
             {/* Logo */}
             <Link to="/" className="flex flex-shrink-0 lg:-ml-18">
-              <div className="text-2xl font-bold text-blue-600">Keasy</div>
+              <div className="text-2xl font-bold text-blue-600">
+                keasy
+              </div>
             </Link>
 
             {/* Search + User */}
