@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Camera, Upload, MapPin, Briefcase, Link, FileText, X, Check, Video, Loader2 } from 'lucide-react';
 import { useAuth } from '../../../../context/AuthContext';
 import { supabase } from '../../../../api/supabase-client';
+import { useNavigate } from 'react-router';
 
 // Style options with emoji and text combinations
 const STYLE_OPTIONS = [
@@ -83,7 +84,7 @@ const ProfessionalNew = () => {
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
-  const [userId] = useState(user.id);
+  const [userId, setUserId] = useState(null);
   const [uploadType, setUploadType] = useState('video');
   const [errors, setErrors] = useState({});
   const [imgPreview, setImgPreview] = useState(null);
@@ -93,6 +94,39 @@ const ProfessionalNew = () => {
   // Store old file paths for deletion
   const [oldImgPath, setOldImgPath] = useState(null);
   const [oldBannerPath, setOldBannerPath] = useState(null);
+  const navigate = useNavigate();
+
+
+
+useEffect(() => {
+  if (!user?.id) return;
+
+  setUserId(user.id);
+
+  const checkProfessionalAccount = async () => {
+    const { data, error } = await supabase
+      .from('connect_professional')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    if (error) {
+      navigate('/connect/');
+      return;
+    }
+
+    if (data) {
+      navigate('/connect/');
+    }
+  };
+
+  checkProfessionalAccount();
+}, [user]);
+
+
+
+
+
 
   // Handle style selection (max 3)
   const toggleStyleSelection = (style) => {
