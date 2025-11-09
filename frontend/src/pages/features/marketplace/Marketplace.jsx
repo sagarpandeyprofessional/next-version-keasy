@@ -667,8 +667,8 @@ export default function Marketplace() {
       {isMobile && (
         <button
           onClick={() => navigate("/marketplace/post")}
-          className="fixed bottom-18   left-1/2 transform -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-800 active:scale-95 transition-all z-40"
-        >
+          className="sm:hidden fixed bottom-18 right-6 z-40 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all hover:scale-110"
+      >
           <FiPlus className="text-2xl" />
         </button>
       )}

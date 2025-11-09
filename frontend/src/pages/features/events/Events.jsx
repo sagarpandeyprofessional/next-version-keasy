@@ -467,7 +467,7 @@ export default function Events() {
       {/* 🔹 Fixed Create Event Button - Mobile Only: bottom center, smaller blue circle */}
       <button
         onClick={handleCreateEvent}
-        className="md:hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-40 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-110 group flex items-center justify-center"
+        className="sm:hidden fixed bottom-18 right-6 z-40 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all hover:scale-110"
         aria-label="Create new event"
       >
         <svg 

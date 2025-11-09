@@ -197,8 +197,8 @@ const Guides = () => {
           {/* Floating Action Button - Mobile Only */}
           <Link
             to={user ? "/guides/new" : "/signin"}
-            className="sm:hidden fixed bottom-18 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
-          >
+            className="sm:hidden fixed bottom-18 right-6 z-40 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all hover:scale-110"
+      >
             <svg 
               className="w-6 h-6" 
               fill="none" 
