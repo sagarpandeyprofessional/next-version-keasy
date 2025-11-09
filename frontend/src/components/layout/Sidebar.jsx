@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { FiHome, FiShoppingBag, FiCalendar, FiUsers, FiBookOpen, FiMapPin } from "react-icons/fi";
 import { TbHttpConnect } from "react-icons/tb";
+import {UserRoundCheck } from 'lucide-react'
 
 const LeftSidebar = () => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const LeftSidebar = () => {
     { name: "Events", path: "/events", icon: FiCalendar },
     { name: "Community", path: "/community", icon: FiUsers },
     { name: "Guides", path: "/guides", icon: FiBookOpen },
-    { name: "Connect", path: "/connect", icon: TbHttpConnect }
+    { name: "Connect", path: "/connect", icon: UserRoundCheck }
   ];
   {/* { name: "Nearby", path: "/nearby", icon: FiMapPin }, */}
 

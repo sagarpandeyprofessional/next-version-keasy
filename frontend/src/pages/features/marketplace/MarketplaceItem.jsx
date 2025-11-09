@@ -256,7 +256,10 @@ export default function MarketplaceItemPage() {
     }
   };
 
-  const isLiked = user_favourites.includes(item.id)
+  const isLiked = Array.isArray(user_favourites) 
+  ? user_favourites.includes(item.id)
+  : false;
+
 
   // Render description with preserved formatting
   const renderDescription = (description) => {
