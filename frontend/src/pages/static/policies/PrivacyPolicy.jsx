@@ -195,7 +195,7 @@ const PrivacyPolicy = () => {
             <h3 className="text-xl font-semibold text-gray-800 mb-3">Communications</h3>
             <p className="text-gray-700 mb-4">You may opt out of marketing emails by clicking "Unsubscribe" or contacting <strong>support@koreaeasy.org</strong>. You will still receive essential service notices.</p>
 
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Data Rights (Under PIPA and GDPR)</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">Data Rights (Under PIPA, CCPA and GDPR)</h3>
             <p className="text-gray-700 mb-2">Subject to law, you may request:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4 mb-4">
               <li>Access to your personal data</li>
