@@ -556,7 +556,64 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
 
   const favouritesList = item.favourites?.favourites || [];
   const likesCount = favouritesList.length;
-  const isLiked = userId && favouritesList.includes(userId);
+  // const isLiked = userId && favouritesList.includes(userId);
+
+  // user likes logic
+
+  // user favs state
+  const [user_id, setUser_id] = useState(null)
+  const [user_favourites, setUserFavourites] = useState([])
+  const isLiked = user_id && user_favourites.includes(item.id)
+
+  // load favourites from db
+  useEffect(() => {
+    const fetchUser = async() => {
+      const {data} = await supabase.auth.getUser()
+      const uid = data?.user?.id || null;
+      setUser_id(uid)
+
+      if(uid){
+        const { data:favsData, error:favsError } = await supabase
+        .from('profiles')
+        .select('favourites_marketplace')
+        .eq('user_id', uid)
+        .single()
+
+        // Ensure favourites_marketplace is always an array
+        const favourites = favsData?.favourites_marketplace;
+        setUserFavourites(Array.isArray(favourites) ? favourites : []);
+      } else{
+        // if no user islogged in, set to empty array
+        setUserFavourites([]);
+      }
+    }
+    fetchUser()
+  }, [])
+
+  const handleToggleLike = async (item) => {
+    if(!user_id) {
+      alert('Please sign in to like items!')
+      return;
+    }
+
+    try{
+      const isLiked = user_favourites.includes(item.id);
+      const updatedFavourites = isLiked 
+        ? user_favourites.filter((id) => id !== item.id)
+      : [...user_favourites, item.id];
+
+      setUserFavourites(updatedFavourites); // local update
+
+      const {error} = await supabase
+      .from('profiles')
+      .update({favourites_marketplace: updatedFavourites})
+      .eq('user_id', user_id)
+
+      if(error) throw error;
+    }
+    catch(err){console.error('Error updating favourites: ', err)}
+  }
+
 
   const handleCardClick = async () => {
     try {
@@ -586,7 +643,7 @@ const MarketplaceItem = ({ item, userId, onToggleLike }) => {
         onClick={(e) => {
           e.stopPropagation();
           if (!userId) return alert("Please log in to like");
-          onToggleLike(item);
+          handleToggleLike(item);
         }}
         className={`absolute top-2 right-2 z-20 p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
           isLiked ? 'bg-red-500 text-white shadow-lg' : 'bg-white/80 hover:bg-white text-gray-700 hover:text-red-500'
