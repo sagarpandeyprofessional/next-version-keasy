@@ -570,7 +570,7 @@ export default function Marketplace() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
