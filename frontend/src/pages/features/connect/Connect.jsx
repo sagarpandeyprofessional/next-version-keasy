@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from '../../../api/supabase-client';
-import { X, MapPin, Briefcase, Calendar, Globe, Instagram, Facebook, Video as VideoIcon, FileText, ExternalLink } from "lucide-react";
+import { X, MapPin, Briefcase, Calendar, Globe, Instagram, Facebook, Video as VideoIcon, FileText, ExternalLink, BadgeCheck } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router";
+import { RiTiktokLine } from "react-icons/ri";
+
 // Mock data
 
 const id = "0d4d00cd-c74a-4fa7-b47c-f7f39a5647e2"
@@ -400,6 +402,432 @@ const ProfessionalCard = ({ professional, onClick, isMobile }) => {
 };
 
 const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [professional, setProfessional] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const handleClose = () => {
+    setIsAnimating(false);
+    setTimeout(onClose, 300);
+  };
+
+  useEffect(() => {
+    // Mock fetch - replace with actual Supabase call
+    const fetchProfessional = async () => {
+      if (!professionalId) {
+        setLoading(false);
+        return;
+      }
+      
+      setLoading(true);
+      const { data, error } = await supabase
+      .from('connect_professional')
+      .select('*')
+      .eq('id', professionalId)
+      .single();
+
+      if(error){
+        console.log(error.message)
+        setLoading(false)
+      }
+      else{
+        setProfessional(data)
+        setLoading(false)
+      }
+
+    };
+    
+    if (isOpen && professionalId) {
+      fetchProfessional();
+    }
+  }, [professionalId, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => setIsAnimating(true), 10);
+      if (isMobile) document.body.style.overflow = "hidden";
+    } else {
+      setIsAnimating(false);
+      if (isMobile) document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, isMobile]);
+  
+  
+
+  const extractYouTubeId = (url) => {
+    if (!url) return null;
+    try {
+      const parsedUrl = new URL(url);
+      if (parsedUrl.hostname.includes("youtu.be")) return parsedUrl.pathname.slice(1);
+      return parsedUrl.searchParams.get("v");
+    } catch {
+      return url;
+    }
+  };
+
+  const getIndustryDisplay = (industry) => {
+    return industry?.split('_').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ') || '';
+  };
+
+  const getSocialIcon = (platform) => {
+    switch(platform) {
+      case 'instagram': return <Instagram className="w-4 h-4 text-violet-400" />;
+      case 'facebook': return <Facebook className="w-4 h-4 text-blue-600" />;
+      case 'tiktok': return <RiTiktokLine className="w-4 h-4  text-black-600" />;
+      case 'website': return <Globe className="w-4 h-4  text-blue-500" />;
+      default: return <Globe className="w-4 h-4" />;
+    }
+  };
+
+  if (!isOpen) return null;
+  
+  if (loading || !professional) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black opacity-50" />
+        <div className="relative bg-white rounded-lg p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const videoId = extractYouTubeId(professional.video_url);
+  const hasSocials = professional.socials && Object.keys(professional.socials).length > 0;
+  const hasBusinessDocs = professional.business_data_url && professional.business_data_url.length > 0;
+
+  // Mobile layout
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 z-50" onClick={handleClose}>
+        <div className={`absolute inset-0 bg-black transition-opacity duration-300 ${isAnimating ? 'opacity-50' : 'opacity-0'}`} />
+        
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className={`fixed left-0 right-0 bottom-0 bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
+          style={{ height: '85vh' }}
+        >
+          <div className="flex justify-center pt-3 pb-2">
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+          </div>
+
+          <button onClick={handleClose} className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors">
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
+
+          <div className="flex-1 overflow-y-auto">
+            {/* Media Section */}
+            <div className="relative aspect-video bg-black overflow-hidden">
+              {professional.show_type === 'video' && videoId ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
+                  title={professional.full_name}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              ) : professional.banner_url ? (
+                <img src={professional.banner_url} alt={professional.full_name} className="w-full h-full object-cover" />
+              ) : (
+                <img src={professional.img_url} alt={professional.full_name} className="w-full h-full object-cover" />
+              )}
+              
+              {professional.quote && (
+                <div className="absolute bottom-4 left-4 bg-blue-700/80 text-white text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-sm">
+                  {professional.quote}
+                </div>
+              )}
+            </div>
+
+            {/* Content */}
+            <div className="p-6 pb-8">
+              {/* Header */}
+              <div className="flex items-start gap-4 mb-4">
+                <img src={professional.img_url} alt={professional.full_name} className="w-20 h-20 rounded-full object-cover shadow-lg" />
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1">{professional.full_name}</h2>
+                  <div className="flex items-center text-sm text-gray-600 gap-2 mb-2">
+                    <Briefcase className="w-4 h-4" />
+                    <span>{professional.role}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 gap-2">
+                    <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                      {professional.experience}+ years in {getIndustryDisplay(professional.industry)}
+                    </span>
+                    {professional.verified && (
+                      <span className="px-3 py-1.5  text-green-700 rounded-full text-sm font-semibold flex items-center gap-1">
+                        ✓
+                      </span>
+                     )}
+                  </div>
+                </div>
+                {professional.location?.url  && professional.location?.title && (
+                <div className="">
+                  <a
+                  href={professional.location.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start rounded-4xl p-3 hover:bg-gray-100 transition border-1 border-blue-100/70"
+                >
+                  <MapPin className="w-5 h-5 text-blue-600 mt-0.5" />
+                </a>
+                </div>
+              )}
+              </div>
+
+              {/* Bio */}
+              {professional.bio && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-bold text-gray-900 mb-2">About</h3>
+                  <p className="text-gray-700 leading-relaxed text-sm">{professional.bio}</p>
+                </div>
+              )}
+
+              {/* Professional Styles */}
+              {professional.style && professional.style.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-bold text-gray-900 mb-3">Professional Style</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {professional.style.map((item, idx) => (
+                      <span key={idx} className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-50 to-purple-50 text-gray-800 rounded-full text-sm font-medium border border-blue-100">
+                        <span className="text-base">{item.emoji}</span>
+                        <span>{item.text}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Social Links */}
+              {hasSocials && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-bold text-gray-900 mb-3">Connect</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(professional.socials).map(([platform, url], idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:border-blue-500 hover:text-blue-600 transition-all"
+                      >
+                        {getSocialIcon(platform)}
+                        <span className="capitalize">{platform}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Business Documents */}
+              {hasBusinessDocs && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-bold text-gray-900 mb-3">Documents</h3>
+                  <div className="space-y-2">
+                    {professional.business_data_url.map((doc, idx) => (
+                      <a
+                        key={idx}
+                        href={doc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
+                      >
+                        <FileText className="w-5 h-5 text-red-600" />
+                        <span className="flex-1 text-sm font-medium text-gray-700 group-hover:text-gray-900">{doc.name}</span>
+                        <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Contact Button */}
+              <a
+                href={professional.contact_url}
+                target={professional.contact_type === 'email' ? '_self' : '_blank'}
+                rel="noopener noreferrer"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
+              >
+                Contact {professional.full_name.split(' ')[0]}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop layout - Side by side like the image
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={handleClose}>
+      <div className={`absolute inset-0 bg-black transition-opacity duration-300 ${isAnimating ? 'opacity-50' : 'opacity-0'}`} />
+      
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`relative bg-white rounded-2xl shadow-2xl transition-all duration-300 max-w-3xl w-full max-h-[75vh] overflow-hidden ${
+          isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        }`}
+      >
+        <button onClick={handleClose} className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-lg hover:bg-gray-100 transition-colors ">
+          <X className="w-4 h-4 text-gray-600" />
+        </button>
+
+        <div className="flex flex-col h-full overflow-hidden bg-gradient-to-br from-rose-100 via-orange-50 to-amber-50">
+          {/* Top section - Image and Content side by side */}
+          <div className="flex flex-1 overflow-hidden">
+            {/* Left side - Image */}
+            <div className="w-2/5 flex items-center justify-center p-4">
+              <div className="relative w-full h-full flex items-center justify-center">
+                {professional.show_type === 'video' && videoId ? (
+                  <div className="w-full aspect-[3/4] rounded-xl overflow-hidden bg-black shadow-xl">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
+                      title={professional.full_name}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+                ) : professional.banner_url ? (
+                  <img 
+                    src={professional.banner_url} 
+                    alt={professional.full_name} 
+                    className="w-full aspect-[3/4] object-cover rounded-xl shadow-xl" 
+                  />
+                ) : (
+                  <img 
+                    src={professional.img_url} 
+                    alt={professional.full_name} 
+                    className="w-full aspect-[3/4] object-cover rounded-xl shadow-xl" 
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Right side - Content (no buttons, location, documents) */}
+            <div className="w-3/5 flex flex-col overflow-y-auto p-5">
+              {/* Header */}
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold font-serif text-blue-600 mb-0.5 flex gap-2">
+                  {professional.full_name}
+                  {professional.verified && (
+                    <BadgeCheck className="w-5 h-5 font-serif text-blue-600 text-sm font-bold mt-2" />
+                  )}
+                </h2>
+                <p className="text-xs text-gray-600 mb-0.5">
+                  {professional.role} with {professional.experience}+ years experience
+                </p>
+                
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2.5 pb-1 text-blue-700 rounded-full text-xs font-medium">
+                    
+                  </span>
+                  
+                </div>
+              </div>
+
+              {/* Bio */}
+              {professional.bio && (
+                <div className="mb-2">
+                  <p className="text-gray-700 leading-relaxed text-xs">{professional.bio}</p>
+                </div>
+              )}
+
+              {/* Bio */}
+              {professional.bio && (
+                <div className="mb-4 ml-6">
+                  <li className="text-gray-700 leading-relaxed text-xs">Service in English/Korean</li>
+                  <li className="text-gray-700 leading-relaxed text-xs">12 years of Service in Daejeon</li>
+                  <li className="text-gray-700 leading-relaxed text-xs">100+ foreigners found house with Colin</li>
+                  <li className="text-gray-700 leading-relaxed text-xs">We provide free Realestate Service to all foreigners.</li>
+                </div>
+              )}
+
+              {/* Social Links */}
+              {hasSocials && (
+                <div className="mb-4 px-2">
+                  <h3 className="mb-2 text-gray-800">View Listings</h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {Object.entries(professional.socials).map(([platform, url], idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-2.5 py-1 bg-nonrounded-lg text-xs font-medium  hover:scale-125 transition-all"
+                      >
+                        {getSocialIcon(platform)}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom section - Full width with Documents, Button, Location */}
+          <div className="border-t border-gray-200 p-4">
+            <div className="flex items-center gap-3">
+              {/* Left - Documents */}
+              <div className="flex-1">
+                {hasBusinessDocs && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {professional.business_data_url.map((doc, idx) => (
+                      <a
+                        key={idx}
+                        href={doc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-gray-700 rounded-lg text-xs font-medium hover:text-red-600 transition-all group"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-red-600" />
+                        <span className="text-red-600">{doc.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Middle - Contact Button */}
+              <div className="flex-shrink-0">
+                <a
+                  href={professional.contact_url}
+                  target={professional.contact_type === 'email' ? '_self' : '_blank'}
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-blue-400 to-blue-500 text-white px-15 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all shadow-md hover:scale-[1.02] flex items-center justify-center gap-2 text-xs whitespace-nowrap"
+                >
+                  <span>Contact {professional.full_name.split(' ')[0]}</span>
+                </a>
+              </div>
+
+              {/* Right - Location */}
+              <div className="flex-1 flex justify-end">
+                {professional.location?.url && professional.location?.title && (
+                  <a
+                    href={professional.location.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-2 text-gray-700 rounded-lg text-xs font-medium hover:text-blue-600 transition-all"
+                  >
+                    <MapPin className="w-3.5 h-3.5 text-blue-600" />
+                    <span className="text-blue-600">{professional.location.title}</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ProModal = ({ professionalId, isOpen, onClose, isMobile }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [professional, setProfessional] = useState(null);
   const [loading, setLoading] = useState(true);

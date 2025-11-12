@@ -19,26 +19,16 @@ export default function MarketplacePostPage() {
     description: "",
     price: "",
     location: "Daejeon",
-    category_id: "2",
+    category_id: "",
     brand_id: "",
     stock: "1",
     is_negotiable: false,
-    condition: "new",
+    condition: "used",
     seller_contact_type: "whatsapp",
-    seller_contact: "+8201096959805",
+    seller_contact: "+820101234567",
   });
 
-  // title: "",
-  //   description: "",
-  //   price: "",
-  //   location: "",
-  //   category_id: "",
-  //   brand_id: "",
-  //   stock: "1",
-  //   is_negotiable: false,
-  //   condition: "used",
-  //   seller_contact_type: "message",
-  //   seller_contact: "",
+  
 
   // Check authentication
   useEffect(() => {
