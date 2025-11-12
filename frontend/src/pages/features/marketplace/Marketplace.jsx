@@ -466,8 +466,14 @@ export default function Marketplace() {
           brand_name: brandMap[item.brand_id] || "",
         }));
 
-        setAllItems(itemsWithNames);
-        setItems(itemsWithNames);
+        // 🔀 Shuffle items randomly before setting state
+        const shuffled = itemsWithNames
+          .map((value) => ({ value, sort: Math.random() }))
+          .sort((a, b) => a.sort - b.sort)
+          .map(({ value }) => value);
+
+        setAllItems(shuffled);
+        setItems(shuffled);
       }
     };
     fetchData();
