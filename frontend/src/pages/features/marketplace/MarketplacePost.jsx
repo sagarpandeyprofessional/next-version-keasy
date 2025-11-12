@@ -209,7 +209,7 @@ export default function MarketplacePostPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setLoading(false);
 
     try {
       // Validation
@@ -222,9 +222,13 @@ export default function MarketplacePostPage() {
       if (formData.description.length > 1000) {
         throw new Error("Description must be 1000 characters or less");
       }
-      if (!formData.price || parseFloat(formData.price) <= 0) {
+
+      // IMPROVED PRICE VALIDATION
+      const priceValue = parseFloat(String(formData.price).replace(/[^\d.]/g, ''));
+      if (isNaN(priceValue) || priceValue <= 0) {
         throw new Error("Valid price is required");
       }
+
       if (!formData.category_id) {
         throw new Error("Category is required");
       }
@@ -237,6 +241,9 @@ export default function MarketplacePostPage() {
       if (!formData.seller_contact.trim()) {
         throw new Error("Contact information is required");
       }
+
+      // Set loading AFTER validation passes
+      setLoading(true);
 
       // Upload images first with the actual title
       console.log(`Uploading ${imageFiles.length} images...`);
@@ -256,11 +263,11 @@ export default function MarketplacePostPage() {
         user_id: userId,
         title: formData.title.trim(),
         description: formData.description.trim() || null,
-        price: parseFloat(formData.price),
+        price: priceValue, // Use cleaned price value
         location: formData.location.trim() || null,
         category_id: parseInt(formData.category_id),
         brand_id: formData.brand_id ? parseInt(formData.brand_id) : null,
-        stock: parseInt(formData.stock),
+        stock: parseInt(formData.stock) || 1,
         is_negotiable: formData.is_negotiable,
         condition: formData.condition,
         seller_contact_type: formData.seller_contact_type,
@@ -290,12 +297,13 @@ export default function MarketplacePostPage() {
 
       console.log("Listing created successfully:", data);
 
-      const updatedContactLink = (contactLink, productId) => {
+      // Update contact link with product information
+      const updatedContactLink = (contactLink, productId, productTitle) => {
         if (!contactLink || !contactLink.trim()) return null;
 
         const trimmedLink = contactLink.trim();
         const encodedMessage = encodeURIComponent(
-          `Hello, I am interested in your ${data.title} listed on the Marketplace. Product Link - https://koreaeasy.org/marketplace/${productId}`
+          `Hello, I am interested in your ${productTitle} listed on the Marketplace. Product Link - https://koreaeasy.org/marketplace/${productId}`
         );
 
         try {
@@ -330,32 +338,41 @@ export default function MarketplacePostPage() {
         }
       };
 
-      // Then in handleSubmit, after the insert:
-      const updatedContact = updatedContactLink(data.seller_contact, data.id);
+    // Update the contact link with product details
+    const updatedContact = updatedContactLink(data.seller_contact, data.id, data.title);
 
-      if (updatedContact) {
-        const { error: updateError } = await supabase
-          .from("marketplace")
-          .update({
-            seller_contact: updatedContact,
-          })
-          .eq("id", data.id);
+    if (updatedContact && updatedContact !== data.seller_contact) {
+      const { error: updateError } = await supabase
+        .from("marketplace")
+        .update({
+          seller_contact: updatedContact,
+        })
+        .eq("id", data.id);
 
-        if (updateError) {
-          console.error("Error updating contact link:", updateError);
-          // Decide if you want to throw an error or just log it
-        }
+      if (updateError) {
+        console.error("Error updating contact link:", updateError);
+        // Don't throw - listing is already created
       }
-
-      // Redirect to item page
-      if(updatedContact) navigate(`/marketplace/${data.id}`);
-    } catch (err) {
-      setError(err.message || "Failed to create listing");
-      console.error("Error creating listing:", err);
-    } finally {
-      setLoading(false);
     }
-  };
+
+    // Redirect to item page
+    navigate(`/marketplace/${data.id}`);
+
+  } catch (err) {
+    setError(err.message || "Failed to create listing");
+    console.error("Error creating listing:", err);
+    
+    // Log the current form state for debugging
+    console.log("Form state at error:", {
+      title: formData.title,
+      price: formData.price,
+      priceType: typeof formData.price,
+      category_id: formData.category_id
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (!userId) {
     return (

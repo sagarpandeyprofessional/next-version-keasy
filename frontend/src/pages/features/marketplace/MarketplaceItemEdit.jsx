@@ -290,150 +290,166 @@ export default function MarketplaceEditPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
+
+  try {
+    // Validation
+    if (!formData.title.trim()) {
+      throw new Error("Title is required");
+    }
+    if (formData.title.length > 100) {
+      throw new Error("Title must be 100 characters or less");
+    }
+    if (formData.description.length > 1000) {
+      throw new Error("Description must be 1000 characters or less");
+    }
+
+    // IMPROVED PRICE VALIDATION - Clean and parse price
+    const priceValue = parseFloat(String(formData.price).replace(/[^\d.]/g, ''));
+    if (isNaN(priceValue) || priceValue <= 0) {
+      throw new Error("Valid price is required");
+    }
+
+    if (!formData.category_id) {
+      throw new Error("Category is required");
+    }
+    
+    const totalImages = existingImages.length + imageFiles.length;
+    if (totalImages === 0) {
+      throw new Error("At least one image is required");
+    }
+    
+    if (!formData.seller_contact_type) {
+      throw new Error("Contact type is required");
+    }
+    if (!formData.seller_contact.trim()) {
+      throw new Error("Contact information is required");
+    }
+
+    // Set loading AFTER validation passes
     setLoading(true);
 
-    try {
-      // Validation
-      if (!formData.title.trim()) {
-        throw new Error("Title is required");
-      }
-      if (formData.title.length > 100) {
-        throw new Error("Title must be 100 characters or less");
-      }
-      if (formData.description.length > 1000) {
-        throw new Error("Description must be 1000 characters or less");
-      }
-      if (!formData.price || parseFloat(formData.price) <= 0) {
-        throw new Error("Valid price is required");
-      }
-      if (!formData.category_id) {
-        throw new Error("Category is required");
-      }
-      
-      const totalImages = existingImages.length + imageFiles.length;
-      if (totalImages === 0) {
-        throw new Error("At least one image is required");
-      }
-      
-      if (!formData.seller_contact_type) {
-        throw new Error("Contact type is required");
-      }
-      if (!formData.seller_contact.trim()) {
-        throw new Error("Contact information is required");
-      }
+    // Upload new images with the actual title
+    console.log(`Uploading ${imageFiles.length} new images...`);
+    const newImageUrls = await uploadImages(formData.title.trim());
+    
+    // Combine existing and new images
+    const allImageUrls = [...existingImages, ...newImageUrls];
 
-      // Upload new images with the actual title
-      console.log(`Uploading ${imageFiles.length} new images...`);
-      const newImageUrls = await uploadImages(formData.title.trim());
-      
-      // Combine existing and new images
-      const allImageUrls = [...existingImages, ...newImageUrls];
+    console.log("All images:", allImageUrls);
 
-      console.log("All images:", allImageUrls);
+    // Generate contact link
+    const contactLink = generateContactLink(formData.seller_contact_type, formData.seller_contact);
 
-      // Generate contact link
-      const contactLink = generateContactLink(formData.seller_contact_type, formData.seller_contact);
+    // Update marketplace item
+    const { data, error: updateError } = await supabase
+      .from("marketplace")
+      .update({
+        title: formData.title.trim(),
+        description: formData.description.trim() || null,
+        price: priceValue, // Use cleaned price value
+        location: formData.location.trim() || null,
+        category_id: parseInt(formData.category_id),
+        brand_id: formData.brand_id ? parseInt(formData.brand_id) : null,
+        stock: parseInt(formData.stock) || 1,
+        is_negotiable: formData.is_negotiable,
+        condition: formData.condition,
+        seller_contact_type: formData.seller_contact_type,
+        seller_contact: contactLink,
+        images: { images: allImageUrls },
+      })
+      .eq("id", parseInt(id))
+      .select()
+      .single();
 
-      // Update marketplace item
-      const { data, error: updateError } = await supabase
+    if (updateError) {
+      console.error("Update error:", updateError);
+      throw new Error(updateError.message || "Failed to update listing");
+    }
+
+    console.log("Listing updated successfully:", data);
+
+    // Update contact link with product ID and title
+    const updatedContactLink = (contactLink, productId, productTitle) => {
+      if (!contactLink || !contactLink.trim()) return null;
+
+      const trimmedLink = contactLink.trim();
+      const encodedMessage = encodeURIComponent(
+        `Hello, I am interested in your ${productTitle} listed on the Marketplace. Product Link - https://koreaeasy.org/marketplace/${productId}`
+      );
+
+      try {
+        const lowerLink = trimmedLink.toLowerCase();
+
+        if (lowerLink.includes("wa.me") || lowerLink.includes("whatsapp.com")) {
+          return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+        }
+
+        if (lowerLink.includes("t.me")) {
+          return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+        }
+
+        if (lowerLink.startsWith("sms:")) {
+          return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}body=${encodedMessage}`;
+        }
+
+        if (lowerLink.startsWith("mailto:")) {
+          return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}body=${encodedMessage}`;
+        }
+
+        if (lowerLink.includes("m.me")) {
+          return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
+        }
+
+        // Unsupported or no text support
+        return trimmedLink;
+
+      } catch (err) {
+        console.error("Invalid contact link:", trimmedLink, err);
+        return trimmedLink;
+      }
+    };
+
+    const updatedContact = updatedContactLink(data.seller_contact, data.id, data.title);
+
+    if (updatedContact && updatedContact !== data.seller_contact) {
+      const { error: contactUpdateError } = await supabase
         .from("marketplace")
         .update({
-          title: formData.title.trim(),
-          description: formData.description.trim() || null,
-          price: parseFloat(formData.price),
-          location: formData.location.trim() || null,
-          category_id: parseInt(formData.category_id),
-          brand_id: formData.brand_id ? parseInt(formData.brand_id) : null,
-          stock: parseInt(formData.stock),
-          is_negotiable: formData.is_negotiable,
-          condition: formData.condition,
-          seller_contact_type: formData.seller_contact_type,
-          seller_contact: contactLink,
-          images: { images: allImageUrls },
+          seller_contact: updatedContact,
         })
-        .eq("id", parseInt(id))
-        .select()
-        .single();
+        .eq("id", data.id);
 
-      if (updateError) {
-        console.error("Update error:", updateError);
-        throw new Error(updateError.message || "Failed to update listing");
+      if (contactUpdateError) {
+        console.error("Error updating contact link:", contactUpdateError);
+        // Don't throw - listing is already updated
       }
-
-      console.log("Listing updated successfully:", data);
-
-      // Update contact link with product ID (same as post page)
-      const updatedContactLink = (contactLink, productId) => {
-        if (!contactLink || !contactLink.trim()) return null;
-
-        const trimmedLink = contactLink.trim();
-        const encodedMessage = encodeURIComponent(
-          `Hello, I am interested in your ${data.title} listed on the Marketplace. Product Link - https://koreaeasy.org/marketplace/${productId}`
-        );
-
-        try {
-          const lowerLink = trimmedLink.toLowerCase();
-
-          if (lowerLink.includes("wa.me") || lowerLink.includes("whatsapp.com")) {
-            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
-          }
-
-          if (lowerLink.includes("t.me")) {
-            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
-          }
-
-          if (lowerLink.startsWith("sms:")) {
-            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}body=${encodedMessage}`;
-          }
-
-          if (lowerLink.startsWith("mailto:")) {
-            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}body=${encodedMessage}`;
-          }
-
-          if (lowerLink.includes("m.me")) {
-            return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
-          }
-
-          // Unsupported or no text support
-          return trimmedLink;
-
-        } catch (err) {
-          console.error("Invalid contact link:", trimmedLink, err);
-          return trimmedLink;
-        }
-      };
-
-      const updatedContact = updatedContactLink(data.seller_contact, data.id);
-
-      if (updatedContact) {
-        const { error: contactUpdateError } = await supabase
-          .from("marketplace")
-          .update({
-            seller_contact: updatedContact,
-          })
-          .eq("id", data.id);
-
-        if (contactUpdateError) {
-          console.error("Error updating contact link:", contactUpdateError);
-        }
-      }
-
-      // Delete removed images from storage
-      if (imagesToDelete.length > 0) {
-        await deleteImagesFromStorage(imagesToDelete);
-      }
-
-      // Redirect to item page
-      if(updatedContact) navigate(`/marketplace/${id}`);
-    } catch (err) {
-      setError(err.message || "Failed to update listing");
-      console.error("Error updating listing:", err);
-    } finally {
-      setLoading(false);
     }
-  };
+
+    // Delete removed images from storage
+    if (imagesToDelete.length > 0) {
+      await deleteImagesFromStorage(imagesToDelete);
+    }
+
+    // Redirect to item page
+    navigate(`/marketplace/${id}`);
+
+  } catch (err) {
+    setError(err.message || "Failed to update listing");
+    console.error("Error updating listing:", err);
+    
+    // Log the current form state for debugging
+    console.log("Form state at error:", {
+      title: formData.title,
+      price: formData.price,
+      priceType: typeof formData.price,
+      category_id: formData.category_id
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this listing? This action cannot be undone.")) {
