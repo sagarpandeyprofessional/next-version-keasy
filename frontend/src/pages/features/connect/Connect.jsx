@@ -582,24 +582,18 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
 
               {/* Bio */}
               {professional.bio && (
-                <div className="mb-6">
+                <div className="mb-2">
                   <h3 className="text-sm font-bold text-gray-900 mb-2">About</h3>
                   <p className="text-gray-700 leading-relaxed text-sm">{professional.bio}</p>
                 </div>
               )}
 
-              {/* Professional Styles */}
-              {professional.style && professional.style.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">Professional Style</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {professional.style.map((item, idx) => (
-                      <span key={idx} className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-50 to-purple-50 text-gray-800 rounded-full text-sm font-medium border border-blue-100">
-                        <span className="text-base">{item.emoji}</span>
-                        <span>{item.text}</span>
-                      </span>
-                    ))}
-                  </div>
+              {/* Bio_list */}
+              {professional.bio_list && (
+                <div className="mb-4 ml-4">
+                  {professional.bio_list.map((listItem, index) => (
+                    <li key={index} className="text-gray-700 leading-relaxed text-xs">{listItem}</li>
+                  ))}
                 </div>
               )}
 
@@ -738,7 +732,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                 </div>
               )}
 
-              {/* Bio */}
+              {/* Bio_list */}
               {professional.bio_list && (
                 <div className="mb-4 ml-6">
                   {professional.bio_list.map((listItem, index) => (
