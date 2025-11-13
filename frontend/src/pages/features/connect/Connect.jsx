@@ -739,19 +739,18 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
               )}
 
               {/* Bio */}
-              {professional.bio && (
+              {professional.bio_list && (
                 <div className="mb-4 ml-6">
-                  <li className="text-gray-700 leading-relaxed text-xs">Service in English/Korean</li>
-                  <li className="text-gray-700 leading-relaxed text-xs">12 years of Service in Daejeon</li>
-                  <li className="text-gray-700 leading-relaxed text-xs">100+ foreigners found house with Colin</li>
-                  <li className="text-gray-700 leading-relaxed text-xs">We provide free Realestate Service to all foreigners.</li>
+                  {professional.bio_list.map((listItem, index) => (
+                    <li key={index} className="text-gray-700 leading-relaxed text-xs">{listItem}</li>
+                  ))}
                 </div>
               )}
 
               {/* Social Links */}
               {hasSocials && (
                 <div className="mb-4 px-2">
-                  <h3 className="mb-2 text-gray-800">View Listings</h3>
+                  <h3 className="mb-2 text-gray-800">Check my Socials</h3>
                   <div className="flex flex-wrap gap-1.5">
                     {Object.entries(professional.socials).map(([platform, url], idx) => (
                       <a
