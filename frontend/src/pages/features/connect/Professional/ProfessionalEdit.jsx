@@ -1,30 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Upload, MapPin, Briefcase, Link, FileText, X, Check, Video, Loader2 } from 'lucide-react';
+import { Camera, Upload, MapPin, Briefcase, Link, FileText, X, Check, Video, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../../../../context/AuthContext';
 import { supabase } from '../../../../api/supabase-client';
 import { useNavigate } from 'react-router';
-
-// Style options with emoji and text combinations
-const STYLE_OPTIONS = [
-  { emoji: '💼', text: 'Professional' },
-  { emoji: '🎯', text: 'Goal-Oriented' },
-  { emoji: '🚀', text: 'Innovative' },
-  { emoji: '💡', text: 'Creative' },
-  { emoji: '⭐', text: 'Excellence-Driven' },
-  { emoji: '🔥', text: 'Passionate' },
-  { emoji: '✨', text: 'Dynamic' },
-  { emoji: '🎨', text: 'Artistic' },
-  { emoji: '📈', text: 'Results-Focused' },
-  { emoji: '🏆', text: 'Achievement-Oriented' },
-  { emoji: '💪', text: 'Determined' },
-  { emoji: '🌟', text: 'Exceptional' },
-  { emoji: '🤝', text: 'Collaborative' },
-  { emoji: '💎', text: 'Premium' },
-  { emoji: '🎓', text: 'Expert' },
-  { emoji: '⚡', text: 'Energetic' },
-  { emoji: '🌱', text: 'Growth-Minded' },
-  { emoji: '🔑', text: 'Key Player' }
-];
 
 // Contact types
 const CONTACT_TYPES = [
@@ -60,15 +38,14 @@ const INDUSTRY_TYPES = [
 const ProfessionalEdit = () => {
   const [formData, setFormData] = useState({
     full_name: '',
-    quote: '',
     role: '',
     industry: 'real_estate',
     bio: '',
+    bio_list: [],
     location: { url: '', title: '' },
     experience: '',
     contact_type: 'email',
     contact_url: '',
-    selected_styles: [],
     img_url: null,
     video_url: '',
     banner_url: null,
@@ -92,6 +69,7 @@ const ProfessionalEdit = () => {
   const [imgPreview, setImgPreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
   const [videoId, setVideoId] = useState(null);
+  const [currentBioItem, setCurrentBioItem] = useState('');
   
   // Store old file paths for deletion
   const [oldImgPath, setOldImgPath] = useState(null);
@@ -168,15 +146,14 @@ const ProfessionalEdit = () => {
 
           setFormData({
             full_name: data.full_name || '',
-            quote: data.quote || '',
             role: data.role || '',
             industry: data.industry || 'real_estate',
             bio: data.bio || '',
+            bio_list: data.bio_list || [],
             location: locationData,
             experience: data.experience?.toString() || '',
             contact_type: data.contact_type || 'email',
             contact_url: extractContactValue(data.contact_url, data.contact_type),
-            selected_styles: data.style || [],
             img_url: data.img_url,
             video_url: data.video_url || '',
             banner_url: data.banner_url || null,
@@ -216,36 +193,29 @@ const ProfessionalEdit = () => {
     fetchProfessionalProfile();
   }, [user, navigate]);
 
-  // Handle style selection (max 3)
-  const toggleStyleSelection = (style) => {
-    setFormData(prev => {
-      const isSelected = prev.selected_styles.some(
-        s => s.emoji === style.emoji && s.text === style.text
-      );
-      
-      if (isSelected) {
-        return {
-          ...prev,
-          selected_styles: prev.selected_styles.filter(
-            s => !(s.emoji === style.emoji && s.text === style.text)
-          )
-        };
-      } else {
-        if (prev.selected_styles.length < 3) {
-          return {
-            ...prev,
-            selected_styles: [...prev.selected_styles, style]
-          };
-        }
-        return prev;
-      }
-    });
+  // Handle bio list item addition
+  const addBioItem = () => {
+    if (!currentBioItem.trim()) return;
+    if (formData.bio_list.length >= 5) {
+      setErrors(prev => ({ ...prev, bio_list: 'Maximum 5 items allowed' }));
+      return;
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      bio_list: [...prev.bio_list, currentBioItem.trim()]
+    }));
+    setCurrentBioItem('');
+    setErrors(prev => ({ ...prev, bio_list: null }));
   };
 
-  const isStyleSelected = (style) => {
-    return formData.selected_styles.some(
-      s => s.emoji === style.emoji && s.text === style.text
-    );
+  // Handle bio list item removal
+  const removeBioItem = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      bio_list: prev.bio_list.filter((_, i) => i !== index)
+    }));
+    setErrors(prev => ({ ...prev, bio_list: null }));
   };
 
   // Delete file from Supabase storage
@@ -465,8 +435,6 @@ const ProfessionalEdit = () => {
     const newErrors = {};
     if (!formData.full_name.trim()) newErrors.full_name = 'Full name is required';
     if (formData.full_name.length > 100) newErrors.full_name = 'Full name must be 100 characters or less';
-    if (formData.quote.length > 150) newErrors.quote = 'Quote must be 150 characters or less';
-    if (formData.selected_styles.length !== 3) newErrors.selected_styles = 'Please select exactly 3 professional styles';
     if (uploadType === 'video' && formData.video_url && !extractYouTubeId(formData.video_url)) {
       newErrors.video_url = 'Please enter a valid YouTube URL';
     }
@@ -482,10 +450,10 @@ const ProfessionalEdit = () => {
     try {
       const updateData = {
         full_name: formData.full_name,
-        quote: formData.quote,
         role: formData.role,
         industry: formData.industry,
         bio: formData.bio,
+        bio_list: formData.bio_list,
         location: formData.location,
         experience: parseInt(formData.experience) || null,
         contact_type: formData.contact_type,
@@ -494,7 +462,6 @@ const ProfessionalEdit = () => {
         video_url: uploadType === 'video' ? formData.video_url : null,
         banner_url: uploadType === 'banner' ? formData.banner_url : null,
         show_type: uploadType,
-        style: formData.selected_styles,
         socials: generateSocialLinks(formData.socials),
         business_data_url: formData.business_data_url,
       };
@@ -610,73 +577,62 @@ const ProfessionalEdit = () => {
               {errors.full_name && <p className="text-red-500 text-sm">{errors.full_name}</p>}
             </div>
 
-            {/* Professional Styles - Select 3 */}
+            {/* Bio List */}
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-gray-700">
-                Professional Styles <span className="text-red-500">*</span>
+                Bio Highlights
                 <span className="text-gray-500 font-normal ml-2">
-                  (Select exactly 3 that best describe you)
+                  (Add up to 5 key points about yourself)
                 </span>
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {STYLE_OPTIONS.map((style, idx) => {
-                  const selected = isStyleSelected(style);
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => toggleStyleSelection(style)}
-                      className={`
-                        flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all
-                        ${selected 
-                          ? 'border-blue-500 bg-blue-50 text-blue-700' 
-                          : 'border-gray-200 bg-white hover:border-gray-300'
-                        }
-                        ${formData.selected_styles.length >= 3 && !selected ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                      `}
-                      disabled={formData.selected_styles.length >= 3 && !selected}
-                    >
-                      <span className="text-xl">{style.emoji}</span>
-                      <span className="text-sm font-medium">{style.text}</span>
-                      {selected && <Check className="w-4 h-4 ml-auto text-blue-600" />}
-                    </button>
-                  );
-                })}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={currentBioItem}
+                  onChange={(e) => setCurrentBioItem(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addBioItem();
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., Fluent in English/Korean or 100+ foreigners found homes with us"
+                  disabled={formData.bio_list.length >= 5}
+                />
+                <button
+                  type="button"
+                  onClick={addBioItem}
+                  disabled={!currentBioItem.trim() || formData.bio_list.length >= 5}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add
+                </button>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600">Selected:</span>
-                <span className={`font-semibold ${formData.selected_styles.length === 3 ? 'text-green-600' : 'text-blue-600'}`}>
-                  {formData.selected_styles.length}/3
+                <span className="text-gray-600">Items:</span>
+                <span className={`font-semibold ${formData.bio_list.length === 5 ? 'text-red-600' : 'text-blue-600'}`}>
+                  {formData.bio_list.length}/5
                 </span>
               </div>
-              {formData.selected_styles.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.selected_styles.map((style, idx) => (
-                    <div key={idx} className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                      <span>{style.emoji}</span>
-                      <span>{style.text}</span>
+              {formData.bio_list.length > 0 && (
+                <div className="space-y-2 mt-2">
+                  {formData.bio_list.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg">
+                      <span className="flex-1">{item}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeBioItem(idx)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
-              {errors.selected_styles && <p className="text-red-500 text-sm">{errors.selected_styles}</p>}
-            </div>
-
-            {/* Quote */}
-            <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
-                Professional Quote
-              </label>
-              <textarea
-                value={formData.quote}
-                onChange={(e) => setFormData(prev => ({ ...prev, quote: e.target.value }))}
-                maxLength={150}
-                rows={2}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Share your professional motto or vision"
-              />
-              <p className="text-xs text-gray-500">{formData.quote.length}/150</p>
-              {errors.quote && <p className="text-red-500 text-sm">{errors.quote}</p>}
+              {errors.bio_list && <p className="text-red-500 text-sm">{errors.bio_list}</p>}
             </div>
 
             {/* Role */}
