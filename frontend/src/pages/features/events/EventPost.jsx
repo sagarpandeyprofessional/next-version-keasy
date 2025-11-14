@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../api/supabase-client";
 import { useAuth } from "../../../context/AuthContext";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
-import "leaflet/dist/leaflet.css";
 
 const SOUTH_KOREA_CITIES = [
   "Seoul", "Busan", "Incheon", "Daegu", "Daejeon", "Gwangju", "Ulsan",
@@ -24,14 +22,13 @@ export default function EventPost() {
   const [categories, setCategories] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const [userLocation, setUserLocation] = useState(null);
 
   const [formData, setFormData] = useState({
     category_id: "",
     name: "",
     description: "",
     location: "",
-    location_coordinates: null,
+    location_coordinates: "",
     date: "",
     organizer_contact_type: "",
     organizer_contact: "",
@@ -54,43 +51,6 @@ export default function EventPost() {
     fetchCategories();
   }, []);
 
-  // Get user's current location
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.log("Location access denied or unavailable");
-          // Default to Daejeon if location access is denied
-          setUserLocation({ lat: 36.35, lng: 127.38 });
-        }
-      );
-    } else {
-      setUserLocation({ lat: 36.35, lng: 127.38 });
-    }
-  }, []);
-
-  // Location picker component
-  const LocationMarker = () => {
-    useMapEvents({
-      click(e) {
-        setFormData({
-          ...formData,
-          location_coordinates: { lat: e.latlng.lat, lng: e.latlng.lng },
-        });
-        setErrors({ ...errors, location_coordinates: null });
-      },
-    });
-    return formData.location_coordinates ? (
-      <Marker position={[formData.location_coordinates.lat, formData.location_coordinates.lng]} />
-    ) : null;
-  };
-
   // Validation functions
   const validateStep1 = () => {
     const newErrors = {};
@@ -109,10 +69,6 @@ export default function EventPost() {
       newErrors.description = "Description must be 100 characters or less";
     }
     
-    if (!formData.location) {
-      newErrors.location = "Please select a city";
-    }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -120,8 +76,28 @@ export default function EventPost() {
   const validateStep2 = () => {
     const newErrors = {};
     
-    if (!formData.location_coordinates) {
-      newErrors.location_coordinates = "Please click on the map to mark the event location";
+    if (!formData.location.trim()) {
+      newErrors.location = "Please enter the location name/address";
+    }
+    
+    if (!formData.location_coordinates.trim()) {
+      newErrors.location_coordinates = "Please enter the Naver Maps link";
+    } else {
+      // Basic URL validation for Naver Maps
+      try {
+  const url = new URL(formData.location_coordinates);
+  const host = url.hostname;
+
+  const isValidNaver =
+    host.endsWith("naver.com") || host.endsWith("naver.me");
+
+  if (!isValidNaver) {
+    newErrors.location_coordinates = "Please enter a valid Naver Maps link";
+  }
+} catch {
+  newErrors.location_coordinates = "Please enter a valid URL";
+}
+
     }
     
     setErrors(newErrors);
@@ -195,7 +171,7 @@ export default function EventPost() {
       case "instagram":
         return `https://instagram.com/${cleanContact}`;
       case "kakao talk":
-        return contact; // KakaoTalk doesn't have direct web links
+        return contact;
       case "messenger":
         return `https://m.me/${cleanContact}`;
       case "email":
@@ -229,7 +205,6 @@ export default function EventPost() {
       setStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      // Show first error in alert
       const firstError = Object.values(errors)[0];
       if (firstError) alert(firstError);
     }
@@ -260,12 +235,12 @@ export default function EventPost() {
       user_id: user.id,
       name: formData.name.trim(),
       description: formData.description.trim(),
-      location: formData.location,
+      location: formData.location.trim(),
       category_id: formData.category_id,
       date: formData.date,
       organizer_contact_type: formData.organizer_contact_type,
       organizer_contact_link: contactLink,
-      location_coordinates: formData.location_coordinates,
+      location_coordinates: formData.location_coordinates.trim(),
     };
 
     const { data, error } = await supabase.from("events").insert([insertData]).select();
@@ -276,7 +251,6 @@ export default function EventPost() {
       setIsSubmitting(false);
     } else {
       alert("🎉 Your event has been created successfully!");
-      // Navigate to events page after short delay
       setTimeout(() => {
         navigate("/events");
       }, 500);
@@ -314,8 +288,7 @@ export default function EventPost() {
     </div>
   );
 
-  // Show loading while checking auth
-  if (!user || !userLocation) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center">
@@ -339,16 +312,13 @@ export default function EventPost() {
 
       <div className="min-h-screen bg-gradient-to-br py-12 px-4">
         <div className="max-w-2xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Create New Event</h1>
             <p className="text-gray-600">Share your event with the community</p>
           </div>
 
-          {/* Progress Indicator */}
           <StepIndicator />
 
-          {/* Form Container */}
           <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
             {step === 1 && (
               <div className="space-y-6">
@@ -424,32 +394,6 @@ export default function EventPost() {
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    City *
-                  </label>
-                  <select
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
-                      errors.location ? "border-red-500" : "border-gray-200"
-                    }`}
-                    value={formData.location}
-                    onChange={(e) => {
-                      setFormData({ ...formData, location: e.target.value });
-                      setErrors({ ...errors, location: null });
-                    }}
-                  >
-                    <option value="">Select a city</option>
-                    {SOUTH_KOREA_CITIES.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.location && (
-                    <p className="text-red-500 text-sm mt-1">{errors.location}</p>
-                  )}
-                </div>
-
                 <button
                   onClick={() => handleNext(1)}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40"
@@ -461,38 +405,64 @@ export default function EventPost() {
 
             {step === 2 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Mark Event Location</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Event Location</h2>
                 <p className="text-gray-600 mb-4">
-                  Click anywhere on the map to mark the exact location of your event
+                  Enter the location name and Naver Maps link for your event
                 </p>
 
-                <div className="rounded-2xl overflow-hidden border-4 border-gray-100 shadow-lg">
-                  <div style={{ height: "400px", width: "100%" }}>
-                    <MapContainer
-                      center={[userLocation.lat, userLocation.lng]}
-                      zoom={13}
-                      style={{ height: "100%", width: "100%" }}
-                    >
-                      <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-                      <LocationMarker />
-                    </MapContainer>
-                  </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Location Name/Address *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Gangnam Station Exit 10, Seoul"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
+                      errors.location ? "border-red-500" : "border-gray-200"
+                    }`}
+                    value={formData.location}
+                    onChange={(e) => {
+                      setFormData({ ...formData, location: e.target.value });
+                      setErrors({ ...errors, location: null });
+                    }}
+                  />
+                  {errors.location && (
+                    <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+                  )}
+                  <p className="text-gray-500 text-sm mt-2">
+                    Enter a clear location name or address
+                  </p>
                 </div>
 
-                {formData.location_coordinates && (
-                  <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
-                    <p className="text-green-800 font-medium">✓ Location marked successfully!</p>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Naver Maps Link *
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://map.naver.com/..."
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
+                      errors.location_coordinates ? "border-red-500" : "border-gray-200"
+                    }`}
+                    value={formData.location_coordinates}
+                    onChange={(e) => {
+                      setFormData({ ...formData, location_coordinates: e.target.value });
+                      setErrors({ ...errors, location_coordinates: null });
+                    }}
+                  />
+                  {errors.location_coordinates && (
+                    <p className="text-red-500 text-sm mt-1">{errors.location_coordinates}</p>
+                  )}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                    <p className="text-blue-800 text-sm font-medium mb-2">📍 How to get Naver Maps link:</p>
+                    <ol className="text-blue-700 text-sm space-y-1 ml-4 list-decimal">
+                      <li>Open Naver Maps (map.naver.com)</li>
+                      <li>Search for your event location</li>
+                      <li>Click "Share" button</li>
+                      <li>Copy the URL and paste it here</li>
+                    </ol>
                   </div>
-                )}
-
-                {errors.location_coordinates && (
-                  <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
-                    <p className="text-red-800 font-medium">{errors.location_coordinates}</p>
-                  </div>
-                )}
+                </div>
 
                 <div className="flex gap-4">
                   <button

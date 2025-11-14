@@ -46,12 +46,6 @@ function getCountdown(dateString) {
   return countdown.trim();
 }
 
-// 🔹 Generate Naver Maps link
-function getNaverMapsLink(coordinates) {
-  if (!coordinates || !coordinates.lat || !coordinates.lng) return '#';
-  return `https://map.naver.com/v5/?c=${coordinates.lng},${coordinates.lat},15,0,0,0,dh`;
-}
-
 // 🔹 Get contact info with branded colors and icons
 function getContactInfo(type, link) {
   const contactTypes = {
@@ -296,7 +290,6 @@ export default function Events() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {events.map((event) => {
           const contactInfo = getContactInfo(event.organizer_contact_type, event.organizer_contact_link);
-          const mapsLink = getNaverMapsLink(event.location_coordinates);
           const isOwner = user && event.user_id === user.id;
           
           return (
@@ -398,41 +391,43 @@ export default function Events() {
                 </div>
 
                 {/* Location */}
-                <div className="flex items-start gap-2 text-sm">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <div className="flex-1">
-                    <span className="text-gray-700">{event.location}</span>
-                    {event.location_coordinates && (
-                      <a
-                        href={mapsLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block text-xs text-blue-600 hover:text-blue-700 font-medium mt-1 hover:underline"
-                      >
-                        Open in Naver Maps →
-                      </a>
-                    )}
+                {event.location && (
+                  <div className="flex items-start gap-2 text-sm">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    <div className="flex-1">
+                      <span className="text-gray-700">{event.location}</span>
+                      {event.location_coordinates && (
+                        <a
+                          href={event.location_coordinates}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-xs text-blue-600 hover:text-blue-700 font-medium mt-1 hover:underline"
+                        >
+                          Open in Naver Maps →
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Contact Button with branded colors */}
                 <div className="pt-2">

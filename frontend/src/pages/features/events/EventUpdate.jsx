@@ -2,20 +2,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../../api/supabase-client";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-
-const SOUTH_KOREA_CITIES = [
-  "Seoul", "Busan", "Incheon", "Daegu", "Daejeon", "Gwangju", "Ulsan",
-  "Sejong", "Suwon", "Yongin", "Goyang", "Seongnam", "Bucheon", "Cheongju",
-  "Ansan", "Jeonju", "Cheonan", "Anyang", "Pohang", "Changwon", "Gimhae",
-  "Jeju City", "Seogwipo", "Paju", "Uijeongbu", "Pyeongtaek", "Siheung",
-  "Hwaseong", "Namyangju", "Gimpo", "Gunpo", "Icheon", "Yangju", "Osan",
-  "Gwangmyeong", "Hanam", "Wonju", "Chuncheon", "Gangneung", "Sokcho",
-  "Gyeongju", "Gumi", "Andong", "Yeongju", "Gimcheon", "Sangju", "Muan",
-  "Mokpo", "Yeosu", "Suncheon", "Gwangyang", "Naju", "Iksan", "Gunsan",
-  "Jinju", "Tongyeong", "Sacheon", "Geoje", "Yangsan", "Miryang"
-].sort();
 
 export default function EventUpdate() {
   const { user } = useAuth();
@@ -26,129 +12,115 @@ export default function EventUpdate() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
-  const [userLocation, setUserLocation] = useState(null);
+  const [eventOwner, setEventOwner] = useState(null);
 
   const [formData, setFormData] = useState({
     category_id: "",
     name: "",
     description: "",
     location: "",
-    location_coordinates: null,
+    location_coordinates: "",
     date: "",
     organizer_contact_type: "",
     organizer_contact: "",
   });
 
-  // Fetch event data and verify ownership
+  // Check if user is authenticated
   useEffect(() => {
-    const fetchEvent = async () => {
-      if (!id) {
-        alert("No event ID provided");
-        navigate("/events");
-        return;
-      }
-
-      if (!user) {
-        alert("Please sign in to edit events");
-        navigate("/signin");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (error || !data) {
-        alert("Event not found");
-        navigate("/events");
-        return;
-      }
-
-      // Check if user owns this event
-      if (data.user_id !== user.id) {
-        alert("You don't have permission to edit this event");
-        navigate("/events");
-        return;
-      }
-
-      // Extract contact from link
-      let contact = data.organizer_contact_link || "";
-      if (data.organizer_contact_type === "telegram") {
-        contact = contact.replace("https://t.me/", "");
-      } else if (data.organizer_contact_type === "whatsapp") {
-        contact = contact.replace("https://wa.me/", "");
-      } else if (data.organizer_contact_type === "instagram") {
-        contact = contact.replace("https://instagram.com/", "");
-      } else if (data.organizer_contact_type === "messenger") {
-        contact = contact.replace("https://m.me/", "");
-      } else if (data.organizer_contact_type === "email") {
-        contact = contact.replace("mailto:", "");
-      } else if (data.organizer_contact_type === "message") {
-        contact = contact.replace("tel:", "");
-      }
-
-      setFormData({
-        category_id: data.category_id || "",
-        name: data.name || "",
-        description: data.description || "",
-        location: data.location || "",
-        location_coordinates: data.location_coordinates || null,
-        date: data.date ? new Date(data.date).toISOString().slice(0, 16) : "",
-        organizer_contact_type: data.organizer_contact_type || "",
-        organizer_contact: contact,
-      });
-
-      setIsLoading(false);
-    };
-
-    fetchEvent();
-  }, [id, user, navigate]);
-
-  // Fetch event categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const { data } = await supabase.from("event_category").select("*");
-      if (data) setCategories(data);
-    };
-    fetchCategories();
-  }, []);
-
-  // Get user's current location
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        () => {
-          setUserLocation({ lat: 36.35, lng: 127.38 });
-        }
-      );
-    } else {
-      setUserLocation({ lat: 36.35, lng: 127.38 });
+    if (!user) {
+      alert("Please sign in to update an event");
+      navigate("/signin");
     }
-  }, []);
+  }, [user, navigate]);
 
-  // Location picker component
-  const LocationMarker = () => {
-    useMapEvents({
-      click(e) {
+  // Fetch event data and categories
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!id) {
+        alert("Event ID is missing");
+        navigate("/events");
+        return;
+      }
+
+      try {
+        // Fetch categories
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from("event_category")
+          .select("*");
+        
+        if (categoriesError) throw categoriesError;
+        setCategories(categoriesData || []);
+
+        // Fetch event data
+        const { data: eventData, error: eventError } = await supabase
+          .from("events")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (eventError) throw eventError;
+
+        if (!eventData) {
+          alert("Event not found");
+          navigate("/events");
+          return;
+        }
+
+        // Check if user owns this event
+        if (eventData.user_id !== user?.id) {
+          alert("You don't have permission to edit this event");
+          navigate("/events");
+          return;
+        }
+
+        setEventOwner(eventData.user_id);
+
+        // Extract username from contact link
+        const extractContact = (link, type) => {
+          if (!link) return "";
+          
+          switch (type) {
+            case "telegram":
+              return link.replace("https://t.me/", "");
+            case "whatsapp":
+              return link.replace("https://wa.me/", "");
+            case "instagram":
+              return link.replace("https://instagram.com/", "");
+            case "messenger":
+              return link.replace("https://m.me/", "");
+            case "email":
+              return link.replace("mailto:", "");
+            case "message":
+              return link.replace("tel:", "");
+            default:
+              return link;
+          }
+        };
+
+        // Populate form with existing data
         setFormData({
-          ...formData,
-          location_coordinates: { lat: e.latlng.lat, lng: e.latlng.lng },
+          category_id: eventData.category_id || "",
+          name: eventData.name || "",
+          description: eventData.description || "",
+          location: eventData.location || "",
+          location_coordinates: eventData.location_coordinates || "",
+          date: eventData.date ? new Date(eventData.date).toISOString().slice(0, 16) : "",
+          organizer_contact_type: eventData.organizer_contact_type || "",
+          organizer_contact: extractContact(eventData.organizer_contact_link, eventData.organizer_contact_type),
         });
-        setErrors({ ...errors, location_coordinates: null });
-      },
-    });
-    return formData.location_coordinates ? (
-      <Marker position={[formData.location_coordinates.lat, formData.location_coordinates.lng]} />
-    ) : null;
-  };
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert(`Failed to load event: ${error.message}`);
+        navigate("/events");
+      }
+    };
+
+    if (user) {
+      fetchData();
+    }
+  }, [id, user, navigate]);
 
   // Validation functions
   const validateStep1 = () => {
@@ -168,10 +140,6 @@ export default function EventUpdate() {
       newErrors.description = "Description must be 100 characters or less";
     }
     
-    if (!formData.location) {
-      newErrors.location = "Please select a city";
-    }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -179,8 +147,24 @@ export default function EventUpdate() {
   const validateStep2 = () => {
     const newErrors = {};
     
-    if (!formData.location_coordinates) {
-      newErrors.location_coordinates = "Please click on the map to mark the event location";
+    if (!formData.location.trim()) {
+      newErrors.location = "Please enter the location name/address";
+    }
+    
+    if (!formData.location_coordinates.trim()) {
+      newErrors.location_coordinates = "Please enter the Naver Maps link";
+    } else {
+      try {
+        const url = new URL(formData.location_coordinates);
+        const host = url.hostname;
+        const isValidNaver = host.endsWith("naver.com") || host.endsWith("naver.me");
+        
+        if (!isValidNaver) {
+          newErrors.location_coordinates = "Please enter a valid Naver Maps link";
+        }
+      } catch {
+        newErrors.location_coordinates = "Please enter a valid URL";
+      }
     }
     
     setErrors(newErrors);
@@ -221,7 +205,7 @@ export default function EventUpdate() {
       if (type === "email") {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(contact)) {
-          newErrors.organizer_contact = "Please enter a valid email address";
+          newErrors.organizer_contact = "Please enter a valid email address (e.g., name@example.com)";
         }
       } else if (type === "message") {
         const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
@@ -230,7 +214,9 @@ export default function EventUpdate() {
         }
       } else {
         if (contact.length < 3) {
-          newErrors.organizer_contact = "Username must be at least 3 characters";
+          newErrors.organizer_contact = "Username must be at least 3 characters long";
+        } else if (contact.length > 50) {
+          newErrors.organizer_contact = "Username is too long";
         }
       }
     }
@@ -284,18 +270,23 @@ export default function EventUpdate() {
     if (isValid) {
       setStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const firstError = Object.values(errors)[0];
+      if (firstError) alert(firstError);
     }
   };
 
   // Form submission
   const handleSubmit = async () => {
     if (!user) {
-      alert("You must be logged in to update an event");
+      alert("You must be logged in to update an event. Please sign in and try again.");
       navigate("/signin");
       return;
     }
 
     if (!validateStep4()) {
+      const firstError = Object.values(errors)[0];
+      if (firstError) alert(firstError);
       return;
     }
 
@@ -309,25 +300,30 @@ export default function EventUpdate() {
     const updateData = {
       name: formData.name.trim(),
       description: formData.description.trim(),
-      location: formData.location,
+      location: formData.location.trim(),
       category_id: formData.category_id,
       date: formData.date,
       organizer_contact_type: formData.organizer_contact_type,
       organizer_contact_link: contactLink,
-      location_coordinates: formData.location_coordinates,
+      location_coordinates: formData.location_coordinates.trim(),
     };
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("events")
       .update(updateData)
-      .eq("id", id);
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .select();
 
     if (error) {
-      alert(`Failed to update event: ${error.message}`);
+      console.error("Update error:", error);
+      alert(`We couldn't update your event right now. ${error.message}. Please try again.`);
       setIsSubmitting(false);
     } else {
-      alert("🎉 Event updated successfully!");
-      navigate("/events");
+      alert("✅ Your event has been updated successfully!");
+      setTimeout(() => {
+        navigate("/events");
+      }, 500);
     }
   };
 
@@ -362,7 +358,7 @@ export default function EventUpdate() {
     </div>
   );
 
-  if (isLoading || !userLocation) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center">
@@ -386,16 +382,13 @@ export default function EventUpdate() {
 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
         <div className="max-w-2xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Update Event</h1>
-            <p className="text-gray-600">Edit your event details</p>
+            <p className="text-gray-600">Modify your event details</p>
           </div>
 
-          {/* Progress Indicator */}
           <StepIndicator />
 
-          {/* Form Container */}
           <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
             {step === 1 && (
               <div className="space-y-6">
@@ -471,32 +464,6 @@ export default function EventUpdate() {
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    City *
-                  </label>
-                  <select
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
-                      errors.location ? "border-red-500" : "border-gray-200"
-                    }`}
-                    value={formData.location}
-                    onChange={(e) => {
-                      setFormData({ ...formData, location: e.target.value });
-                      setErrors({ ...errors, location: null });
-                    }}
-                  >
-                    <option value="">Select a city</option>
-                    {SOUTH_KOREA_CITIES.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.location && (
-                    <p className="text-red-500 text-sm mt-1">{errors.location}</p>
-                  )}
-                </div>
-
                 <button
                   onClick={() => handleNext(1)}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40"
@@ -508,42 +475,64 @@ export default function EventUpdate() {
 
             {step === 2 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Mark Event Location</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Event Location</h2>
                 <p className="text-gray-600 mb-4">
-                  Click anywhere on the map to mark the exact location
+                  Enter the location name and Naver Maps link for your event
                 </p>
 
-                <div className="rounded-2xl overflow-hidden border-4 border-gray-100 shadow-lg">
-                  <div style={{ height: "400px", width: "100%" }}>
-                    <MapContainer
-                      center={
-                        formData.location_coordinates
-                          ? [formData.location_coordinates.lat, formData.location_coordinates.lng]
-                          : [userLocation.lat, userLocation.lng]
-                      }
-                      zoom={13}
-                      style={{ height: "100%", width: "100%" }}
-                    >
-                      <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-                      <LocationMarker />
-                    </MapContainer>
-                  </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Location Name/Address *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Gangnam Station Exit 10, Seoul"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
+                      errors.location ? "border-red-500" : "border-gray-200"
+                    }`}
+                    value={formData.location}
+                    onChange={(e) => {
+                      setFormData({ ...formData, location: e.target.value });
+                      setErrors({ ...errors, location: null });
+                    }}
+                  />
+                  {errors.location && (
+                    <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+                  )}
+                  <p className="text-gray-500 text-sm mt-2">
+                    Enter a clear location name or address
+                  </p>
                 </div>
 
-                {formData.location_coordinates && (
-                  <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
-                    <p className="text-green-800 font-medium">✓ Location marked successfully!</p>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Naver Maps Link *
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://map.naver.com/..."
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
+                      errors.location_coordinates ? "border-red-500" : "border-gray-200"
+                    }`}
+                    value={formData.location_coordinates}
+                    onChange={(e) => {
+                      setFormData({ ...formData, location_coordinates: e.target.value });
+                      setErrors({ ...errors, location_coordinates: null });
+                    }}
+                  />
+                  {errors.location_coordinates && (
+                    <p className="text-red-500 text-sm mt-1">{errors.location_coordinates}</p>
+                  )}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                    <p className="text-blue-800 text-sm font-medium mb-2">📍 How to get Naver Maps link:</p>
+                    <ol className="text-blue-700 text-sm space-y-1 ml-4 list-decimal">
+                      <li>Open Naver Maps (map.naver.com)</li>
+                      <li>Search for your event location</li>
+                      <li>Click "Share" button</li>
+                      <li>Copy the URL and paste it here</li>
+                    </ol>
                   </div>
-                )}
-
-                {errors.location_coordinates && (
-                  <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
-                    <p className="text-red-800 font-medium">{errors.location_coordinates}</p>
-                  </div>
-                )}
+                </div>
 
                 <div className="flex gap-4">
                   <button
@@ -585,6 +574,9 @@ export default function EventUpdate() {
                   {errors.date && (
                     <p className="text-red-500 text-sm mt-1">{errors.date}</p>
                   )}
+                  <p className="text-gray-500 text-sm mt-2">
+                    Select a date and time in the future
+                  </p>
                 </div>
 
                 <div className="flex gap-4">
@@ -652,7 +644,9 @@ export default function EventUpdate() {
                           ? "your.email@example.com"
                           : formData.organizer_contact_type === "message"
                           ? "+82 10-1234-5678"
-                          : "your_username"
+                          : formData.organizer_contact_type === "telegram"
+                          ? "your_username"
+                          : "username"
                       }
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
                         errors.organizer_contact ? "border-red-500" : "border-gray-200"
@@ -666,6 +660,13 @@ export default function EventUpdate() {
                     {errors.organizer_contact && (
                       <p className="text-red-500 text-sm mt-1">{errors.organizer_contact}</p>
                     )}
+                    <p className="text-gray-500 text-sm mt-2">
+                      {formData.organizer_contact_type === "email"
+                        ? "Enter a valid email address"
+                        : formData.organizer_contact_type === "message"
+                        ? "Enter your phone number with country code"
+                        : "Enter your username without @ symbol"}
+                    </p>
                   </div>
                 )}
 
@@ -680,7 +681,7 @@ export default function EventUpdate() {
                   <button
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-4 rounded-xl transition-all shadow-lg shadow-green-600/30 disabled:opacity-50"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-4 rounded-xl transition-all shadow-lg shadow-green-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? "Updating..." : "Update Event ✅"}
                   </button>
