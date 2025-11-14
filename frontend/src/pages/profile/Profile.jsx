@@ -3,12 +3,31 @@ import { useNavigate, Link, useParams } from "react-router-dom";
 import { supabase } from "../../api/supabase-client";
 import { useAuth } from "../../context/AuthContext";
 
+// helpers
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("ko-KR", {
+    style: "currency",
+    currency: "KRW",
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+
 const Profile = () => {
   const { username: usernameFromUrl } = useParams();
   const [userExist, setUserExist] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [userId, setUserId] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+   // Responsive
+    useEffect(() => {
+      const handleResize = () => setIsMobile(window.innerWidth < 768);
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
   // Check User
   useEffect(() => {
@@ -43,7 +62,7 @@ const Profile = () => {
     getUser();
   }, [usernameFromUrl])
 
-  const [activeTab, setActiveTab] = useState("listings");
+  const [activeTab, setActiveTab] = useState("products");
 
   if (loading) return <p className="text-center mt-12 text-gray-500">Loading...</p>;
   if (!userExist) return <p className="text-center mt-12 text-red-500">User not found</p>;
@@ -54,7 +73,7 @@ const Profile = () => {
 
       {/* Tabs */}
       <div className="flex justify-center mt-8 border-b border-gray-300">
-        {["listings", "events", "community", "guides"].map((tab) => (
+        {["products", "events", "community", "guides"].map((tab) => (
           <button
             key={tab}
             className={`px-4 py-2 -mb-px font-medium ${
@@ -74,13 +93,13 @@ const Profile = () => {
         {(() => {
           switch (activeTab) {
             case "community":
-              return <UserCommunities userId={userId} setError={setError} />;
+              return <UserCommunities userId={userId} setError={setError} isMobile={isMobile} />;
             case "events":
-              return <UserEvents userId={userId} setError={setError} />;
+              return <UserEvents userId={userId} setError={setError} isMobile={isMobile}  />;
             case "guides":
-              return <UserGuides userId={userId} setError={setError} />;
-            case "listings":
-              return <UserListings userId={userId} setError={setError} />;
+              return <UserGuides userId={userId} setError={setError} isMobile={isMobile}  />;
+            case "products":
+              return <UserMarketplace userId={userId} setError={setError} isMobile={isMobile}  />;
             default:
               return null;
           }
@@ -177,29 +196,160 @@ const ProfileHeader = ({ usernameFromUrl }) => {
   );
 };
 
-const UserListings = ({userId, setError}) => {
-  const [listings, setListings] = useState([])
+const UserMarketplace = ({userId, setError, isMobile}) => {
+  const [products, setProducts] = useState([])
 
   useEffect(() => {
-    const getListings = async() => {
+    const getProducts = async() => {
       const {data: listingsData, error: listingsError} = await supabase.from('marketplace').select('*').eq('user_id', userId)
       if(listingsError){
         setError(listingsError)
       }
       else{
-        setListings(listingsData)
+        setProducts(listingsData)
       }
     }
-    // getListings()
+    getProducts()
   },[userId])
 
   return (
-    <div className="space-y-4">
-      <div className="p-6 border rounded-lg bg-white shadow-sm text-gray-700">
-        <p>Upload Product to see your Listings on this page!</p>
-      
-      </div>
+    <div className="w-full">
+      {products.length === 0 ? (
+        <div className="space-y-4">
+          <div className="p-6 border rounded-lg bg-white shadow-sm text-gray-700">
+            <p>List a product to see your uploaded products</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => (
+            <MarketplaceItem 
+              product = {product}
+              isMobile = {isMobile}
+              setError = {setError}
+              key = {product.id}
+            />
+          ))}
+        </div>
+      )}
     </div>
+  )
+}
+
+const MarketplaceItem = ({product, isMobile, setError}) => {
+
+  const [imageError, setImageError] = useState(false)
+  const navigate = useNavigate()
+  const imageUrl = product?.images?.images?.[0] || '/no-image.png'
+
+  const conditionStyles = {
+    new: {label: 'New', color: 'bg-black'},
+    used: {label: 'Used', color: 'bg-gray-700'}
+  }
+
+  const handleCardClick = async () => {
+    try {
+      const navigationLink = `/marketplace/${product.id}`
+      navigate(navigationLink)
+    }
+    catch (err) {
+      setError('Error with opening ', navigationLink)
+    }
+  }
+
+  // Mobile horizontal layout
+  if(isMobile){
+    return (
+      <div onClick={handleCardClick} className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-all active:scale-[0.98] flex h-[120px]">
+        {/* Left Image */}
+                <div className="relative w-[120px] flex-shrink-0 bg-gray-50 flex justify-center items-center">
+                  <img
+                    src={imageUrl}
+                    alt={product.title}
+                    onError={() => setImageError(true)}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+        
+                {/* Right Content */}
+                <div className="flex-1 p-3 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-base font-semibold text-black line-clamp-1 mb-1">
+                      {product.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
+                      <span>Location: {product.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-block rounded px-2 py-0.5 text-xs font-medium text-white ${
+                          conditionStyles[product.condition]?.color || "bg-gray-700"
+                        }`}
+                      >
+                        {conditionStyles[product.condition]?.label || "Unknown"}
+                      </span>
+                    </div>
+                  </div>
+        
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <p className="text-base font-bold text-black">
+                        {formatCurrency(product.price)}
+                      </p>
+                    </div>
+                    
+                  </div>
+                </div>
+      </div>
+    )
+  }
+
+  return (
+    <div
+          onClick={handleCardClick}
+          className="cursor-pointer overflow-hidden rounded-lg bg-white shadow-md transition-transform hover:-translate-y-1"
+        >
+          <div className="relative w-full h-48 bg-white flex justify-center items-center">
+            <img
+              src={imageUrl}
+              alt={product.title}
+              onError={() => setImageError(true)}
+              className="max-h-full w-auto object-contain"
+            />
+    
+            {/* Condition Label */}
+            <div
+              className={`absolute top-0 left-0 m-2 rounded-full px-2 py-1 text-xs font-semibold text-white ${
+                conditionStyles[product.condition]?.color || "bg-gray-700"
+              }`}
+            >
+              {conditionStyles[product.condition]?.label || "Unknown"}
+            </div>
+          </div>
+    
+          <div className="p-4">
+            <div className="mb-1 flex items-center justify-between">
+              <p className="text-xs text-gray-500">Location: {product.location}</p>
+            </div>
+    
+            <h3 className="mb-2 text-lg font-semibold text-black">{product.title}</h3>
+    
+            {/* <div className="mb-2 flex items-center gap-1 text-gray-800 text-sm">
+              <FiEye />
+              <span>{item.views || 0}</span>
+            </div> */}
+    
+            <div className="flex items-center justify-between">
+              <p className="font-bold text-black">{formatCurrency(product.price)}</p>
+              <Link
+                to={`/marketplace/${product.id}`}
+                className="text-sm font-medium text-black hover:underline"
+              >
+                View Details
+              </Link>
+            </div>
+          </div>
+        </div>
   )
 }
 
