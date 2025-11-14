@@ -257,7 +257,7 @@ const Guides = () => {
                    <span className='text-emerald-500'> Full Access!</span>
                 </h2>
                 <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
-                  Become part of Korea’s most supportive expat community
+                  Become part of Korea’s most supportive expats
                   <br/>
                   from Community for Community.
                 </p>
