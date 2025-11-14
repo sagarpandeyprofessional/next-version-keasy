@@ -90,7 +90,7 @@ const Guides = () => {
       }
     };
     fetchGuides();
-  }, [activeCategory]);
+  }, [activeCategory, user]);
 
   const handleLike = async (guideId) => {
     if (!user) {
