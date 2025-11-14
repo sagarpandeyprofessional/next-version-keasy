@@ -270,7 +270,6 @@ const Guides = () => {
                     setTimeout(() => {
                       window.location.href = '/signin';
                     }, 500);
-                    setLockActive(false)
                   }}
                   className={`
                     inline-flex items-center justify-center gap-2 px-8 py-4 
