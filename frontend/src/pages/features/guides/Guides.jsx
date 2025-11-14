@@ -80,13 +80,15 @@ const Guides = () => {
         console.error('Error fetching guides:', error.message);
         setLoading(false);
       } else {
-        if(user === null){
-          setGuides(data.slice(0,10))
-          setLoading(false);
-        }else{
+        // if(user === null){
+        //   setGuides(data.slice(0,10))
+        //   setLoading(false);
+        // }else{
+        // setGuides(data || []);
+        // setLoading(false);
+        // }
         setGuides(data || []);
         setLoading(false);
-      }
       }
     };
     fetchGuides();
@@ -241,7 +243,7 @@ const Guides = () => {
             ))}
           </ExploreSection>
 
-          {user === null && (<>
+          {/* {user === null && (<>
             <section className="py-20 text-center">
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
@@ -313,7 +315,7 @@ const Guides = () => {
                 </div>
               </motion.div>
             </section>
-          </>)}
+          </>)} */}
         </div>
       </section>
     </div>
