@@ -4,7 +4,6 @@ import { supabase } from "../../../api/supabase-client";
 import { FiHeart, FiEye, FiSearch, FiPlus } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
-
 // =========================
 // Helpers
 // =========================

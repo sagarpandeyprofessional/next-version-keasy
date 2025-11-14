@@ -4,6 +4,9 @@ import { Link } from 'react-router';
 import { IoEyeOutline } from "react-icons/io5";
 import { IoIosHeart } from "react-icons/io";
 import { IoIosHeartEmpty } from "react-icons/io";
+import { motion, AnimatePresence } from "framer-motion";
+
+import { LockKeyholeOpen,LockKeyhole  } from "lucide-react";
 
 const getPlaceholderImage = (id) =>
   `https://picsum.photos/400/300?random=${id || Math.floor(Math.random() * 1000)}`;
@@ -14,6 +17,7 @@ const Guides = () => {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All'); // Changed to 'All' string
   const [user, setUser] = useState(null);
+  const [lockActive, setLockActive] = useState(false);
 
   // Get current user
   useEffect(() => {
@@ -76,8 +80,13 @@ const Guides = () => {
         console.error('Error fetching guides:', error.message);
         setLoading(false);
       } else {
+        if(user === null){
+          setGuides(data.slice(0,10))
+          setLoading(false);
+        }else{
         setGuides(data || []);
         setLoading(false);
+      }
       }
     };
     fetchGuides();
@@ -231,6 +240,80 @@ const Guides = () => {
               />
             ))}
           </ExploreSection>
+
+          {user === null && (<>
+            <section className="py-20 text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="container mx-auto px-6"
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+                  Join 
+                  <span className='text-blue-600'> keasy </span>
+                   for
+                   <span className='text-emerald-500'> Full Access!</span>
+                </h2>
+                <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
+                  Become part of Korea’s most supportive expat community
+                  <br/>
+                  from Community for Community.
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center gap-4 w-full items-center">
+                 <Link
+                  to="signin"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setLockActive(true);
+                    setTimeout(() => {
+                      window.location.href = '/signin';
+                    }, 500);
+                  }}
+                  className={`
+                    inline-flex items-center justify-center gap-2 px-8 py-4 
+                    bg-white text-black border border-gray-300 rounded-xl font-semibold 
+                    shadow-lg transition-all duration-500
+                    ${lockActive ? "scale-125 rotate-12 shadow-2xl" : "hover:scale-105 hover:shadow-2xl"}
+                  `}
+                >
+                  <motion.span
+                    className="relative"
+                    initial={false}
+                    animate={{
+                      rotate: lockActive ? [0, -10, 10, -10, 0] : 0,
+                      scale: lockActive ? [1, 1.2, 1] : 1,
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <span
+                      className={`
+                        transition-all duration-300 flex gap-2
+                        ${lockActive ? "opacity-0 scale-0 absolute" : "opacity-100 scale-100"}
+                      `}
+                    >
+                      <LockKeyhole />
+                      Unlock
+                    </span>
+
+                    <span
+                      className={`
+                        transition-all duration-300 flex gap-2
+                        ${lockActive ? "opacity-100 scale-100" : "opacity-0 scale-0 absolute"}
+                      `}
+                    >
+                      <LockKeyholeOpen />
+                    </span>
+                  </motion.span>
+                </Link>
+                </div>
+              </motion.div>
+            </section>
+          </>)}
         </div>
       </section>
     </div>
