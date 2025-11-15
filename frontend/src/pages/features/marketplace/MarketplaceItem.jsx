@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../api/supabase-client";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
@@ -525,6 +525,468 @@ export default function MarketplaceItemPage() {
           </div>
         </div>
       </div>
+
+      <div className="w-full">
+          <ItemReview 
+            itemId={item.id} 
+            userId={userId} 
+            setError={setError}
+            setIsLoading={setIsLoading}
+            itemUserId = {item.user_id}
+          />
+      </div>
+    </div>
+  );
+}
+
+const ItemReview = ({itemId, userId, setError, setIsLoading, itemUserId}) => {
+  const [reviews, setReviews] = useState([]);
+  const [isAuthor, setIsAuthor] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewImages, setReviewImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userProfiles, setUserProfiles] = useState({});
+  const [hasUserReviewed, setHasUserReviewed] = useState(false);
+
+  // fetching item's reviews
+  useEffect(() => {
+    const getReviews = async () => {
+      const { data, error } = await supabase
+        .from("marketplace_reviews")
+        .select("*")
+        .eq("product_id", itemId)
+        .order("created_at", { ascending: false });
+
+      if (error) return setError("Reviews not loaded!");
+      setReviews(data || []);
+
+      // Check if current user has already reviewed
+      if (userId) {
+        const userReview = data?.find(review => review.user_id === userId);
+        setHasUserReviewed(!!userReview);
+      }
+
+      // Fetch user profiles for all reviewers
+      if (data && data.length > 0) {
+        const userIds = [...new Set(data.map(r => r.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, username, pfp_url")
+          .in("user_id", userIds);
+
+        if (profiles) {
+          const profileMap = {};
+          profiles.forEach(p => {
+            profileMap[p.user_id] = p;
+          });
+          setUserProfiles(profileMap);
+        }
+      }
+    };
+
+    if (itemId) getReviews();
+  }, [itemId, userId]);
+
+  // check user is author
+  useEffect(() => {
+    setIsAuthor(userId === itemUserId);
+  }, [userId, itemUserId]);
+
+  // Handle image selection
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + reviewImages.length > 5) {
+      alert("Maximum 5 images allowed");
+      return;
+    }
+
+    setReviewImages(prev => [...prev, ...files]);
+
+    // Create previews
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Remove image
+  const removeImage = (index) => {
+    setReviewImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Submit review
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+
+    if (!userId) {
+      alert("Please log in to submit a review");
+      return;
+    }
+
+    if (rating === 0) {
+      alert("Please select a rating");
+      return;
+    }
+
+    if (!reviewText.trim()) {
+      alert("Please write a review");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      let imageUrls = [];
+
+      // Upload images to Supabase storage
+      if (reviewImages.length > 0) {
+        for (let i = 0; i < reviewImages.length; i++) {
+          const file = reviewImages[i];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${userId}/${itemId}/${Date.now()}_${i}.${fileExt}`;
+
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from("marketplace_reviews")
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+
+          // Get public URL
+          const { data: urlData } = supabase.storage
+            .from("marketplace_reviews")
+            .getPublicUrl(fileName);
+
+          imageUrls.push(urlData.publicUrl);
+        }
+      }
+
+      // Insert review
+      const { data, error } = await supabase
+        .from("marketplace_reviews")
+        .insert({
+          user_id: userId,
+          product_id: itemId,
+          review: reviewText,
+          rating: rating,
+          img_urls: imageUrls.length > 0 ? imageUrls : null
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Fetch reviewer profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("user_id, username, pfp_url")
+        .eq("user_id", userId)
+        .single();
+
+      // Add new review to list
+      setReviews(prev => [data, ...prev]);
+      setUserProfiles(prev => ({
+        ...prev,
+        [userId]: profile
+      }));
+
+      // Reset form
+      setReviewText("");
+      setRating(0);
+      setReviewImages([]);
+      setImagePreviews([]);
+      setShowReviewForm(false);
+      setHasUserReviewed(true);
+
+      alert("Review submitted successfully!");
+    } catch (err) {
+      console.error("Error submitting review:", err);
+      alert("Failed to submit review. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Calculate average rating
+  const averageRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : 0;
+
+  return (
+    <div className="mt-12 border-t border-gray-200 pt-8">
+      {/* Reviews Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">Reviews</h2>
+          <div className="flex items-center gap-3 mt-2">
+            <div className="flex items-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <svg
+                  key={star}
+                  className={`w-5 h-5 ${
+                    star <= Math.round(averageRating)
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                  }`}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+            <span className="text-gray-600">
+              {averageRating} ({reviews.length} {reviews.length === 1 ? "review" : "reviews"})
+            </span>
+          </div>
+        </div>
+
+        {/* Write Review Button */}
+        {userId && !isAuthor && !hasUserReviewed && (
+          <button
+            onClick={() => setShowReviewForm(!showReviewForm)}
+            className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+          >
+            {showReviewForm ? "Cancel" : "Write Review"}
+          </button>
+        )}
+      </div>
+
+      {/* Review Form */}
+      {showReviewForm && !isAuthor && !hasUserReviewed && (
+        <div className="mb-8 p-6 bg-gray-50 rounded-lg">
+          <form onSubmit={handleSubmitReview}>
+            {/* Rating */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Rating *
+              </label>
+              <div className="flex items-center gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    className="focus:outline-none"
+                  >
+                    <svg
+                      className={`w-8 h-8 transition-colors ${
+                        star <= (hoverRating || rating)
+                          ? "text-yellow-400"
+                          : "text-gray-300"
+                      }`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </button>
+                ))}
+                <span className="ml-2 text-gray-600">
+                  {rating > 0 ? `${rating}/5` : "Select rating"}
+                </span>
+              </div>
+            </div>
+
+            {/* Review Text */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Your Review *
+              </label>
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+                rows="4"
+                placeholder="Share your experience with this product..."
+                required
+              />
+            </div>
+
+            {/* Image Upload */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Add Photos (Optional, max 5)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="hidden"
+                id="review-images"
+                disabled={reviewImages.length >= 5}
+              />
+              <label
+                htmlFor="review-images"
+                className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
+                  reviewImages.length >= 5 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Upload Photos
+              </label>
+
+              {/* Image Previews */}
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mt-3">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative aspect-square">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Review"}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Info Messages */}
+      {userId && isAuthor && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700">
+          You cannot review your own product.
+        </div>
+      )}
+
+      {userId && hasUserReviewed && !isAuthor && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+          You have already reviewed this product.
+        </div>
+      )}
+
+      {!userId && (
+        <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+          Please sign in to write a review.
+        </div>
+      )}
+
+      {/* Reviews List */}
+      {reviews.length === 0 ? (
+        <div className="text-center py-12 text-gray-500">
+          <p className="text-lg">No reviews yet</p>
+          <p className="text-sm mt-2">Be the first to review this product!</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {reviews.map((review) => {
+            const profile = userProfiles[review.user_id];
+            return (
+              <div
+                key={review.id}
+                className="p-6 bg-white border border-gray-200 rounded-lg"
+              >
+                {/* Reviewer Info */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                      <img
+                        src={profile?.pfp_url || "/default-avatar.png"}
+                        alt={profile?.username || "User"}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <Link
+                        to={`/profile/${profile?.username}`}
+                        className="font-semibold text-gray-800 hover:underline"
+                      >
+                        {profile?.username || "Anonymous"}
+                      </Link>
+                      <p className="text-sm text-gray-500">
+                        {daysAgo(review.created_at)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Rating */}
+                  <div className="flex items-center">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        className={`w-4 h-4 ${
+                          star <= review.rating
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Review Text */}
+                <p className="text-gray-700 mb-3 whitespace-pre-wrap">
+                  {review.review}
+                </p>
+
+                {/* Review Images */}
+                {review.img_urls && review.img_urls.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {review.img_urls.map((url, index) => (
+                      <div
+                        key={index}
+                        className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => window.open(url, "_blank")}
+                      >
+                        <img
+                          src={url}
+                          alt={`Review image ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
