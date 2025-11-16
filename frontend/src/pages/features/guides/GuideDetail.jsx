@@ -384,24 +384,24 @@ export default function GuideDetail() {
       case "image":
         return (
           <div key={index} className="mb-8">
-  <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-gray-200 flex items-center justify-center">
-    {section.url ? (
-      <img
-        src={section.url}
-        alt={section.caption || "Guide image"}
-        className="w-full h-full object-contain bg-gray-200"
-        onError={(e) => {
-          console.error('Section image failed to load:', section.url);
-          e.target.style.display = 'none';
-        }}
-      />
-    ) : (
-      <div className="w-full h-64 flex items-center justify-center bg-gray-200">
-        <span className="text-gray-400">Image not available</span>
-      </div>
-    )}
-  </div>
-</div>
+            <div className="w-full  overflow-hidden bg-gray-200 flex items-center justify-center">
+              {section.url ? (
+                <img
+                  src={section.url}
+                  alt={section.caption || "Guide image"}
+                  className="w-full h-full object-cover bg-gray-200"
+                  onError={(e) => {
+                    console.error('Section image failed to load:', section.url);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-64 flex items-center justify-center bg-gray-200">
+                  <span className="text-gray-400">Image not available</span>
+                </div>
+              )}
+            </div>
+          </div>
         );
 
       case "list":
