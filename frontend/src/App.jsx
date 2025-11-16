@@ -52,6 +52,7 @@ import SettingsPage from './pages/Settings'
 
 import GuideDetail from './pages/features/guides/GuideDetail'
 import Guides from './pages/features/guides/Guides'
+import GuideEdit from './pages/features/guides/GuideEdit'
 import GuideEditor from './pages/features/guides/GuidePost';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -105,6 +106,7 @@ function App() {
 
         <Route element={<Layout><Guides/></Layout>} path="/guides" />
         <Route element={<Layout><GuideDetail/></Layout>} path="/guides/guide/:id" />
+        <Route element={<Layout><GuideEdit/></Layout>} path="/guides/edit/:id" />
         <Route element={<Layout><GuideEditor/></Layout>} path="/guides/new" />
         
         <Route element={<Layout><Community/></Layout>} path="/community" />
