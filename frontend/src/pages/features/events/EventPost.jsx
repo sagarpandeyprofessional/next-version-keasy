@@ -3,18 +3,6 @@ import { supabase } from "../../../api/supabase-client";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const SOUTH_KOREA_CITIES = [
-  "Seoul", "Busan", "Incheon", "Daegu", "Daejeon", "Gwangju", "Ulsan",
-  "Sejong", "Suwon", "Yongin", "Goyang", "Seongnam", "Bucheon", "Cheongju",
-  "Ansan", "Jeonju", "Cheonan", "Anyang", "Pohang", "Changwon", "Gimhae",
-  "Jeju City", "Seogwipo", "Paju", "Uijeongbu", "Pyeongtaek", "Siheung",
-  "Hwaseong", "Namyangju", "Gimpo", "Gunpo", "Icheon", "Yangju", "Osan",
-  "Gwangmyeong", "Hanam", "Wonju", "Chuncheon", "Gangneung", "Sokcho",
-  "Gyeongju", "Gumi", "Andong", "Yeongju", "Gimcheon", "Sangju", "Muan",
-  "Mokpo", "Yeosu", "Suncheon", "Gwangyang", "Naju", "Iksan", "Gunsan",
-  "Jinju", "Tongyeong", "Sacheon", "Geoje", "Yangsan", "Miryang"
-].sort();
-
 export default function EventPost() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -85,19 +73,18 @@ export default function EventPost() {
     } else {
       // Basic URL validation for Naver Maps
       try {
-  const url = new URL(formData.location_coordinates);
-  const host = url.hostname;
+        const url = new URL(formData.location_coordinates);
+        const host = url.hostname;
 
-  const isValidNaver =
-    host.endsWith("naver.com") || host.endsWith("naver.me");
+        const isValidNaver =
+          host.endsWith("naver.com") || host.endsWith("naver.me");
 
-  if (!isValidNaver) {
-    newErrors.location_coordinates = "Please enter a valid Naver Maps link";
-  }
-} catch {
-  newErrors.location_coordinates = "Please enter a valid URL";
-}
-
+        if (!isValidNaver) {
+          newErrors.location_coordinates = "Please enter a valid Naver Maps link";
+        }
+      } catch {
+        newErrors.location_coordinates = "Please enter a valid URL";
+      }
     }
     
     setErrors(newErrors);
@@ -135,7 +122,10 @@ export default function EventPost() {
       const contact = formData.organizer_contact.trim();
       const type = formData.organizer_contact_type;
       
-      if (type === "email") {
+      // Check if user added @ symbol
+      if ((type === "telegram" || type === "instagram" || type === "messenger") && contact.startsWith("@")) {
+        newErrors.organizer_contact = "Please remove the @ symbol from your username";
+      } else if (type === "email") {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(contact)) {
           newErrors.organizer_contact = "Please enter a valid email address (e.g., name@example.com)";
@@ -144,6 +134,11 @@ export default function EventPost() {
         const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
         if (!phoneRegex.test(contact)) {
           newErrors.organizer_contact = "Please enter a valid phone number";
+        }
+      } else if (type === "whatsapp") {
+        const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
+        if (!phoneRegex.test(contact)) {
+          newErrors.organizer_contact = "Please enter a valid phone number with country code";
         }
       } else {
         // For social media platforms, check for username format
@@ -161,23 +156,25 @@ export default function EventPost() {
 
   // Generate contact link based on platform
   const generateContactLink = (type, contact) => {
-    const cleanContact = contact.trim().replace('@', '');
+    const cleanContact = contact.trim().replace(/^@+/, ''); // Remove @ from beginning
     
     switch (type) {
       case "telegram":
         return `https://t.me/${cleanContact}`;
       case "whatsapp":
-        return `https://wa.me/${cleanContact.replace(/[^0-9]/g, '')}`;
+        const phoneNumber = cleanContact.replace(/[^0-9+]/g, '');
+        return `https://wa.me/${phoneNumber}`;
       case "instagram":
         return `https://instagram.com/${cleanContact}`;
       case "kakao talk":
-        return contact;
+        return cleanContact; // KakaoTalk ID
       case "messenger":
         return `https://m.me/${cleanContact}`;
       case "email":
         return `mailto:${contact}`;
       case "message":
-        return `tel:${contact.replace(/[^0-9+]/g, '')}`;
+        const tel = contact.replace(/[^0-9+]/g, '');
+        return `tel:${tel}`;
       default:
         return contact;
     }
@@ -549,7 +546,6 @@ export default function EventPost() {
                     <option value="telegram">Telegram</option>
                     <option value="whatsapp">WhatsApp</option>
                     <option value="instagram">Instagram</option>
-                    <option value="kakao talk">KakaoTalk</option>
                     <option value="messenger">Messenger</option>
                     <option value="email">Email</option>
                   </select>
@@ -565,6 +561,8 @@ export default function EventPost() {
                         ? "Email Address *"
                         : formData.organizer_contact_type === "message"
                         ? "Phone Number *"
+                        : formData.organizer_contact_type === "whatsapp"
+                        ? "WhatsApp Number *"
                         : "Username *"}
                     </label>
                     <input
@@ -574,8 +572,12 @@ export default function EventPost() {
                           ? "your.email@example.com"
                           : formData.organizer_contact_type === "message"
                           ? "+82 10-1234-5678"
+                          : formData.organizer_contact_type === "whatsapp"
+                          ? "+82 10-1234-5678"
                           : formData.organizer_contact_type === "telegram"
                           ? "your_username"
+                          : formData.organizer_contact_type === "instagram"
+                          ? "jjayleenee"
                           : "username"
                       }
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
@@ -590,12 +592,25 @@ export default function EventPost() {
                     {errors.organizer_contact && (
                       <p className="text-red-500 text-sm mt-1">{errors.organizer_contact}</p>
                     )}
+                    
+                    {/* Preview of generated link */}
+                    {formData.organizer_contact && !errors.organizer_contact && (
+                      <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-green-800 text-sm font-medium mb-1">Generated Link:</p>
+                        <p className="text-green-700 text-sm break-all">
+                          {generateContactLink(formData.organizer_contact_type, formData.organizer_contact)}
+                        </p>
+                      </div>
+                    )}
+                    
                     <p className="text-gray-500 text-sm mt-2">
                       {formData.organizer_contact_type === "email"
                         ? "Enter a valid email address"
                         : formData.organizer_contact_type === "message"
                         ? "Enter your phone number with country code"
-                        : "Enter your username without @ symbol"}
+                        : formData.organizer_contact_type === "whatsapp"
+                        ? "Enter your WhatsApp number with country code"
+                        : "Enter your username without the @ symbol"}
                     </p>
                   </div>
                 )}

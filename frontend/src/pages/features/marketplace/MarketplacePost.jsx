@@ -28,8 +28,6 @@ export default function MarketplacePostPage() {
     seller_contact: "+820101234567",
   });
 
-  
-
   // Check authentication
   useEffect(() => {
     const checkAuth = async () => {
@@ -78,34 +76,24 @@ export default function MarketplacePostPage() {
     
     switch(type) {
       case "message":
-        // SMS link
         return `sms:${trimmedContact}`;
       
       case "telegram":
-        // Telegram username (remove @ if present)
         const telegramUser = trimmedContact.replace(/^@/, '');
         return `https://t.me/${telegramUser}`;
       
       case "whatsapp":
-        // WhatsApp number (remove non-digits)
         const whatsappNumber = trimmedContact.replace(/\D/g, '');
         return `https://wa.me/${whatsappNumber}`;
       
       case "instagram":
-        // Instagram username (remove @ if present)
         const instaUser = trimmedContact.replace(/^@/, '');
         return `https://instagram.com/${instaUser}`;
       
-      case "kakao talk":
-        // KakaoTalk ID
-        return `https://open.kakao.com/o/${trimmedContact}`;
-      
       case "messenger":
-        // Facebook Messenger username
         return `https://m.me/${trimmedContact}`;
       
       case "email":
-        // Email link
         return `mailto:${trimmedContact}`;
       
       default:
@@ -116,16 +104,13 @@ export default function MarketplacePostPage() {
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
     
-    // Clear previous error
     setError("");
     
-    // Check total image count
     if (files.length + imageFiles.length > 10) {
       setError("Maximum 10 images allowed");
       return;
     }
 
-    // Validate file types and sizes
     const validFiles = [];
     const errors = [];
 
@@ -146,10 +131,8 @@ export default function MarketplacePostPage() {
       if (validFiles.length === 0) return;
     }
 
-    // Add valid files
     setImageFiles(prev => [...prev, ...validFiles]);
     
-    // Create previews
     validFiles.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -162,7 +145,7 @@ export default function MarketplacePostPage() {
   const removeImage = (index) => {
     setImageFiles(prev => prev.filter((_, i) => i !== index));
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
-    setError(""); // Clear error when removing images
+    setError("");
   };
 
   const uploadImages = async (productTitle) => {
@@ -179,7 +162,6 @@ export default function MarketplacePostPage() {
         const randomStr = Math.random().toString(36).substring(7);
         const fileName = `${userId}/${productTitle}/${timestamp}_${randomStr}.${fileExt}`;
         
-        // Upload file
         const { error: uploadError } = await supabase.storage
           .from("products")
           .upload(fileName, file, {
@@ -192,7 +174,6 @@ export default function MarketplacePostPage() {
           throw new Error(`Failed to upload image ${i + 1}: ${uploadError.message}`);
         }
 
-        // Get public URL
         const { data: urlData } = supabase.storage
           .from("products")
           .getPublicUrl(fileName);
@@ -225,7 +206,6 @@ export default function MarketplacePostPage() {
         throw new Error("Description must be 1000 characters or less");
       }
 
-      // IMPROVED PRICE VALIDATION
       const priceValue = parseFloat(String(formData.price).replace(/[^\d.]/g, ''));
       if (isNaN(priceValue) || priceValue <= 0) {
         throw new Error("Valid price is required");
@@ -244,10 +224,8 @@ export default function MarketplacePostPage() {
         throw new Error("Contact information is required");
       }
 
-      // Set loading AFTER validation passes
       setLoading(true);
 
-      // Upload images first with the actual title
       console.log(`Uploading ${imageFiles.length} images...`);
       const imageUrls = await uploadImages(formData.title.trim());
       
@@ -257,15 +235,13 @@ export default function MarketplacePostPage() {
 
       console.log("Images uploaded successfully:", imageUrls);
 
-      // Generate contact link
       const contactLink = generateContactLink(formData.seller_contact_type, formData.seller_contact);
 
-      // Prepare marketplace data - match your exact database schema
       const marketplaceData = {
         user_id: userId,
         title: formData.title.trim(),
         description: formData.description.trim() || null,
-        price: priceValue, // Use cleaned price value
+        price: priceValue,
         location: formData.location.trim() || null,
         category_id: parseInt(formData.category_id),
         brand_id: formData.brand_id ? parseInt(formData.brand_id) : null,
@@ -280,7 +256,6 @@ export default function MarketplacePostPage() {
 
       console.log("Inserting marketplace data:", marketplaceData);
 
-      // Insert marketplace item
       const { data, error: insertError } = await supabase
         .from("marketplace")
         .insert(marketplaceData)
@@ -299,7 +274,6 @@ export default function MarketplacePostPage() {
 
       console.log("Listing created successfully:", data);
 
-      // Update contact link with product information
       const updatedContactLink = (contactLink, productId, productTitle) => {
         if (!contactLink || !contactLink.trim()) return null;
 
@@ -331,7 +305,6 @@ export default function MarketplacePostPage() {
             return `${trimmedLink}${trimmedLink.includes("?") ? "&" : "?"}text=${encodedMessage}`;
           }
 
-          // Unsupported or no text support
           return trimmedLink;
 
         } catch (err) {
@@ -340,41 +313,37 @@ export default function MarketplacePostPage() {
         }
       };
 
-    // Update the contact link with product details
-    const updatedContact = updatedContactLink(data.seller_contact, data.id, data.title);
+      const updatedContact = updatedContactLink(data.seller_contact, data.id, data.title);
 
-    if (updatedContact && updatedContact !== data.seller_contact) {
-      const { error: updateError } = await supabase
-        .from("marketplace")
-        .update({
-          seller_contact: updatedContact,
-        })
-        .eq("id", data.id);
+      if (updatedContact && updatedContact !== data.seller_contact) {
+        const { error: updateError } = await supabase
+          .from("marketplace")
+          .update({
+            seller_contact: updatedContact,
+          })
+          .eq("id", data.id);
 
-      if (updateError) {
-        console.error("Error updating contact link:", updateError);
-        // Don't throw - listing is already created
+        if (updateError) {
+          console.error("Error updating contact link:", updateError);
+        }
       }
+
+      navigate(`/marketplace/${data.id}`);
+
+    } catch (err) {
+      setError(err.message || "Failed to create listing");
+      console.error("Error creating listing:", err);
+      
+      console.log("Form state at error:", {
+        title: formData.title,
+        price: formData.price,
+        priceType: typeof formData.price,
+        category_id: formData.category_id
+      });
+    } finally {
+      setLoading(false);
     }
-
-    // Redirect to item page
-    navigate(`/marketplace/${data.id}`);
-
-  } catch (err) {
-    setError(err.message || "Failed to create listing");
-    console.error("Error creating listing:", err);
-    
-    // Log the current form state for debugging
-    console.log("Form state at error:", {
-      title: formData.title,
-      price: formData.price,
-      priceType: typeof formData.price,
-      category_id: formData.category_id
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   if (!userId) {
     return (
@@ -395,7 +364,6 @@ export default function MarketplacePostPage() {
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
               <FiAlertCircle className="text-red-500 mt-0.5 flex-shrink-0" />
-              {/* <p className="text-red-700 text-sm">{error}</p> */}
               <p className="text-red-700 text-sm">Upload failed. Please review your entries, avoid AI-generated titles, and ensure all fields are filled accurately.</p>
             </div>
           )}
@@ -621,7 +589,6 @@ export default function MarketplacePostPage() {
                     <option value="telegram">Telegram</option>
                     <option value="whatsapp">WhatsApp</option>
                     <option value="instagram">Instagram</option>
-                    <option value="kakao talk">Kakao Talk</option>
                     <option value="messenger">Messenger</option>
                     <option value="email">Email</option>
                   </select>
@@ -643,7 +610,6 @@ export default function MarketplacePostPage() {
                       formData.seller_contact_type === "telegram" ? "Your @username" :
                       formData.seller_contact_type === "whatsapp" ? "Your phone number" :
                       formData.seller_contact_type === "instagram" ? "Your @username" :
-                      formData.seller_contact_type === "kakao talk" ? "Your KakaoTalk ID" :
                       formData.seller_contact_type === "messenger" ? "Your username" :
                       "Your email address"
                     }
@@ -658,7 +624,6 @@ export default function MarketplacePostPage() {
                 {formData.seller_contact_type === "telegram" && "Buyers will be able to message you on Telegram"}
                 {formData.seller_contact_type === "whatsapp" && "Buyers will be able to message you on WhatsApp (no calls)"}
                 {formData.seller_contact_type === "instagram" && "Buyers will be able to message you on Instagram"}
-                {formData.seller_contact_type === "kakao talk" && "Buyers will be able to message you on Kakao Talk"}
                 {formData.seller_contact_type === "messenger" && "Buyers will be able to message you on Messenger"}
                 {formData.seller_contact_type === "email" && "Buyers will be able to email you"}
               </p>
