@@ -485,12 +485,12 @@ const ExploreCard = ({
         {/* MOBILE VIEW - Horizontal Layout */}
         <div className="my-2 mx-2 sm:hidden h-full overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl group cursor-pointer flex">
           {/* Mobile Image - Left side */}
-          <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden bg-gray-200">
+          <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden bg-white">
             {img_url ? (
               <img
                 src={img_url}
                 alt={name || 'Guide image'}
-                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
+                className="object-fit w-full h-full transition-transform duration-300 group-hover:scale-110"
                 onError={handleImageError}
                 loading="lazy"
               />
