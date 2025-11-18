@@ -46,14 +46,6 @@ const TeamSection = () => {
       website: 'https://firdavssalokhiddinov.github.io/MyPortfolio/', 
       linkedin: 'https://www.linkedin.com/in/firdavs-salokhiddinov-0288b1215/', 
       email: 'firdavssalokhiddinov@gmail.com' 
-    },
-    { 
-      name: 'Akbar Makhmudjonov', 
-      title: 'Co-Founder | AI & Software Engineer', 
-      image: '/team/akbar_makhmudjonov.jpg', 
-      website: 'https://github.com/blissparadoxx', 
-      linkedin: 'https://www.linkedin.com/in/akbar-makhmudjonov-a620bb259', 
-      email: 'akbarmakh14@gmail.com' 
     }
   ];
 
