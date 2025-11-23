@@ -42,7 +42,7 @@ const TeamSection = () => {
     { 
       name: 'Firdavs Salokhiddinov', 
       title: 'Co-Founder | AI & Software Engineer', 
-      image: '/team/firdavs_salokhiddinov.png', 
+      image: '/team/firdavs_salokhiddinov.jpg', 
       website: 'https://firdavssalokhiddinov.github.io/MyPortfolio/', 
       linkedin: 'https://www.linkedin.com/in/firdavs-salokhiddinov-0288b1215/', 
       email: 'firdavssalokhiddinov@gmail.com' 
