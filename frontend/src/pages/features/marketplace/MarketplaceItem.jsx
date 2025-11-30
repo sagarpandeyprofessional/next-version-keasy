@@ -482,9 +482,10 @@ export default function MarketplaceItemPage() {
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
             {renderDescription(item.description)}
           </div>
+          <p className="text-sm font-semibold mb-3 text-gray-800 pb-10" >Refund is not available for this Product!</p>
 
           {/* Contact Information Display */}
-          {item.seller_contact_type && (
+          {/* {item.seller_contact_type && (
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center gap-2 text-sm">
                 <span className="text-gray-600">Contact via:</span>
@@ -493,7 +494,7 @@ export default function MarketplaceItemPage() {
                 </span>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -523,6 +524,17 @@ export default function MarketplaceItemPage() {
               <span className="hidden sm:inline">{isLiked ? "Saved" : "Save"}</span>
             </button>
           </div>
+          {/* Checkout Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <Link
+              className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors
+                        flex items-center justify-center"
+              to={`/toss`}
+            >
+              Purchase Now (Testing, under development)
+            </Link>
+          </div>
+
         </div>
       </div>
 

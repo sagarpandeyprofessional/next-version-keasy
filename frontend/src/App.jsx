@@ -60,6 +60,16 @@ import Connect from './pages/features/connect/Connect';
 import ProfessionalEdit from './pages/features/connect/Professional/ProfessionalEdit';
 import ProfessionalNew from './pages/features/connect/Professional/ProfessionalNew';
 
+// Toss Payment Pages
+import { BrandpayCheckoutPage } from "./pages/toss/brandpay/BrandpayCheckout";
+import { FailPage } from "./pages/toss/Fail";
+import { PaymentBillingPage } from "./pages/toss/payment/PaymentBilling";
+import { PaymentCheckoutPage } from "./pages/toss/payment/PaymentCheckout";
+import { PaymentSuccessPage } from "./pages/toss/payment/PaymentSuccess";
+import { BrandpaySuccessPage } from "./pages/toss/brandpay/BrandpaySuccess";
+import { WidgetCheckoutPage } from "./pages/toss/widget/WidgetCheckout";
+import { WidgetSuccessPage } from "./pages/toss/widget/WidgetSuccess";
+
 
 
 const ScrollToTop = () => {
@@ -82,6 +92,7 @@ function App() {
     <AuthProvider>
       <ScrollToTop />
       <Routes>
+
         {/* All routes now just use Layout - Layout handles all auth/username logic */}
         <Route element={<Layout><Home/></Layout>} path="/" />
         <Route element={<Layout><SignIn/></Layout>} path="/signin" />
@@ -133,6 +144,88 @@ function App() {
         <Route element={<Layout><MyListingsPage /></Layout>} path='/marketplace/my' />
         <Route element={<Layout><SettingsPage/></Layout>} path='/settings'/>
         <Route element={<LoadingComp />} path='/loading' />
+
+        {/* Toss Payment Routes */}
+        <Route
+          path="/toss"
+          element={
+            <Layout>
+              <WidgetCheckoutPage />
+            </Layout>
+          }
+        />
+
+        {/* Widget Routes */}
+        <Route
+          path="/toss/widget/checkout"
+          element={
+            <Layout>
+              <WidgetCheckoutPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/toss/widget/success"
+          element={
+            <Layout>
+              <WidgetSuccessPage />
+            </Layout>
+          }
+        />
+
+        {/* Payment Routes */}
+        <Route
+          path="/toss/payment/checkout"
+          element={
+            <Layout>
+              <PaymentCheckoutPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/toss/payment/billing"
+          element={
+            <Layout>
+              <PaymentBillingPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/toss/payment/success"
+          element={
+            <Layout>
+              <PaymentSuccessPage />
+            </Layout>
+          }
+        />
+
+        {/* BrandPay Routes */}
+        <Route
+          path="/toss/brandpay/checkout"
+          element={
+            <Layout>
+              <BrandpayCheckoutPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/toss/brandpay/success"
+          element={
+            <Layout>
+              <BrandpaySuccessPage />
+            </Layout>
+          }
+        />
+
+        {/* Fail Page */}
+        <Route
+          path="/toss/fail"
+          element={
+            <Layout>
+              <FailPage />
+            </Layout>
+          }
+        />
       </Routes>
     </AuthProvider>
   )
