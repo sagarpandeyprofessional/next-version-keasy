@@ -282,7 +282,7 @@ const TermsOfService = () => {
             <div className="bg-gray-100 p-6 rounded">
               <p className="text-gray-900 font-semibold mb-2">Korea Easy (Operated by Montem Flumen Inc.)</p>
               <p className="text-gray-700">Email: support@koreaeasy.org | legal@koreaeasy.org</p>
-              <p className="text-gray-700">Address: 162, Dongdaejeon-ro, Dong-gu, Daejeon, 34644</p>
+              <p className="text-gray-700">Address: 66-24 Jayang-dong Dong-gu Daejeon, 34644, Republic of Korea</p>
               <p className="text-gray-700">Republic of Korea</p>
               <p className="text-gray-700">Hours: Mon – Fri 10:00 – 18:00 KST</p>
             </div>

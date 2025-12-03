@@ -29,8 +29,9 @@ const Footer = () => {
 
               <div className="mt-6 space-x-4 text-sm">
                 <p className='mb-1 max-w-80'>MontemFlumen Inc.</p>
-                <p className='mb-1 max-w-80'>Business Registration Number: 280-81-04090</p>
-                <p className='mb-1 max-w-80'>CEO & Founder: Sagar Pandey</p>
+                <p className='mb-1 max-w-80'>Business Registration: 280-81-04090</p>
+                <p className='mb-1 max-w-80'>E-Commerce Permit: _____</p>
+                <p className='mb-1 max-w-80'>CEO: Sagar Pandey</p>
             </div>
           </div>
 
@@ -127,7 +128,7 @@ const Footer = () => {
 
         <div className="mt-8 border-t border-gray-800 pt-8">
           <p className="text-center text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} KEasy. All rights reserved.
+            &copy; {new Date().getFullYear()} 2025 koreaeasy. All rights reserved.
           </p>
         </div>
       </div>
