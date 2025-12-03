@@ -532,6 +532,10 @@ export default function MarketplaceItemPage() {
             >
               Purchase Now (Testing, under development)
             </Link>
+            <button className="px-6 py-3 border rounded-lg border-[#F8FAFB] flex items-center justify-center gap-2 font-medium text-[#F8FAFB]">
+              {isLiked ? <FaHeart /> : <FiHeart />}
+              <span className="hidden sm:inline">Save</span>
+            </button>
           </div>
 
         </div>
