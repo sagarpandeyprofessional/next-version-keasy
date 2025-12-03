@@ -148,7 +148,7 @@ const TermsOfService = () => {
               <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
                 <li>Memberships: non-refundable once the free trial ends</li>
                 <li>Ads/Listings: non-refundable after publication</li>
-                <li>Product Sales (e.g., laptops): refundable within 3 days of delivery if unused and in original condition</li>
+                <li>Product Sales (e.g., laptops): refundable within 7 days of delivery if unused and in original condition</li>
               </ul>
             </div>
 
