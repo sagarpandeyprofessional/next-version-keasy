@@ -524,7 +524,7 @@ export default function MarketplaceItemPage() {
             </button>
           </div>
           {/* Checkout Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+          <div className="flex flex-col sm:flex-row gap-3 mt-4 text-center justify-center items-center">
             <Link
               className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors
                         flex items-center justify-center"
@@ -532,10 +532,16 @@ export default function MarketplaceItemPage() {
             >
               Purchase Now (Testing, under development)
             </Link>
-            <button className="px-6 py-3 border rounded-lg border-[#F8FAFB] flex items-center justify-center gap-2 font-medium text-[#F8FAFB]">
-              {isLiked ? <FaHeart /> : <FiHeart />}
-              <span className="hidden sm:inline">Save</span>
-            </button>
+            
+          </div>
+          
+          <div className="p-4 mb-6 text-center justify-center items-center">
+            <p className="text-sm text-gray-700">
+              Click to see 
+              <Link to='/marketplace_policy' className="text-blue-500 pl-1">
+               Refund & Marketplace Policy
+              </Link>.
+            </p>
           </div>
 
         </div>
