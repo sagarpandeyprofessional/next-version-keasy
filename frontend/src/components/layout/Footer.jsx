@@ -108,7 +108,7 @@ const Footer = () => {
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white">About us</h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li className=''>Address: </li>
-              <li className='mb-4 max-w-60'>66-24 Jayang-dong Dong-gu Daejeon, 34644, Republic of Korea</li>
+              <li className='mb-4 max-w-60'>103, 1F, 162 Dongdaejeon-ro, Dong-gu, Daejeon, Republic of Korea</li>
               <li className='gap-10 max-w-60'>
                 <span>Phone: </span>
                 <a href="callto:1096959805" className="hover:text-white hover:underline text-white">
