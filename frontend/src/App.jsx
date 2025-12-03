@@ -25,6 +25,7 @@ import FAQPage from './pages/static/faq/FAQ'
 import Error404Page from './pages/static/notFound/NotFound';
 import PrivacyPolicy from './pages/static/policies/PrivacyPolicy'
 import TermsOfService from './pages/static/policies/TermsOfService'
+import MarketplacePolicy from './pages/static/policies/MarketplacePolicy'
 
 //features pages
 import Nearby from './pages/features/nearby/Nearby'
@@ -110,6 +111,7 @@ function App() {
         {/* Policies */}
         <Route element={<Layout><PrivacyPolicy /></Layout>} path='/privacy_policy' />
         <Route element={<Layout><TermsOfService /></Layout>} path='/terms_of_service' />
+        <Route element={<Layout><MarketplacePolicy /></Layout>} path='/marketplace_policy' />
         
         {/* Features Pages */}
         <Route element={<Layout><Blog/></Layout>} path="/blog" />

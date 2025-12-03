@@ -482,7 +482,6 @@ export default function MarketplaceItemPage() {
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
             {renderDescription(item.description)}
           </div>
-          <p className="text-sm font-semibold mb-3 text-gray-800 pb-10" >Refund is not available for this Product!</p>
 
           {/* Contact Information Display */}
           {/* {item.seller_contact_type && (
@@ -547,6 +546,19 @@ export default function MarketplaceItemPage() {
             itemUserId = {item.user_id}
           />
       </div>
+
+      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+            <p className="text-sm text-gray-700">
+              <strong>Important:</strong> KoreaEasy (KEASY) operates as a 
+              communications sales intermediary (통신판매중개자) and is not a party to 
+              transactions between buyers and sellers. Responsibility for products, product 
+              information, and transactions lies solely with the transaction parties.
+              Click to see 
+              <Link to='/marketplace_policy' className="text-blue-500 pl-1">
+               Refund & Marketplace Policy
+              </Link>.
+            </p>
+          </div>
     </div>
   );
 }

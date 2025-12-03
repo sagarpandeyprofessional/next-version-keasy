@@ -282,9 +282,10 @@ const TermsOfService = () => {
             <div className="bg-gray-100 p-6 rounded">
               <p className="text-gray-900 font-semibold mb-2">Korea Easy (Operated by Montem Flumen Inc.)</p>
               <p className="text-gray-700">Email: support@koreaeasy.org | legal@koreaeasy.org</p>
-              <p className="text-gray-700">Address: 66-24 Jayang-dong Dong-gu Daejeon, 34644, Republic of Korea</p>
+              <p className="text-gray-700">Address: 103, 1F, 162 Dongdaejeon-ro, Dong-gu, Daejeon, Republic of Korea</p>
               <p className="text-gray-700">Republic of Korea</p>
               <p className="text-gray-700">Hours: Mon – Fri 10:00 – 18:00 KST</p>
+              <p className="text-gray-700">For Inquiries about koreaeasy terms of service, please contact: +82 10-9695-9805</p>
             </div>
           </section>
         </div>

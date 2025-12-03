@@ -231,9 +231,9 @@ const PrivacyPolicy = () => {
               <p className="text-gray-700">Privacy Officer: [Name]</p>
               <p className="text-gray-700">Email: privacy@koreaeasy.org</p>
               <p className="text-gray-700">General Support: support@koreaeasy.org</p>
-              <p className="text-gray-700">Address: 66-24 Jayang-dong Dong-gu Daejeon, 34644, Republic of Korea</p>
-              <p className="text-gray-700">Republic of Korea</p>
+              <p className="text-gray-700">Address: 103, 1F, 162 Dongdaejeon-ro, Dong-gu, Daejeon, Republic of Korea</p>
               <p className="text-gray-700">Hours: Mon–Fri 10:00–18:00 KST</p>
+              <p className="text-gray-700">For Inquiries about koreaeasy privacy policy, please contact: +82 10-9695-9805</p>
             </div>
           </section>
         </div>
