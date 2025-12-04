@@ -229,11 +229,11 @@ const MarketplacePolicy = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  {/* <tr>
                     <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700">Digital & Electronics</td>
                     <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700">Phones, tablets, laptops, cameras, TVs</td>
                     <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700">Include model, condition, warranty status</td>
-                  </tr>
+                  </tr> */}
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700">Home Appliances</td>
                     <td className="border border-gray-300 px-4 py-2 text-sm text-gray-700">Refrigerators, washers, air conditioners</td>
