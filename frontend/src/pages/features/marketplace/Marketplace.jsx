@@ -278,7 +278,7 @@ const FilterSidebar = ({
       </div>
 
       {/* Brand */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <label className="mb-2 block text-sm font-medium text-black">Brand</label>
         <select
           value={filters.brand_id}
@@ -292,7 +292,7 @@ const FilterSidebar = ({
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       {/* Condition */}
       <div className="mb-6">
