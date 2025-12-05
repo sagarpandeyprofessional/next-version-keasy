@@ -1140,7 +1140,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchMarketplaceItems = async () => {
-      const { data, error } = await supabase.from('marketplace').select('*').limit(20);
+      const { data, error } = await supabase.from('marketplace').select('*').eq("verified", true).eq('available', true).limit(20);
       if (error) console.error(error);
       else setMarketplaceItems(data || []);
     };
