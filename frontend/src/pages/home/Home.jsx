@@ -1105,7 +1105,7 @@ const ServicesSection = ({ features }) => {
   ];
 
   return (
-    <section className="py-16">
+    <section className="py-16 bg-[#FAFAF8]">
       <div className="container mx-auto px-4 md:px-8">
         {/* Section Header */}
         <motion.div
