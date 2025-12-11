@@ -199,7 +199,7 @@ const HeroSection = () => {
 
   return (
     <section 
-      className="relative py-8 md:py-12 overflow-hidden"
+      className="relative py-8 md:py-12 bg-[#F8FAFB] overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -239,7 +239,7 @@ const HeroSection = () => {
       </button>
 
       {/* Slides Container */}
-      <div className="container mx-auto px-4 md:px-8 relative z-10">
+      <div className="container mx-auto px-4 md:px-8  bg-[#F8FAFB] relative z-10">
         <AnimatePresence mode="wait">
           {/* SLIDE 1: Welcome Hero */}
           {currentSlide === 0 && (
@@ -1271,7 +1271,7 @@ const FloatingBubblesSection = () => {
   }
 
   return (
-    <section className="py-12 overflow-hidden bg-white">
+    <section className="py-12 overflow-hidden bg-[#F8FAFB]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
         {/* Section Label */}
         <motion.div
@@ -1718,8 +1718,8 @@ const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef
 
 const LocalClassesCTA = () => {
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4 md:px-8">
+    <section className="py-16 bg-[#F8FAFB]">
+      <div className="container mx-auto px-4 md:px-8 ">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1747,21 +1747,21 @@ const LocalClassesCTA = () => {
                 className="relative rounded-2xl overflow-hidden shadow-2xl"
               >
                 <img
-                  src="/korean-class.jpg"
+                  src="/Testimonials/Kevin.svg"
                   alt="Korean Language Class"
-                  className="w-full h-[280px] lg:h-[320px] object-cover"
+                  className="w-full h-[280px] lg:h-[380px] object-cover"
                   onError={(e) => {
                     e.target.src = 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=400&fit=crop';
                   }}
                 />
                 {/* Play button overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.div
+                  {/* <motion.div
                     whileHover={{ scale: 1.1 }}
                     className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg cursor-pointer"
                   >
                     <Play className="w-6 h-6 text-[#FF6B6B] ml-1" />
-                  </motion.div>
+                  </motion.div> */}
                 </div>
               </motion.div>
             </div>
@@ -1833,7 +1833,7 @@ const LocalClassesCTA = () => {
  */
 const TestimonialCard = ({ name, image, quote, lightColor, darkColor, notch }) => {
   return (
-    <div className="flex-shrink-0 w-[280px] md:w-[280px]">
+    <div className="flex-shrink-0 w-[280px] md:w-[280px]bg-[#F8FAFB]">
       {/* Card Container */}
       <div className="relative w-full h-[500px] md:h-[430px] overflow-hidden rounded-[10px] shadow-[0_2px_20px_rgba(0,0,0,0.08)]">
         
@@ -2006,7 +2006,7 @@ const TestimonialsSection = () => {
   const allTestimonials = [...testimonials, ...testimonials];
 
   return (
-    <section className="py-16 md:py-20 bg-white overflow-hidden">
+    <section className="py-16 md:py-20 bg-[#F8FAFB] overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
@@ -2034,8 +2034,10 @@ const TestimonialsSection = () => {
       {/* Full Width Scrolling Container */}
       <div className="relative py-8">
         {/* Gradient Overlays */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32  pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 pointer-events-none" />
+        {/* <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" /> */}
         
         {/* Auto-Scrolling Track */}
         <div className="overflow-hidden px-4">
@@ -2090,7 +2092,7 @@ const TestimonialsSection = () => {
               className="inline-flex items-center gap-2 text-[#FF6B6B] hover:text-[#E85555] font-semibold transition-colors"
             >
               Read more testimonials
-              <FiArrowRight className="w-5 h-5" />
+              <FiArrowRight className="w-10 h-10" />
             </Link>
           </motion.div>
         </div>
@@ -2108,8 +2110,8 @@ const TestimonialsSection = () => {
 
 const CTASection = ({ currentUserId }) => {
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4 md:px-8">
+    <section className="py-16 bg-[#F8FAFB]">
+      <div className="container mx-auto px-4 md:px-8 bg-[#F8FAFB]">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -2186,7 +2188,7 @@ const PartnershipsSection = () => {
   const allPartners = [...partners, ...partners, ...partners];
 
   return (
-    <section className="py-8 md:py-10 bg-white border-t border-[#E8E6E1] overflow-hidden">
+    <section className="py-8 md:py-10 bg-[#F8FAFB] border-t border-[#E8E6E1] overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
         {/* Horizontal Layout: Label on Left, Scrolling Partners on Right */}
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
