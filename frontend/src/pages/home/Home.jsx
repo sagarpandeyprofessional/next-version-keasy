@@ -1971,7 +1971,7 @@ const TestimonialsSection = () => {
       quote: "Keasy helped me meet amazing people and join fun events in Korea. It made settling in much easier."
     },
     {
-      name: "Rupesh",
+      name: "Rupesh, Nepal",
       image: "/testimonials/Rupesh.svg",
       quote: "KEasy understands what expats need. Every feature is thoughtfully designed for our community."
     },
