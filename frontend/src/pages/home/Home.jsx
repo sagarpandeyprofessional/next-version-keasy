@@ -1849,7 +1849,7 @@ const TestimonialCard = ({ name, image, quote, lightColor, darkColor, notch }) =
             src={image}
             alt={name}
             className="w-[200px] h-[200px] md:w-[220px] md:h-[220px] object-cover rounded-"
-            onError={(e) => {
+            onError={(e) => { 
               e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
             }}
           />
@@ -1863,10 +1863,10 @@ const TestimonialCard = ({ name, image, quote, lightColor, darkColor, notch }) =
             backgroundColor: darkColor 
           }}
         >
-          <p className="text-white text-[14px] md:text-[15px] leading-[1.6] mb-4 md:mb-5 italic">
+          <p className="text-white text-[14px] md:text-[15px] leading-[1.6] mb-4 md:mb-5">
             "{quote}"
           </p>
-          <p className="text-white text-[16px] md:text-[18px] font-bold">
+          <p className=" absolute bottom-7 left-8 text-white text-[16px] md:text-[18px] font-bold">
             {name}
           </p>
         </div>
@@ -1936,65 +1936,65 @@ const TestimonialsSection = () => {
   // Testimonials with KEasy theme
   const testimonials = [
     {
-      name: "Fatima",
-      image: "/testimonials/AB.SVG",
-      quote: "KEasy has changed my life in Korea. I found amazing friends and support when I needed it most."
+      name: "Abhishek, Nepal",
+      image: "/testimonials/Abhishek.svg",
+      quote: "KEasy has changed my life in Korea. I was confused about everything in South Korea, but KEasy guides saved my life."
     },
     {
-      name: "Diana",
-      image: "/testimonials/AB.SVG",
-      quote: "I love how KEasy connects expats. The guides helped me navigate Korean bureaucracy so easily!"
+      name: "Nada, Egypt",
+      image: "/testimonials/Nada.svg",
+      quote: "Keasy made my life in Korea so much easier. I met new friends and found affordable second-hand items through the marketplace. Super convenient for foreigners."
     },
     {
-      name: "Melissa",
-      image: "/testimonials/AB.SVG",
-      quote: "Being part of KEasy community made my transition to Korea smooth. Thank you for this amazing platform!"
+      name: "Kevin, Korea",
+      image: "/testimonials/Kevin.svg",
+      quote: "Being part of KEasy community is a must for foreigners. It helps foreigners communicate and participate  Thank you for this amazing platform!"
     },
     {
-      name: "Evert",
-      image: "/testimonials/AB.SVG",
-      quote: "KEasy marketplace saved me money, and the events section helped me make lifelong friends."
+      name: "Khalil, Egypt",
+      image: "/testimonials/Khalil.svg",
+      quote: "Keasy helped me meet great people in Korea and discover events I wouldn’t have found on my own. It’s been a huge help for my social life."
     },
     {
-      name: "April",
-      image: "/testimonials/AB.SVG",
-      quote: "The professional network on KEasy is incredible. I found my dream job through a connection here!"
+      name: "Zakaria, Egypt",
+      image: "/testimonials/Zakaria.svg",
+      quote: "Keasy helped me meet amazing people and join fun events in Korea. It made settling in much easier."
     },
     {
-      name: "Corisha",
-      image: "/testimonials/AB.SVG",
+      name: "Rupesh",
+      image: "/testimonials/Rupesh.svg",
       quote: "KEasy understands what expats need. Every feature is thoughtfully designed for our community."
     },
-    {
-      name: "Dori",
-      image: "/testimonials/AB.SVG",
-      quote: "I can't imagine my life in Korea without KEasy. It's my go-to platform for everything!"
-    },
-    {
-      name: "Hari",
-      image: "/testimonials/AB.SVG",
-      quote: "KEasy community support is unmatched. I always get helpful advice from fellow expats here."
-    },
-    {
-      name: "Sarah",
-      image: "/testimonials/AB.SVG",
-      quote: "The support I received was exactly what I needed. It felt personalized and helped me through difficult times."
-    },
-    {
-      name: "Michael",
-      image: "/testimonials/AB.SVG",
-      quote: "I found the perfect match. They understood my background and challenges completely."
-    },
-    {
-      name: "Jessica",
-      image: "/testimonials/AB.SVG",
-      quote: "This changed my perspective on living abroad. I wish I had found KEasy sooner."
-    },
-    {
-      name: "David",
-      image: "/testimonials/AB.SVG",
-      quote: "Finally, a platform that gets it. The connection was instant and the progress has been amazing."
-    },
+    // {
+    //   name: "Dori",
+    //   image: "/testimonials/AB.SVG",
+    //   quote: "I can't imagine my life in Korea without KEasy. It's my go-to platform for everything!"
+    // },
+    // {
+    //   name: "Hari",
+    //   image: "/testimonials/AB.SVG",
+    //   quote: "KEasy community support is unmatched. I always get helpful advice from fellow expats here."
+    // },
+    // {
+    //   name: "Sarah",
+    //   image: "/testimonials/AB.SVG",
+    //   quote: "The support I received was exactly what I needed. It felt personalized and helped me through difficult times."
+    // },
+    // {
+    //   name: "Michael",
+    //   image: "/testimonials/AB.SVG",
+    //   quote: "I found the perfect match. They understood my background and challenges completely."
+    // },
+    // {
+    //   name: "Jessica",
+    //   image: "/testimonials/AB.SVG",
+    //   quote: "This changed my perspective on living abroad. I wish I had found KEasy sooner."
+    // },
+    // {
+    //   name: "David",
+    //   image: "/testimonials/AB.SVG",
+    //   quote: "Finally, a platform that gets it. The connection was instant and the progress has been amazing."
+    // },
   ];
 
   // Duplicate for infinite scroll
@@ -2169,12 +2169,12 @@ const CTASection = ({ currentUserId }) => {
 
 const PartnershipsSection = () => {
   const partners = [
-    { name: "Skala Plus" },
-    { name: "Carrot" },
-    { name: "Facebook" },
+    // { name: "Skala Plus" },
+    // { name: "Carrot" },
+    // { name: "Facebook" },
     { name: "The Realtor Guy" },
-    { name: "The Car Guy" },
-    { name: "사과" },
+    { name: "Woosong Univesity" },
+    { name: "Ws_Phoneshop" },
   ];
 
   // Duplicate partners for seamless infinite loop
@@ -2707,8 +2707,8 @@ export default function Home() {
       <HeroSection />
        <FloatingBubblesSection guides={guides} />
       <ServicesSection features={features} />
-           <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
-      <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} />
+           {/* <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
+      <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} /> */}
       <LocalClassesCTA />
       <TestimonialsSection />
       <CTASection currentUserId={currentUserId} />
