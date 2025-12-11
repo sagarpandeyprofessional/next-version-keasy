@@ -54,7 +54,7 @@ const colors = {
   tealDark: '#3DBDB5',
   yellow: '#FFE66D',
   yellowLight: '#FFED9E',
-  cream: '#FDFBF7',
+  cream: '#FFFFFF',
   warmGray: {
     50: '#dda73aff',
     100: '#695c49ff',
@@ -1239,7 +1239,7 @@ const FloatingBubblesSection = () => {
   // Loading skeleton
   if (isLoading) {
     return (
-      <section className="py-12 overflow-hidden bg-[#FDFBF7]">
+      <section className="py-12 overflow-hidden bg-white">
         <div className="container mx-auto px-4 md:px-8 lg:px-12">
           <div className="text-center mb-10">
             <span className="text-sm font-semibold text-[#7D789F] uppercase tracking-[0.2em]">
@@ -1271,7 +1271,7 @@ const FloatingBubblesSection = () => {
   }
 
   return (
-    <section className="py-12 overflow-hidden bg-[#FDFBF7]">
+    <section className="py-12 overflow-hidden bg-white">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
         {/* Section Label */}
         <motion.div
@@ -1816,102 +1816,184 @@ const LocalClassesCTA = () => {
    TESTIMONIALS SECTION - EXACT Design Match
    ============================================================================= */
 
-const TestimonialCard = ({ name, image, quote, bgColor }) => {
+/* =============================================================================
+   TESTIMONIALS SECTION - WITH STEPPED BOX DESIGN (EXACT MATCH)
+   Images are INSIDE the light color section, not overlapping
+   ============================================================================= */
+
+/**
+ * Testimonial Card with Stepped Box - Images Inside Light Section
+ * 
+ * @param {string} name - Person's name
+ * @param {string} image - Person's image URL
+ * @param {string} quote - Testimonial quote
+ * @param {string} lightColor - Light background color (top section)
+ * @param {string} darkColor - Dark background color (bottom section + notches)
+ * @param {object} notch - Notch configuration {left: {w, h, b}, right: {w, h, t}}
+ */
+const TestimonialCard = ({ name, image, quote, lightColor, darkColor, notch }) => {
   return (
-    <div className="flex-shrink-0 w-[280px] md:w-[300px]">
-      {/* White Card Container with Shadow */}
-      <div className="bg-white rounded-[20px] shadow-[0_2px_20px_rgba(0,0,0,0.08)] overflow-visible p-5 md:p-6 h-full flex flex-col">
+    <div className="flex-shrink-0 w-[280px] md:w-[280px]">
+      {/* Card Container */}
+      <div className="relative w-full h-[500px] md:h-[430px] overflow-hidden rounded-[10px] shadow-[0_2px_20px_rgba(0,0,0,0.08)]">
         
-        {/* Top Section: Colored Background + Overlapping Photo */}
-        <div className="relative mb-4">
-          {/* Colored Background Rectangle */}
-          <div 
-            className="w-full h-[180px] md:h-[200px] rounded-[16px]"
-            style={{ backgroundColor: bgColor }}
+        {/* Top Light Section with Image Inside */}
+        <div 
+          className="absolute top-0 left-0 right-0 flex items-end justify-center pb-0"
+          style={{ 
+            height: '50%',
+            backgroundColor: lightColor 
+          }}
+        >
+          <img
+            src={image}
+            alt={name}
+            className="w-[200px] h-[200px] md:w-[220px] md:h-[220px] object-cover rounded-"
+            onError={(e) => {
+              e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
+            }}
           />
-          
-          {/* Person Photo - Positioned to Overlap */}
-          <div className="absolute bottom-[-30px] left-1/2 transform -translate-x-1/2">
-            <img
-              src={image}
-              alt={name}
-              className="h-[180px] md:h-[200px] w-auto object-contain"
-              style={{
-                filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))',
-              }}
-              onError={(e) => {
-                e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
-              }}
-            />
-          </div>
         </div>
-
-        {/* Spacer for overlapping photo */}
-        <div className="h-[35px]" />
-
-        {/* Quote Text */}
-        <p className="text-[#374151] text-[14px] md:text-[15px] leading-[1.7] flex-grow mb-4">
-          "{quote}"
-        </p>
-
-        {/* Name */}
-        <p className="font-bold text-[#D97655] text-[15px] md:text-[16px]">
-          {name}
-        </p>
+        
+        {/* Bottom Dark Section with Quote */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 p-6 md:p-8 flex flex-col justify-center"
+          style={{ 
+            height: '50%',
+            backgroundColor: darkColor 
+          }}
+        >
+          <p className="text-white text-[14px] md:text-[15px] leading-[1.6] mb-4 md:mb-5 italic">
+            "{quote}"
+          </p>
+          <p className="text-white text-[16px] md:text-[18px] font-bold">
+            {name}
+          </p>
+        </div>
+        
+        {/* Left Notch */}
+        <div 
+          className="absolute left-0"
+          style={{
+            width: `${notch.left.w}px`,
+            height: `${notch.left.h}px`,
+            backgroundColor: darkColor,
+            top: notch.left.t,
+            bottom: notch.left.b
+          }}
+        />
+        
+        {/* Right Notch */}
+        <div 
+          className="absolute right-0"
+          style={{
+            width: `${notch.right.w}px`,
+            height: `${notch.right.h}px`,
+            backgroundColor: darkColor,
+            top: notch.right.t,
+            bottom: notch.right.b
+          }}
+        />
       </div>
     </div>
   );
 };
 
+/**
+ * Testimonials Section - Complete with Auto-Scrolling
+ */
 const TestimonialsSection = () => {
+  // Color combinations
+  const colors = [
+    { light: '#FFE5E5', dark: '#FF6B6B' },  // Coral
+    { light: '#E0F7F5', dark: '#5BBFBA' },  // Teal
+    { light: '#FFE5E5', dark: '#FFBDBD' },  // Light Pink
+    { light: '#E0F7F5', dark: '#9DD5E3' },  // Light Blue
+    { light: '#F3E8FF', dark: '#9DD5E3' },  // Purple to Blue
+    { light: '#D1FAE5', dark: '#B8E5C9' },  // Mint Green
+    { light: '#E0F7F5', dark: '#9DD5E3' },  // Cyan
+    { light: '#FFE5E5', dark: '#FDBA9B' },  // Coral Peach
+    { light: '#FFF0E1', dark: '#FFA726' },  // Orange
+    { light: '#E6FBF7', dark: '#06D6A0' },  // Turquoise
+    { light: '#F0E6FA', dark: '#7209B7' },  // Purple
+    { light: '#EBF3FF', dark: '#3A86FF' },  // Blue
+  ];
+
+  // Notch variations - positioned to connect seamlessly at 50% split
+  // Left notch: starts at 50% and extends DOWN into dark section
+  // Right notch: ends at 50% and extends UP from dark section
+  const notchVariations = [
+    { left: { w: 32, h: 64, b: '50%' }, right: { w: 31, h: 80, b: '50%' } },
+    { left: { w: 34, h: 80, b: '50%' }, right: { w: 37, h: 96, b: '50%' } },
+    { left: { w: 36, h: 48, b: '50%' }, right: { w: 33, h: 64, b: '50%' } },
+    { left: { w: 34, h: 96, b: '50%' }, right: { w: 32, h: 80, b: '50%' } },
+    { left: { w: 36, h: 72, b: '50%' }, right: { w: 28, h: 88, b: '50%' } },
+    { left: { w: 32, h: 60, b: '50%' }, right: { w: 27, h: 76, b: '50%' } },
+    { left: { w: 28, h: 84, b: '50%' }, right: { w: 36, h: 68, b: '50%' } },
+    { left: { w: 40, h: 56, b: '50%' }, right: { w: 33, h: 92, b: '50%' } },
+  ];
+
+  // Testimonials with KEasy theme
   const testimonials = [
     {
       name: "Fatima",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=500&fit=crop&crop=top",
-      quote: "Talkspace has changed my life because it's given me the confidence to do difficult things.",
-      bgColor: "#FDBA9B", // Coral/Peach
+      image: "/testimonials/AB.SVG",
+      quote: "KEasy has changed my life in Korea. I found amazing friends and support when I needed it most."
     },
     {
       name: "Diana",
-      image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=500&fit=crop&crop=top",
-      quote: "I like that my Talkspace therapist is always checking up on me through text. She refers back to the issues we talked about last time.",
-      bgColor: "#5BBFBA", // Teal
+      image: "/testimonials/AB.SVG",
+      quote: "I love how KEasy connects expats. The guides helped me navigate Korean bureaucracy so easily!"
     },
     {
       name: "Melissa",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop&crop=top",
-      quote: "Having a Talkspace therapist is like somebody coming in and kind of shining a light down the path. It's still up to me to walk that path, but it just makes it a little bit easier.",
-      bgColor: "#FFBDBD", // Light Pink
+      image: "/testimonials/AB.SVG",
+      quote: "Being part of KEasy community made my transition to Korea smooth. Thank you for this amazing platform!"
     },
     {
       name: "Evert",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=top",
-      quote: "Instead of just texting my friends, I text my therapist and there's no judgment on what I say.",
-      bgColor: "#9DD5E3", // Light Blue
+      image: "/testimonials/AB.SVG",
+      quote: "KEasy marketplace saved me money, and the events section helped me make lifelong friends."
     },
     {
       name: "April",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop&crop=top",
-      quote: "The therapist I'm working with gives me thoughtful feedback and is very prompt with responses. I've been doing both the video therapy sessions as well as the messaging.",
-      bgColor: "#9DD5E3", // Light Blue
+      image: "/testimonials/AB.SVG",
+      quote: "The professional network on KEasy is incredible. I found my dream job through a connection here!"
     },
     {
       name: "Corisha",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop&crop=top",
-      quote: "I got connected to a provider from the same area, someone that looks like me. So they understand the issue that I may have.",
-      bgColor: "#B8E5C9", // Mint Green
+      image: "/testimonials/AB.SVG",
+      quote: "KEasy understands what expats need. Every feature is thoughtfully designed for our community."
     },
     {
       name: "Dori",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=500&fit=crop&crop=top",
-      quote: "If anybody asked me about Talkspace, I would definitely tell them to go use it, because they can use it any time of the day, any place, anywhere.",
-      bgColor: "#9DD5E3", // Light Blue
+      image: "/testimonials/AB.SVG",
+      quote: "I can't imagine my life in Korea without KEasy. It's my go-to platform for everything!"
     },
     {
       name: "Hari",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop&crop=top",
-      quote: "If it doesn't work out with one therapist, you can move to somebody else. But in-person it's not easy to move from therapist to therapist.",
-      bgColor: "#FDBA9B", // Coral/Peach
+      image: "/testimonials/AB.SVG",
+      quote: "KEasy community support is unmatched. I always get helpful advice from fellow expats here."
+    },
+    {
+      name: "Sarah",
+      image: "/testimonials/AB.SVG",
+      quote: "The support I received was exactly what I needed. It felt personalized and helped me through difficult times."
+    },
+    {
+      name: "Michael",
+      image: "/testimonials/AB.SVG",
+      quote: "I found the perfect match. They understood my background and challenges completely."
+    },
+    {
+      name: "Jessica",
+      image: "/testimonials/AB.SVG",
+      quote: "This changed my perspective on living abroad. I wish I had found KEasy sooner."
+    },
+    {
+      name: "David",
+      image: "/testimonials/AB.SVG",
+      quote: "Finally, a platform that gets it. The connection was instant and the progress has been amazing."
     },
   ];
 
@@ -1919,7 +2001,7 @@ const TestimonialsSection = () => {
   const allTestimonials = [...testimonials, ...testimonials];
 
   return (
-    <section className="py-16 md:py-20 bg-[#FDFBF7] overflow-hidden">
+    <section className="py-16 md:py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
@@ -1947,21 +2029,21 @@ const TestimonialsSection = () => {
       {/* Full Width Scrolling Container */}
       <div className="relative py-8">
         {/* Gradient Overlays */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#FDFBF7] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#FDFBF7] to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
         
         {/* Auto-Scrolling Track */}
         <div className="overflow-hidden px-4">
           <motion.div 
-            className="flex gap-5 md:gap-6"
+            className="flex gap-5 md:gap-8"
             animate={{
-              x: [0, -(300 + 24) * testimonials.length],
+              x: [0, -(320 + 32) * testimonials.length],
             }}
             transition={{
               x: {
                 repeat: Infinity,
                 repeatType: "loop",
-                duration: testimonials.length * 5,
+                duration: testimonials.length * 6,
                 ease: "linear",
               },
             }}
@@ -1969,12 +2051,22 @@ const TestimonialsSection = () => {
               width: 'fit-content',
             }}
           >
-            {allTestimonials.map((testimonial, index) => (
-              <TestimonialCard
-                key={`testimonial-${index}`}
-                {...testimonial}
-              />
-            ))}
+            {allTestimonials.map((testimonial, index) => {
+              const colorIndex = index % colors.length;
+              const notchIndex = index % notchVariations.length;
+              
+              return (
+                <TestimonialCard
+                  key={`testimonial-${index}`}
+                  name={testimonial.name}
+                  image={testimonial.image}
+                  quote={testimonial.quote}
+                  lightColor={colors[colorIndex].light}
+                  darkColor={colors[colorIndex].dark}
+                  notch={notchVariations[notchIndex]}
+                />
+              );
+            })}
           </motion.div>
         </div>
       </div>
@@ -2001,6 +2093,8 @@ const TestimonialsSection = () => {
     </section>
   );
 };
+
+
 
 
 /* =============================================================================
@@ -2087,7 +2181,7 @@ const PartnershipsSection = () => {
   const allPartners = [...partners, ...partners, ...partners];
 
   return (
-    <section className="py-8 md:py-10 bg-[#FDFBF7] border-t border-[#E8E6E1] overflow-hidden">
+    <section className="py-8 md:py-10 bg-white border-t border-[#E8E6E1] overflow-hidden">
       <div className="container mx-auto px-4 md:px-8">
         {/* Horizontal Layout: Label on Left, Scrolling Partners on Right */}
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
@@ -2611,15 +2705,15 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <HeroSection />
+       <FloatingBubblesSection guides={guides} />
       <ServicesSection features={features} />
-      <FloatingBubblesSection guides={guides} />
-      <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
+           <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
       <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} />
       <LocalClassesCTA />
       <TestimonialsSection />
       <CTASection currentUserId={currentUserId} />
       <PartnershipsSection />
-      <FeedbackSection />
+      {/* <FeedbackSection /> */}
       <AIChatbot currentUserId={currentUserId} />
     </div>
   );
