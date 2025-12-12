@@ -1847,9 +1847,9 @@ const FeaturedMarketplaceCard = ({ item }) => {
         </span>
       </div> */}
 
-      {/* Bottom Content */}
+      {/* Bottom Content you can change the text colour of featured item name here*/}
       <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-        <div className="flex items-center gap-3 text-white/80 text-xs mb-2">
+        <div className="flex items-center gap-3 text-black/80 text-xs mb-2">
           <span className="flex items-center gap-1">
             <FiMapPin className="w-3 h-3" />
             {item.location || 'Korea'}
@@ -1859,8 +1859,7 @@ const FeaturedMarketplaceCard = ({ item }) => {
             {item.views || 0} views
           </span>
         </div>
-
-        <h3 className="text-xl lg:text-2xl font-bold text-white mb-2 line-clamp-2">
+        <h3 className="text-xl lg:text-2xl font-bold text-black mb-2 line-clamp-2">
           {item.title}
         </h3>
 
