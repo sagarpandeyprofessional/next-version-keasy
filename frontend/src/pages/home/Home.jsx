@@ -1367,11 +1367,574 @@ const FloatingBubblesSection = () => {
 
 
 
+// /* =============================================================================
+//    GUIDES SECTION - Editorial Style Cards
+//    ============================================================================= */
+
+// const GuidesCard = ({ id, name, description, img_url, created_by, like = {}, onLike, currentUserId }) => {
+//   const [author, setAuthor] = useState("KEasy Team");
+//   const isLiked = currentUserId && like[currentUserId] === true;
+//   const likesCount = Object.values(like || {}).filter(val => val === true).length;
+
+//   useEffect(() => {
+//     const fetchAuthor = async () => {
+//       if (!created_by) return;
+//       const { data, error } = await supabase
+//         .from("profiles")
+//         .select("username")
+//         .eq("user_id", created_by)
+//         .single();
+//       if (!error && data) setAuthor(data.username || "KEasy Team");
+//     };
+//     fetchAuthor();
+//   }, [created_by]);
+
+//   return (
+//     <Link to={`/guides/guide/${id}`} className="block group">
+//       <motion.div
+//         whileHover={{ y: -8 }}
+//         transition={{ duration: 0.3 }}
+//         className="relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500"
+//       >
+//         {/* Image */}
+//         <div className="relative h-[200px] overflow-hidden">
+//           {img_url ? (
+//             <img 
+//               src={img_url} 
+//               alt={name} 
+//               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+//             />
+//           ) : (
+//             <div className="w-full h-full bg-gradient-to-br from-[#FF6B6B] to-[#4ECDC4] flex items-center justify-center">
+//               <LuSparkles className="w-12 h-12 text-white/50" />
+//             </div>
+//           )}
+//           {/* Overlay */}
+//           <div className="absolute inset-0 bg-gradient-to-t from-[#1A1917]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
+//           {/* Like Button */}
+//           <button
+//             onClick={(e) => {
+//               e.preventDefault();
+//               e.stopPropagation();
+//               onLike();
+//             }}
+//             className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+//               isLiked 
+//                 ? 'bg-[#FF6B6B] text-white' 
+//                 : 'bg-white/90 backdrop-blur-sm text-[#7D786F] hover:text-[#FF6B6B]'
+//             }`}
+//           >
+//             {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
+//           </button>
+//         </div>
+
+//         {/* Content */}
+//         <div className="p-6">
+//           <div className="flex items-center gap-2 text-xs text-[#7D786F] mb-2">
+//             <span className="w-6 h-6 rounded-full bg-[#4ECDC4]/20 flex items-center justify-center text-[#4ECDC4]">
+//               {author.charAt(0).toUpperCase()}
+//             </span>
+//             <span>By {author}</span>
+//             <span>•</span>
+//             <span>{formatCount(likesCount)} likes</span>
+//           </div>
+//           <h3 className="text-lg font-bold text-[#1A1917] line-clamp-2 mb-2 group-hover:text-[#FF6B6B] transition-colors">
+//             {name}
+//           </h3>
+//           <p className="text-sm text-[#7D786F] line-clamp-2">
+//             {description || "Discover helpful tips and guides for life in Korea."}
+//           </p>
+//         </div>
+//       </motion.div>
+//     </Link>
+//   );
+// };
+
+// const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
+//   return (
+//     <section className="py-16">
+//       <div className="container mx-auto px-4 md:px-8">
+//         {/* Header */}
+//         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+//           <motion.div
+//             initial="hidden"
+//             whileInView="visible"
+//             viewport={{ once: true }}
+//             variants={staggerContainer}
+//           >
+//             <motion.span 
+//               variants={fadeInUp}
+//               className="inline-block px-4 py-2 bg-[#FF6B6B]/10 text-[#FF6B6B] rounded-full text-sm font-semibold mb-4"
+//             >
+//               Learn & Grow
+//             </motion.span>
+//             <motion.h2 
+//               variants={fadeInUp}
+//               className="text-3xl md:text-4xl font-bold text-[#1A1917]"
+//             >
+//               Explore <span className="text-[#FF6B6B]">Guides</span>
+//             </motion.h2>
+//           </motion.div>
+          
+//           <motion.div
+//             initial={{ opacity: 0, x: 20 }}
+//             whileInView={{ opacity: 1, x: 0 }}
+//             viewport={{ once: true }}
+//           >
+//             <Link 
+//               to="/guides"
+//               className="group inline-flex items-center gap-2 px-6 py-3 bg-[#1A1917] text-white rounded-full font-medium hover:bg-[#3D3A35] transition-colors"
+//             >
+//               View All Guides
+//               <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+//             </Link>
+//           </motion.div>
+//         </div>
+
+//         {/* Scrollable Cards */}
+//         <div
+//           ref={guidesRef}
+//           className="flex gap-6 pb-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+//         >
+//           {guides.map((guide, index) => (
+//             <motion.div 
+//               key={guide.id} 
+//               className="flex-none w-[300px] snap-start"
+//               initial={{ opacity: 0, y: 30 }}
+//               whileInView={{ opacity: 1, y: 0 }}
+//               viewport={{ once: true }}
+//               transition={{ delay: index * 0.1 }}
+//             >
+//               <GuidesCard
+//                 {...guide}
+//                 currentUserId={currentUserId}
+//                 onLike={() => onGuideLike(guide.id)}
+//               />
+//             </motion.div>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
+
+
+// /* =============================================================================
+//    GUIDES SECTION - Groot Vine Snake Layout 🌿
+//    =============================================================================
+   
+//    Layout Structure:
+   
+//    Row 1 (Left → Right):
+//    ╭─────────╮   ╭─────────╮   ╭─────────╮
+//    │ Guide 1 │───│ Guide 2 │───│ Guide 3 │──╮
+//    ╰─────────╯   ╰─────────╯   ╰─────────╯  │
+//                                             │ 🌿 (vine curves down)
+//    Row 2 (Right → Left):                    │
+//    ╭─────────╮   ╭─────────╮   ╭─────────╮  │
+//    │ Guide 6 │───│ Guide 5 │───│ Guide 4 │──╯
+//    ╰─────────╯   ╰─────────╯   ╰─────────╯
+//    │
+//    │ 🌿 (vine curves down)
+//    │
+//    Row 3 (Left → Right):
+//    ╭─────────╮   ╭─────────╮   ╭─────────╮
+//    │ Guide 7 │───│ Guide 8 │───│ Guide 9 │
+//    ╰─────────╯   ╰─────────╯   ╰─────────╯
+   
+//    ============================================================================= */
+
+// /* Groot Vine Guide Card - Speech Bubble Style with Faded Image */
+// const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {}, onLike, currentUserId, view }) => {
+//   const [author, setAuthor] = useState("KEasy Team");
+//   const isLiked = currentUserId && like[currentUserId] === true;
+//   const likesCount = Object.values(like || {}).filter(val => val === true).length;
+
+//   useEffect(() => {
+//     const fetchAuthor = async () => {
+//       if (!created_by) return;
+//       const { data, error } = await supabase
+//         .from("profiles")
+//         .select("username")
+//         .eq("user_id", created_by)
+//         .single();
+//       if (!error && data) setAuthor(data.username || "KEasy Team");
+//     };
+//     fetchAuthor();
+//   }, [created_by]);
+
+//   return (
+//     <Link to={`/guides/guide/${id}`} className="block group">
+//       <motion.div
+//         whileHover={{ y: -8, scale: 1.02 }}
+//         transition={{ duration: 0.3 }}
+//         className="relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100"
+//       >
+//         {/* Image with Fade Effect */}
+//         <div className="relative h-[140px] overflow-hidden">
+//           {img_url ? (
+//             <>
+//               <img 
+//                 src={img_url} 
+//                 alt={name} 
+//                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+//               />
+//               {/* Gradient Fade Overlay */}
+//               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
+//             </>
+//           ) : (
+//             <div className="w-full h-full bg-gradient-to-br from-[#8B4513] to-[#A0522D] flex items-center justify-center">
+//               <span className="text-4xl">🌿</span>
+//             </div>
+//           )}
+          
+//           {/* Like Button */}
+//           <button
+//             onClick={(e) => {
+//               e.preventDefault();
+//               e.stopPropagation();
+//               onLike();
+//             }}
+//             className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
+//               isLiked 
+//                 ? 'bg-[#FF6B6B] text-white' 
+//                 : 'bg-white/90 backdrop-blur-sm text-[#7D786F] hover:text-[#FF6B6B]'
+//             }`}
+//           >
+//             {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
+//           </button>
+
+//           {/* Stats Badge */}
+//           <div className="absolute bottom-3 left-3 flex items-center gap-2">
+//             <span className="flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-sm rounded-full text-white text-xs">
+//               <FiEye className="w-3 h-3" />
+//               {view || 0}
+//             </span>
+//             <span className="flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-sm rounded-full text-white text-xs">
+//               <FiHeart className="w-3 h-3" />
+//               {likesCount}
+//             </span>
+//           </div>
+//         </div>
+
+//         {/* Content */}
+//         <div className="p-4">
+//           <h3 className="text-base font-bold text-[#1A1917] line-clamp-1 mb-1 group-hover:text-[#8B4513] transition-colors">
+//             {name}
+//           </h3>
+//           <p className="text-sm text-[#7D786F] line-clamp-2 mb-3">
+//             {description || "Discover helpful tips and guides for life in Korea."}
+//           </p>
+          
+//           {/* Footer */}
+//           <div className="flex items-center justify-between">
+//             <span className="text-xs text-[#7D786F]">by {author}</span>
+//             <span className="flex items-center gap-1 text-xs font-semibold text-[#8B4513] group-hover:text-[#A0522D]">
+//               Read guide
+//               <FiArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+//             </span>
+//           </div>
+//         </div>
+
+//         {/* Speech Bubble Tail (decorative) */}
+//         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-r border-b border-gray-100" />
+//       </motion.div>
+//     </Link>
+//   );
+// };
+
+// /* Groot Vine SVG Component */
+// const GrootVine = ({ position = 'right', showLeaf = true }) => {
+//   return (
+//     <div className={`absolute ${position === 'right' ? 'right-0' : 'left-0'} top-0 bottom-0 w-16 flex flex-col items-center justify-center`}>
+//       {/* Wooden Vine Texture */}
+//       <div className="relative w-4 h-full">
+//         {/* Main vine trunk */}
+//         <div 
+//           className="absolute inset-0 rounded-full"
+//           style={{
+//             background: 'linear-gradient(90deg, #5D4037 0%, #8B4513 30%, #A0522D 50%, #8B4513 70%, #5D4037 100%)',
+//             boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.3), inset 2px 0 4px rgba(255,255,255,0.1)',
+//           }}
+//         />
+//         {/* Wood grain lines */}
+//         <div className="absolute inset-0 opacity-30">
+//           <div className="absolute left-1 top-0 bottom-0 w-px bg-[#3E2723]" />
+//           <div className="absolute right-1 top-0 bottom-0 w-px bg-[#3E2723]" />
+//         </div>
+//       </div>
+      
+//       {/* Leaf decoration */}
+//       {showLeaf && (
+//         <div className={`absolute ${position === 'right' ? '-left-4' : '-right-4'} top-1/2 -translate-y-1/2`}>
+//           <motion.div
+//             initial={{ rotate: position === 'right' ? -30 : 30, scale: 0 }}
+//             whileInView={{ rotate: position === 'right' ? -15 : 15, scale: 1 }}
+//             transition={{ duration: 0.5, delay: 0.3 }}
+//             className="text-2xl"
+//           >
+//             🍃
+//           </motion.div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// /* Horizontal Vine Connector */
+// const HorizontalVine = ({ curveDirection = 'down-right' }) => {
+//   const isDownRight = curveDirection === 'down-right';
+  
+//   return (
+//     <div className="relative h-20 w-full">
+//       <svg 
+//         className="absolute inset-0 w-full h-full" 
+//         viewBox="0 0 100 100" 
+//         preserveAspectRatio="none"
+//         fill="none"
+//       >
+//         <defs>
+//           <linearGradient id="vineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+//             <stop offset="0%" stopColor="#5D4037" />
+//             <stop offset="30%" stopColor="#8B4513" />
+//             <stop offset="50%" stopColor="#A0522D" />
+//             <stop offset="70%" stopColor="#8B4513" />
+//             <stop offset="100%" stopColor="#5D4037" />
+//           </linearGradient>
+//         </defs>
+        
+//         {isDownRight ? (
+//           /* Curve from top-left to bottom-right */
+//           <path
+//             d="M 0 10 
+//                L 85 10 
+//                Q 95 10, 95 20 
+//                L 95 80 
+//                Q 95 90, 100 90"
+//             stroke="url(#vineGradient)"
+//             strokeWidth="4"
+//             strokeLinecap="round"
+//             fill="none"
+//           />
+//         ) : (
+//           /* Curve from top-right to bottom-left */
+//           <path
+//             d="M 100 10 
+//                L 15 10 
+//                Q 5 10, 5 20 
+//                L 5 80 
+//                Q 5 90, 0 90"
+//             stroke="url(#vineGradient)"
+//             strokeWidth="4"
+//             strokeLinecap="round"
+//             fill="none"
+//           />
+//         )}
+//       </svg>
+      
+//       {/* Leaf at the curve */}
+//       <motion.div 
+//         className={`absolute ${isDownRight ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2`}
+//         initial={{ scale: 0, rotate: 0 }}
+//         whileInView={{ scale: 1, rotate: isDownRight ? 15 : -15 }}
+//         transition={{ duration: 0.5, delay: 0.2 }}
+//       >
+//         <span className="text-xl">🍃</span>
+//       </motion.div>
+//     </div>
+//   );
+// };
+
+// /* Main Guides Section with Groot Vine Layout */
+// const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
+//   // Take first 9 guides (or however many you want)
+//   const displayGuides = guides.slice(0, 9);
+  
+//   // Split into rows of 3
+//   const row1 = displayGuides.slice(0, 3);                    // Guides 1, 2, 3 (left to right)
+//   const row2 = displayGuides.slice(3, 6).reverse();          // Guides 6, 5, 4 (reversed for snake)
+//   const row3 = displayGuides.slice(6, 9);                    // Guides 7, 8, 9 (left to right)
+
+//   return (
+//     <section className="py-16 bg-[#F8FAFB] overflow-hidden">
+//       <div className="container mx-auto px-4 md:px-8">
+//         {/* Header */}
+//         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+//           <motion.div
+//             initial="hidden"
+//             whileInView="visible"
+//             viewport={{ once: true }}
+//             variants={staggerContainer}
+//           >
+//             <motion.span 
+//               variants={fadeInUp}
+//               className="inline-flex items-center gap-2 px-4 py-2 bg-[#8B4513]/10 text-[#8B4513] rounded-full text-sm font-semibold mb-4"
+//             >
+//               <span>🌿</span>
+//               Learn & Grow
+//             </motion.span>
+//             <motion.h2 
+//               variants={fadeInUp}
+//               className="text-3xl md:text-4xl font-bold text-[#1A1917]"
+//             >
+//               Explore <span className="text-[#8B4513]">Guides</span>
+//             </motion.h2>
+//             <motion.p 
+//               variants={fadeInUp}
+//               className="text-[#7D786F] mt-2 max-w-md"
+//             >
+//               Follow the vine to discover helpful guides for life in Korea
+//             </motion.p>
+//           </motion.div>
+          
+//           <motion.div
+//             initial={{ opacity: 0, x: 20 }}
+//             whileInView={{ opacity: 1, x: 0 }}
+//             viewport={{ once: true }}
+//           >
+//             <Link 
+//               to="/guides"
+//               className="group inline-flex items-center gap-2 px-6 py-3 bg-[#8B4513] text-white rounded-full font-medium hover:bg-[#A0522D] transition-colors shadow-lg"
+//             >
+//               View All Guides
+//               <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+//             </Link>
+//           </motion.div>
+//         </div>
+
+//         {/* Groot Vine Snake Layout */}
+//         <div className="relative">
+          
+//           {/* ===== ROW 1: Left to Right ===== */}
+//           <motion.div 
+//             className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 relative"
+//             initial={{ opacity: 0, y: 30 }}
+//             whileInView={{ opacity: 1, y: 0 }}
+//             viewport={{ once: true }}
+//             transition={{ duration: 0.5 }}
+//           >
+//             {row1.map((guide, index) => (
+//               <GrootGuideCard
+//                 key={guide.id}
+//                 {...guide}
+//                 currentUserId={currentUserId}
+//                 onLike={() => onGuideLike(guide.id)}
+//               />
+//             ))}
+//           </motion.div>
+
+//           {/* Vine Connector: Row 1 → Row 2 (curves down-right then left) */}
+//           <div className="hidden md:block">
+//             <HorizontalVine curveDirection="down-right" />
+//           </div>
+          
+//           {/* Mobile Vine */}
+//           <div className="md:hidden flex justify-end py-4 pr-8">
+//             <div className="flex items-center gap-2">
+//               <div className="w-1 h-12 rounded-full bg-gradient-to-b from-[#8B4513] to-[#A0522D]" />
+//               <span className="text-lg">🍃</span>
+//             </div>
+//           </div>
+
+//           {/* ===== ROW 2: Right to Left (reversed) ===== */}
+//           <motion.div 
+//             className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 relative"
+//             initial={{ opacity: 0, y: 30 }}
+//             whileInView={{ opacity: 1, y: 0 }}
+//             viewport={{ once: true }}
+//             transition={{ duration: 0.5, delay: 0.2 }}
+//           >
+//             {row2.map((guide, index) => (
+//               <GrootGuideCard
+//                 key={guide.id}
+//                 {...guide}
+//                 currentUserId={currentUserId}
+//                 onLike={() => onGuideLike(guide.id)}
+//               />
+//             ))}
+//           </motion.div>
+
+//           {/* Vine Connector: Row 2 → Row 3 (curves down-left then right) */}
+//           <div className="hidden md:block">
+//             <HorizontalVine curveDirection="down-left" />
+//           </div>
+          
+//           {/* Mobile Vine */}
+//           <div className="md:hidden flex justify-start py-4 pl-8">
+//             <div className="flex items-center gap-2">
+//               <span className="text-lg">🍃</span>
+//               <div className="w-1 h-12 rounded-full bg-gradient-to-b from-[#8B4513] to-[#A0522D]" />
+//             </div>
+//           </div>
+
+//           {/* ===== ROW 3: Left to Right ===== */}
+//           <motion.div 
+//             className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 relative"
+//             initial={{ opacity: 0, y: 30 }}
+//             whileInView={{ opacity: 1, y: 0 }}
+//             viewport={{ once: true }}
+//             transition={{ duration: 0.5, delay: 0.4 }}
+//           >
+//             {row3.map((guide, index) => (
+//               <GrootGuideCard
+//                 key={guide.id}
+//                 {...guide}
+//                 currentUserId={currentUserId}
+//                 onLike={() => onGuideLike(guide.id)}
+//               />
+//             ))}
+            
+//             {/* End Leaf */}
+//             {row3.length > 0 && (
+//               <motion.div 
+//                 className="absolute -bottom-4 right-4 md:right-12"
+//                 initial={{ scale: 0, rotate: 0 }}
+//                 whileInView={{ scale: 1, rotate: 20 }}
+//                 transition={{ duration: 0.5, delay: 0.6 }}
+//               >
+//                 <span className="text-2xl">🍃</span>
+//               </motion.div>
+//             )}
+//           </motion.div>
+
+//         </div>
+
+//         {/* Bottom CTA */}
+//         <motion.div 
+//           className="text-center mt-12"
+//           initial={{ opacity: 0, y: 20 }}
+//           whileInView={{ opacity: 1, y: 0 }}
+//           viewport={{ once: true }}
+//           transition={{ delay: 0.5 }}
+//         >
+//           <Link 
+//             to="/guides"
+//             className="inline-flex items-center gap-2 text-[#8B4513] hover:text-[#A0522D] font-semibold transition-colors"
+//           >
+//             <span>Discover more guides</span>
+//             <FiArrowRight className="w-4 h-4" />
+//           </Link>
+//         </motion.div>
+//       </div>
+//     </section>
+//   );
+// };
+
 /* =============================================================================
-   GUIDES SECTION - Editorial Style Cards
+   GUIDES SECTION - Smooth Continuous Light Green Vine 🌿
+   =============================================================================
+   
+   Design:
+   - Single continuous LIGHT GREEN line (#81C784)
+   - Smooth curves at corners (no breaks)
+   - 9 guides in snake pattern
+   - Uses CSS for reliable rendering
+   
    ============================================================================= */
 
-const GuidesCard = ({ id, name, description, img_url, created_by, like = {}, onLike, currentUserId }) => {
+/* Groot Vine Guide Card */
+const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {}, view, onLike, currentUserId }) => {
   const [author, setAuthor] = useState("KEasy Team");
   const isLiked = currentUserId && like[currentUserId] === true;
   const likesCount = Object.values(like || {}).filter(val => val === true).length;
@@ -1392,25 +1955,26 @@ const GuidesCard = ({ id, name, description, img_url, created_by, like = {}, onL
   return (
     <Link to={`/guides/guide/${id}`} className="block group">
       <motion.div
-        whileHover={{ y: -8 }}
+        whileHover={{ y: -8, scale: 1.02 }}
         transition={{ duration: 0.3 }}
-        className="relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500"
+        className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-[#81C784]/30 hover:border-[#81C784]/60"
       >
-        {/* Image */}
-        <div className="relative h-[200px] overflow-hidden">
+        {/* Image with Fade Effect */}
+        <div className="relative h-[120px] overflow-hidden">
           {img_url ? (
-            <img 
-              src={img_url} 
-              alt={name} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-            />
+            <>
+              <img 
+                src={img_url} 
+                alt={name} 
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
+            </>
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#FF6B6B] to-[#4ECDC4] flex items-center justify-center">
-              <LuSparkles className="w-12 h-12 text-white/50" />
+            <div className="w-full h-full bg-gradient-to-br from-[#81C784] to-[#66BB6A] flex items-center justify-center">
+              <span className="text-4xl">🌿</span>
             </div>
           )}
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1917]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
           {/* Like Button */}
           <button
@@ -1419,42 +1983,66 @@ const GuidesCard = ({ id, name, description, img_url, created_by, like = {}, onL
               e.stopPropagation();
               onLike();
             }}
-            className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+            className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
               isLiked 
                 ? 'bg-[#FF6B6B] text-white' 
                 : 'bg-white/90 backdrop-blur-sm text-[#7D786F] hover:text-[#FF6B6B]'
             }`}
           >
-            {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
+            {isLiked ? <FaHeart className="w-3 h-3" /> : <FiHeart className="w-3 h-3" />}
           </button>
+
+          {/* Stats Badge */}
+          <div className="absolute bottom-2 left-2 flex items-center gap-1">
+            <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+              <FiEye className="w-2.5 h-2.5" />
+              {view || 0}
+            </span>
+            <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+              <FiHeart className="w-2.5 h-2.5" />
+              {likesCount}
+            </span>
+          </div>
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          <div className="flex items-center gap-2 text-xs text-[#7D786F] mb-2">
-            <span className="w-6 h-6 rounded-full bg-[#4ECDC4]/20 flex items-center justify-center text-[#4ECDC4]">
-              {author.charAt(0).toUpperCase()}
-            </span>
-            <span>By {author}</span>
-            <span>•</span>
-            <span>{formatCount(likesCount)} likes</span>
-          </div>
-          <h3 className="text-lg font-bold text-[#1A1917] line-clamp-2 mb-2 group-hover:text-[#FF6B6B] transition-colors">
+        <div className="p-3">
+          <h3 className="text-sm font-bold text-[#1A1917] line-clamp-1 mb-1 group-hover:text-[#4CAF50] transition-colors">
             {name}
           </h3>
-          <p className="text-sm text-[#7D786F] line-clamp-2">
-            {description || "Discover helpful tips and guides for life in Korea."}
+          <p className="text-xs text-[#7D786F] line-clamp-2 mb-2">
+            {description || "Discover helpful tips for life in Korea."}
           </p>
+          
+          {/* Footer */}
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-[#7D786F]">by {author}</span>
+            <span className="flex items-center gap-1 text-[10px] font-semibold text-[#4CAF50]">
+              Read guide
+              <FiArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </div>
         </div>
       </motion.div>
     </Link>
   );
 };
 
+/* Main Guides Section */
 const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
+  const displayGuides = guides.slice(0, 9);
+  
+  const row1 = displayGuides.slice(0, 3);
+  const row2 = [...displayGuides.slice(3, 6)].reverse();
+  const row3 = displayGuides.slice(6, 9);
+
+  // Light green color
+  const vineColor = '#81C784';
+
   return (
-    <section className="py-16">
+    <section className="py-16 bg-[#F8FAFB] overflow-hidden relative">
       <div className="container mx-auto px-4 md:px-8">
+        
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <motion.div
@@ -1465,16 +2053,23 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
           >
             <motion.span 
               variants={fadeInUp}
-              className="inline-block px-4 py-2 bg-[#FF6B6B]/10 text-[#FF6B6B] rounded-full text-sm font-semibold mb-4"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#81C784]/20 text-[#4CAF50] rounded-full text-sm font-semibold mb-4"
             >
+              <span>🌿</span>
               Learn & Grow
             </motion.span>
             <motion.h2 
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold text-[#1A1917]"
             >
-              Explore <span className="text-[#FF6B6B]">Guides</span>
+              Explore <span className="text-[#4CAF50]">Guides</span>
             </motion.h2>
+            <motion.p 
+              variants={fadeInUp}
+              className="text-[#7D786F] mt-2 max-w-md"
+            >
+              Follow the vine to discover helpful guides for life in Korea
+            </motion.p>
           </motion.div>
           
           <motion.div
@@ -1484,7 +2079,7 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
           >
             <Link 
               to="/guides"
-              className="group inline-flex items-center gap-2 px-6 py-3 bg-[#1A1917] text-white rounded-full font-medium hover:bg-[#3D3A35] transition-colors"
+              className="group inline-flex items-center gap-2 px-6 py-3 bg-[#4CAF50] text-white rounded-full font-medium hover:bg-[#43A047] transition-colors shadow-lg"
             >
               View All Guides
               <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -1492,33 +2087,215 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
           </motion.div>
         </div>
 
-        {/* Scrollable Cards */}
-        <div
-          ref={guidesRef}
-          className="flex gap-6 pb-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-        >
-          {guides.map((guide, index) => (
-            <motion.div 
-              key={guide.id} 
-              className="flex-none w-[300px] snap-start"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <GuidesCard
-                {...guide}
-                currentUserId={currentUserId}
-                onLike={() => onGuideLike(guide.id)}
-              />
-            </motion.div>
-          ))}
+        {/* Vine + Cards Container */}
+        <div className="relative">
+          
+          {/* ========== CSS VINE STRUCTURE (Desktop Only) ========== */}
+          <div className="hidden md:block absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+            
+            {/* ROW 1: Horizontal line */}
+            <div 
+              className="absolute left-0 right-12 h-2 rounded-full"
+              style={{ 
+                top: '100px', 
+                backgroundColor: vineColor 
+              }} 
+            />
+            
+            {/* RIGHT CORNER: Connects Row 1 to Row 2 */}
+            <div 
+              className="absolute w-12 h-12 border-t-[8px] border-r-[8px] rounded-tr-3xl"
+              style={{ 
+                top: '120px', 
+                right: '0',
+                borderColor: vineColor 
+              }} 
+            />
+            
+            {/* RIGHT VERTICAL: Down from Row 1 to Row 2 */}
+            <div 
+              className="absolute w-2 rounded-full"
+              style={{ 
+                top: '200px', 
+                right: '0',
+                height: '152px',
+                backgroundColor: vineColor 
+              }} 
+            />
+            
+            {/* RIGHT CORNER BOTTOM: Connects vertical to Row 2 */}
+            <div 
+              className="absolute w-15 h-12 border-b-[8px] border-r-[8px] rounded-br-3xl"
+              style={{ 
+                top: '330px', 
+                right: '0',
+                borderColor: vineColor 
+              }} 
+            />
+            
+            {/* ROW 2: Horizontal line */}
+            <div 
+              className="absolute left-12 right-12 h-2 rounded-full"
+              style={{ 
+                top: '360px', 
+                backgroundColor: vineColor 
+              }} 
+            />
+            
+            {/* LEFT CORNER TOP: Connects Row 2 to vertical */}
+            <div 
+              className="absolute w-12 rotate-90 h-12 border-b-[8px] border-l-[8px] rounded-bl-3xl"
+              style={{ 
+                top: '360px', 
+                left: '0',
+                borderColor: vineColor 
+              }} 
+            />
+            
+            {/* LEFT VERTICAL: Down from Row 2 to Row 3 */}
+            <div 
+              className="absolute w-2 rounded-full"
+              style={{ 
+                top: '360px', 
+                left: '0',
+                height: '300px',
+                backgroundColor: vineColor 
+              }} 
+            />
+            
+            {/* LEFT CORNER BOTTOM: Connects vertical to Row 3 */}
+            {/* <div 
+              className="absolute w-12 h-12 border-t-[8px] border-l-[8px] rounded-tl-3xl"
+              style={{ 
+                top: '512px', 
+                left: '0',
+                borderColor: vineColor 
+              }} 
+            /> */}
+            
+            {/* ROW 3: Horizontal line */}
+            <div 
+              className="absolute left-12 right-0 h-2 rounded-full"
+              style={{ 
+                top: '675px', 
+                backgroundColor: vineColor 
+              }} 
+            />
+            
+          </div>
+
+          {/* ==================== ROW 1 ==================== */}
+          <motion.div 
+            className="relative z-10 grid grid-cols-8 md:grid-cols-3 gap-4 md:gap-8 pb-16 md:pb-0"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            {row1.map((guide, index) => (
+              <motion.div
+                key={guide.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <GrootGuideCard
+                  {...guide}
+                  currentUserId={currentUserId}
+                  onLike={() => onGuideLike(guide.id)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Mobile Vine Connector 1 */}
+          <div className="md:hidden flex justify-end pr-8 -mt-8 mb-8">
+            <div 
+              className="w-2 h-16 rounded-full"
+              style={{ backgroundColor: vineColor }}
+            />
+          </div>
+
+          {/* ==================== ROW 2 ==================== */}
+          <motion.div 
+            className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 py-16 md:py-28"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            {row2.map((guide, index) => (
+              <motion.div
+                key={guide.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <GrootGuideCard
+                  {...guide}
+                  currentUserId={currentUserId}
+                  onLike={() => onGuideLike(guide.id)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Mobile Vine Connector 2 */}
+          <div className="md:hidden flex justify-start pl-8 -mt-8 mb-8">
+            <div 
+              className="w-2 h-16 rounded-full"
+              style={{ backgroundColor: vineColor }}
+            />
+          </div>
+
+          {/* ==================== ROW 3 ==================== */}
+          <motion.div 
+            className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 pt-16 md:pt-0"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+          >
+            {row3.map((guide, index) => (
+              <motion.div
+                key={guide.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <GrootGuideCard
+                  {...guide}
+                  currentUserId={currentUserId}
+                  onLike={() => onGuideLike(guide.id)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+
         </div>
+
+        {/* Bottom CTA */}
+        <motion.div 
+          className="text-center mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link 
+            to="/guides"
+            className="inline-flex items-center gap-2 text-[#4CAF50] hover:text-[#43A047] font-semibold transition-colors"
+          >
+            <span>🌱 Discover more guides</span>
+            <FiArrowRight className="w-4 h-4" />
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
 };
-
 
 // /* =============================================================================
 //    MARKETPLACE SECTION
@@ -3175,11 +3952,11 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <HeroSection />
       <FloatingBubblesSection guides={guides} />
+      <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
       {/* <ServicesSection features={features} /> */}
       {/* <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} /> */}
       <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} />
-      {/* <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
-      <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} /> */}
+      {/* <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} /> */}
       <LocalClassesCTA />
       <TestimonialsSection />
       <CTASection currentUserId={currentUserId} />
