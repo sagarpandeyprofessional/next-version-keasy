@@ -1520,122 +1520,508 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
 };
 
 
-/* =============================================================================
-   MARKETPLACE SECTION
-   ============================================================================= */
+// /* =============================================================================
+//    MARKETPLACE SECTION
+//    ============================================================================= */
 
-const MarketplaceCard = ({ item, userId, onToggleLike }) => {
+// const MarketplaceCard = ({ item, userId, onToggleLike }) => {
+//   const [imageError, setImageError] = useState(false);
+//   const navigate = useNavigate();
+//   const imageUrl = item?.images?.images?.[0] || "/no-image.png";
+
+//   const [user_id, setUser_id] = useState(null);
+//   const [user_favourites, setUserFavourites] = useState([]);
+//   const isLiked = user_id && user_favourites.includes(item.id);
+
+//   useEffect(() => {
+//     const fetchUser = async () => {
+//       const { data } = await supabase.auth.getUser();
+//       const uid = data?.user?.id || null;
+//       setUser_id(uid);
+//       if (uid) {
+//         const { data: favsData } = await supabase
+//           .from('profiles')
+//           .select('favourites_marketplace')
+//           .eq('user_id', uid)
+//           .single();
+//         const favourites = favsData?.favourites_marketplace;
+//         setUserFavourites(Array.isArray(favourites) ? favourites : []);
+//       }
+//     };
+//     fetchUser();
+//   }, []);
+
+//   const handleToggleLike = async () => {
+//     if (!user_id) {
+//       alert('Please sign in to like items!');
+//       return;
+//     }
+//     try {
+//       const updatedFavourites = isLiked
+//         ? user_favourites.filter((id) => id !== item.id)
+//         : [...user_favourites, item.id];
+//       setUserFavourites(updatedFavourites);
+//       await supabase.from('profiles').update({ favourites_marketplace: updatedFavourites }).eq('user_id', user_id);
+//     } catch (err) {
+//       console.error('Error updating favourites: ', err);
+//     }
+//   };
+
+//   const handleCardClick = async () => {
+//     try {
+//       await supabase.from("marketplace").update({ views: (item.views || 0) + 1 }).eq("id", item.id);
+//     } catch (err) {
+//       console.error(err);
+//     }
+//     navigate(`/marketplace/${item.id}`);
+//   };
+
+//   const conditionColors = {
+//     new: '#10B981',
+//     like_new: '#3B82F6',
+//     used: '#6B7280',
+//     refurbished: '#F59E0B',
+//     damaged: '#EF4444',
+//   };
+
+//   return (
+//     <motion.div
+//       onClick={handleCardClick}
+//       whileHover={{ y: -8 }}
+//       className="group relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer"
+//     >
+//       {/* Image */}
+//       <div className="relative h-[180px] bg-gray-50 flex items-center justify-center p-4">
+//         <img
+//           src={imageError ? "/no-image.png" : imageUrl}
+//           onError={() => setImageError(true)}
+//           alt={item.title}
+//           className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
+//         />
+        
+//         {/* Condition Badge */}
+//         <span 
+//           className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold text-white"
+//           style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
+//         >
+//           {item.condition?.replace('_', ' ').charAt(0).toUpperCase() + item.condition?.slice(1).replace('_', ' ') || 'Used'}
+//         </span>
+
+//         {/* Like Button */}
+//         <button
+//           onClick={(e) => {
+//             e.stopPropagation();
+//             handleToggleLike();
+//           }}
+//           className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+//             isLiked 
+//               ? 'bg-[#FF6B6B] text-white' 
+//               : 'bg-white/90 text-[#7D786F] hover:text-[#FF6B6B]'
+//           }`}
+//         >
+//           {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
+//         </button>
+//       </div>
+
+//       {/* Content */}
+//       <div className="p-5">
+//         <div className="flex items-center gap-1 text-xs text-[#7D786F] mb-2">
+//           <FiMapPin className="w-3 h-3" />
+//           <span>{item.location || 'Korea'}</span>
+//           <span className="mx-2">•</span>
+//           <FiEye className="w-3 h-3" />
+//           <span>{item.views || 0}</span>
+//         </div>
+//         <h3 className="text-base font-bold text-[#1A1917] line-clamp-1 mb-2 group-hover:text-[#4ECDC4] transition-colors">
+//           {item.title}
+//         </h3>
+//         <p className="text-xl font-bold text-[#FF6B6B]">
+//           {formatCurrency(item.price)}
+//         </p>
+//       </div>
+//     </motion.div>
+//   );
+// };
+
+// const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef }) => {
+//   return (
+//     <section className="py-16">
+//       <div className="container mx-auto px-4 md:px-8">
+//         {/* Header */}
+//         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+//           <motion.div
+//             initial="hidden"
+//             whileInView="visible"
+//             viewport={{ once: true }}
+//             variants={staggerContainer}
+//           >
+//             <motion.span 
+//               variants={fadeInUp}
+//               className="inline-block px-4 py-2 bg-[#4ECDC4]/10 text-[#4ECDC4] rounded-full text-sm font-semibold mb-4"
+//             >
+//               Buy & Sell
+//             </motion.span>
+//             <motion.h2 
+//               variants={fadeInUp}
+//               className="text-3xl md:text-4xl font-bold text-[#1A1917]"
+//             >
+//               Explore <span className="text-[#4ECDC4]">Marketplace</span>
+//             </motion.h2>
+//           </motion.div>
+          
+//           <motion.div
+//             initial={{ opacity: 0, x: 20 }}
+//             whileInView={{ opacity: 1, x: 0 }}
+//             viewport={{ once: true }}
+//           >
+//             <Link 
+//               to="/marketplace"
+//               className="group inline-flex items-center gap-2 px-6 py-3 bg-[#4ECDC4] text-white rounded-full font-medium hover:bg-[#3DBDB5] transition-colors"
+//             >
+//               Browse All Items
+//               <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+//             </Link>
+//           </motion.div>
+//         </div>
+
+//         {/* Scrollable Cards */}
+//         <div
+//           ref={marketplaceRef}
+//           className="flex gap-6 pb-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+//         >
+//           {items.map((item, index) => (
+//             <motion.div 
+//               key={item.id} 
+//               className="flex-none w-[280px] snap-start"
+//               initial={{ opacity: 0, y: 30 }}
+//               whileInView={{ opacity: 1, y: 0 }}
+//               viewport={{ once: true }}
+//               transition={{ delay: index * 0.1 }}
+//             >
+//               <MarketplaceCard
+//                 item={item}
+//                 userId={currentUserId}
+//                 onToggleLike={onToggleLike}
+//               />
+//             </motion.div>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
+
+const conditionColors = {
+  new: '#10B981',
+  like_new: '#3B82F6',
+  used: '#6B7280',
+  refurbished: '#F59E0B',
+  damaged: '#EF4444',
+};
+
+const formatCondition = (condition) => {
+  if (!condition) return 'Used';
+  return condition
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
+/* Featured Large Card - Left Side */
+const FeaturedMarketplaceCard = ({ item }) => {
   const [imageError, setImageError] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
-  const imageUrl = item?.images?.images?.[0] || "/no-image.png";
 
-  const [user_id, setUser_id] = useState(null);
-  const [user_favourites, setUserFavourites] = useState([]);
-  const isLiked = user_id && user_favourites.includes(item.id);
+  const imageUrl = item?.images?.images?.[0] || '/no-image.png';
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserAndFavorites = async () => {
       const { data } = await supabase.auth.getUser();
       const uid = data?.user?.id || null;
-      setUser_id(uid);
+      setUserId(uid);
+
       if (uid) {
-        const { data: favsData } = await supabase
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('favourites_marketplace')
           .eq('user_id', uid)
           .single();
-        const favourites = favsData?.favourites_marketplace;
-        setUserFavourites(Array.isArray(favourites) ? favourites : []);
+
+        const favorites = profileData?.favourites_marketplace || [];
+        setIsLiked(Array.isArray(favorites) && favorites.includes(item.id));
       }
     };
-    fetchUser();
-  }, []);
 
-  const handleToggleLike = async () => {
-    if (!user_id) {
+    fetchUserAndFavorites();
+  }, [item.id]);
+
+  const handleToggleLike = async (e) => {
+    e.stopPropagation();
+
+    if (!userId) {
       alert('Please sign in to like items!');
       return;
     }
+
     try {
-      const updatedFavourites = isLiked
-        ? user_favourites.filter((id) => id !== item.id)
-        : [...user_favourites, item.id];
-      setUserFavourites(updatedFavourites);
-      await supabase.from('profiles').update({ favourites_marketplace: updatedFavourites }).eq('user_id', user_id);
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('favourites_marketplace')
+        .eq('user_id', userId)
+        .single();
+
+      const currentFavorites = profileData?.favourites_marketplace || [];
+      const updatedFavorites = isLiked
+        ? currentFavorites.filter((id) => id !== item.id)
+        : [...currentFavorites, item.id];
+
+      await supabase
+        .from('profiles')
+        .update({ favourites_marketplace: updatedFavorites })
+        .eq('user_id', userId);
+
+      setIsLiked(!isLiked);
     } catch (err) {
-      console.error('Error updating favourites: ', err);
+      console.error('Error updating favorites:', err);
     }
   };
 
   const handleCardClick = async () => {
     try {
-      await supabase.from("marketplace").update({ views: (item.views || 0) + 1 }).eq("id", item.id);
+      await supabase
+        .from('marketplace')
+        .update({ views: (item.views || 0) + 1 })
+        .eq('id', item.id);
     } catch (err) {
-      console.error(err);
+      console.error('Error updating views:', err);
     }
-    navigate(`/marketplace/${item.id}`);
-  };
 
-  const conditionColors = {
-    new: '#10B981',
-    like_new: '#3B82F6',
-    used: '#6B7280',
-    refurbished: '#F59E0B',
-    damaged: '#EF4444',
+    navigate(`/marketplace/${item.id}`);
   };
 
   return (
     <motion.div
       onClick={handleCardClick}
-      whileHover={{ y: -8 }}
-      className="group relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer"
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.3 }}
+      className="relative h-full min-h-[350px] lg:min-h-full rounded-3xl overflow-hidden cursor-pointer group"
     >
-      {/* Image */}
-      <div className="relative h-[180px] bg-gray-50 flex items-center justify-center p-4">
+      {/* Background Image */}
+      <div className="absolute inset-0">
         <img
-          src={imageError ? "/no-image.png" : imageUrl}
+          src={imageError ? '/no-image.png' : imageUrl}
           onError={() => setImageError(true)}
           alt={item.title}
-          className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
-        
-        {/* Condition Badge */}
-        <span 
-          className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold text-white"
+        {/* we can change the colour of the gradient here for the featured product featured background colour change */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-white/5 to-transparent" />
+      </div>
+
+      {/* Top Badges & Actions */}
+      <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
+        <span
+          className="px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-lg"
           style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
         >
-          {item.condition?.replace('_', ' ').charAt(0).toUpperCase() + item.condition?.slice(1).replace('_', ' ') || 'Used'}
+          {formatCondition(item.condition)}
         </span>
 
-        {/* Like Button */}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleToggleLike();
-          }}
-          className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-            isLiked 
-              ? 'bg-[#FF6B6B] text-white' 
-              : 'bg-white/90 text-[#7D786F] hover:text-[#FF6B6B]'
+          onClick={handleToggleLike}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+            isLiked
+              ? 'bg-[#FF6B6B] text-white'
+              : 'bg-white/90 text-gray-600 hover:text-[#FF6B6B]'
           }`}
         >
           {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
         </button>
       </div>
 
-      {/* Content */}
-      <div className="p-5">
-        <div className="flex items-center gap-1 text-xs text-[#7D786F] mb-2">
-          <FiMapPin className="w-3 h-3" />
-          <span>{item.location || 'Korea'}</span>
-          <span className="mx-2">•</span>
-          <FiEye className="w-3 h-3" />
-          <span>{item.views || 0}</span>
+      {/* Featured Badge */}
+      {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+        <span className="px-3 py-1.5 bg-[#FFE66D] text-[#1A1917] rounded-full text-xs font-bold shadow-lg">
+          ⭐ Featured
+        </span>
+      </div> */}
+
+      {/* Bottom Content */}
+      <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+        <div className="flex items-center gap-3 text-white/80 text-xs mb-2">
+          <span className="flex items-center gap-1">
+            <FiMapPin className="w-3 h-3" />
+            {item.location || 'Korea'}
+          </span>
+          <span className="flex items-center gap-1">
+            <FiEye className="w-3 h-3" />
+            {item.views || 0} views
+          </span>
         </div>
-        <h3 className="text-base font-bold text-[#1A1917] line-clamp-1 mb-2 group-hover:text-[#4ECDC4] transition-colors">
+
+        <h3 className="text-xl lg:text-2xl font-bold text-white mb-2 line-clamp-2">
           {item.title}
         </h3>
-        <p className="text-xl font-bold text-[#FF6B6B]">
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p className="text-2xl lg:text-3xl font-bold text-[#4ECDC4]">
+            {formatCurrency(item.price)}
+          </p>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/marketplace/${item.id}`);
+            }}
+            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-[#1A1917] rounded-full font-semibold hover:bg-[#4ECDC4] hover:text-white transition-all duration-300 text-sm group/btn"
+          >
+            View Details
+            <FiArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+/* Small Card - For the 3x2 Grid */
+const SmallMarketplaceCard = ({ item, index }) => {
+  const [imageError, setImageError] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
+
+  const imageUrl = item?.images?.images?.[0] || '/no-image.png';
+
+  useEffect(() => {
+    const fetchUserAndFavorites = async () => {
+      const { data } = await supabase.auth.getUser();
+      const uid = data?.user?.id || null;
+      setUserId(uid);
+
+      if (uid) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('favourites_marketplace')
+          .eq('user_id', uid)
+          .single();
+
+        const favorites = profileData?.favourites_marketplace || [];
+        setIsLiked(Array.isArray(favorites) && favorites.includes(item.id));
+      }
+    };
+
+    fetchUserAndFavorites();
+  }, [item.id]);
+
+  const handleToggleLike = async (e) => {
+    e.stopPropagation();
+
+    if (!userId) {
+      alert('Please sign in to like items!');
+      return;
+    }
+
+    try {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('favourites_marketplace')
+        .eq('user_id', userId)
+        .single();
+
+      const currentFavorites = profileData?.favourites_marketplace || [];
+      const updatedFavorites = isLiked
+        ? currentFavorites.filter((id) => id !== item.id)
+        : [...currentFavorites, item.id];
+
+      await supabase
+        .from('profiles')
+        .update({ favourites_marketplace: updatedFavorites })
+        .eq('user_id', userId);
+
+      setIsLiked(!isLiked);
+    } catch (err) {
+      console.error('Error updating favorites:', err);
+    }
+  };
+
+  const handleCardClick = async () => {
+    try {
+      await supabase
+        .from('marketplace')
+        .update({ views: (item.views || 0) + 1 })
+        .eq('id', item.id);
+    } catch (err) {
+      console.error('Error updating views:', err);
+    }
+
+    navigate(`/marketplace/${item.id}`);
+  };
+
+  return (
+    <motion.div
+      onClick={handleCardClick}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.08 }}
+      whileHover={{ y: -5 }}
+      className="relative rounded-2xl overflow-hidden cursor-pointer group bg-white shadow-md hover:shadow-xl transition-all duration-300"
+    >
+      {/* Image */}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <img
+          src={imageError ? '/no-image.png' : imageUrl}
+          onError={() => setImageError(true)}
+          alt={item.title}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        />
+
+        <span
+          className="absolute top-2 left-2 px-2 py-1 rounded-full text-[10px] font-semibold text-white"
+          style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
+        >
+          {formatCondition(item.condition)}
+        </span>
+
+        <button
+          onClick={handleToggleLike}
+          className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
+            isLiked
+              ? 'bg-[#FF6B6B] text-white'
+              : 'bg-white/90 text-gray-600 hover:text-[#FF6B6B]'
+          }`}
+        >
+          {isLiked ? <FaHeart className="w-3 h-3" /> : <FiHeart className="w-3 h-3" />}
+        </button>
+
+        {/* Hover Overlay */}
+        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <span className="text-white font-semibold flex items-center gap-2 text-sm">
+            View Details <FiArrowRight />
+          </span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-3">
+        <div className="flex items-center gap-2 text-[10px] text-gray-500 mb-1">
+          <span className="flex items-center gap-1">
+            <FiMapPin className="w-2.5 h-2.5" />
+            {item.location || 'Korea'}
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-1">
+            <FiEye className="w-2.5 h-2.5" />
+            {item.views || 0}
+          </span>
+        </div>
+
+        <h4 className="font-semibold text-[#1A1917] text-xs line-clamp-1 mb-1 group-hover:text-[#4ECDC4] transition-colors">
+          {item.title}
+        </h4>
+
+        <p className="text-sm font-bold text-[#FF6B6B]">
           {formatCurrency(item.price)}
         </p>
       </div>
@@ -1643,74 +2029,151 @@ const MarketplaceCard = ({ item, userId, onToggleLike }) => {
   );
 };
 
+/* Main Marketplace Section we can change the marketplace products from here*/
 const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef }) => {
+  const featuredItem = items[6];
+  const gridItems = items.slice(9-15);
+  const totalItems = items.length;
+
+  if (!items || items.length === 0) {
+    return null;
+  }
+// background for the marketplace section can be changed here
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4 md:px-8">
+    <section className="py-12 md:py-16 lg:py-20 bg-[#F8FAFB]">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
           >
-            <motion.span 
+            <motion.span
               variants={fadeInUp}
-              className="inline-block px-4 py-2 bg-[#4ECDC4]/10 text-[#4ECDC4] rounded-full text-sm font-semibold mb-4"
+              className="inline-block px-4 py-2 bg-[#4ECDC4]/10 text-[#4ECDC4] rounded-full text-sm font-semibold mb-3"
             >
               Buy & Sell
             </motion.span>
-            <motion.h2 
+            <motion.h2
               variants={fadeInUp}
-              className="text-3xl md:text-4xl font-bold text-[#1A1917]"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A1917]"
             >
               Explore <span className="text-[#4ECDC4]">Marketplace</span>
             </motion.h2>
+            <motion.p
+              variants={fadeInUp}
+              className="text-gray-600 mt-2 max-w-md"
+            >
+              Discover amazing deals from our expat community.
+            </motion.p>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <Link 
+            <Link
               to="/marketplace"
-              className="group inline-flex items-center gap-2 px-6 py-3 bg-[#4ECDC4] text-white rounded-full font-medium hover:bg-[#3DBDB5] transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#4ECDC4] text-white rounded-full font-semibold hover:bg-[#3DBDB5] transition-all duration-300 shadow-lg hover:shadow-xl group"
             >
-              Browse All Items
+              View All ({totalItems}+)
               <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
         </div>
 
-        {/* Scrollable Cards */}
-        <div
-          ref={marketplaceRef}
-          className="flex gap-6 pb-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-        >
-          {items.map((item, index) => (
-            <motion.div 
-              key={item.id} 
-              className="flex-none w-[280px] snap-start"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+        {/* Main Grid: 1 Big Left + 3x2 Grid Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-5">
+          {/* Featured Card - Left (2 columns) */}
+          {featuredItem && (
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ duration: 0.5 }}
+              className="lg:col-span-2"
             >
-              <MarketplaceCard
-                item={item}
-                userId={currentUserId}
-                onToggleLike={onToggleLike}
-              />
+              <FeaturedMarketplaceCard item={featuredItem} />
             </motion.div>
-          ))}
+          )}
+
+          {/* Small Cards - Right (3 columns, 2 rows) */}
+          <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 content-start">
+            {gridItems.map((item, index) => (
+              <SmallMarketplaceCard key={item.id} item={item} index={index} />
+            ))}
+
+            {/* View More Card if less than 6 items */}
+            {gridItems.length < 6 && (
+              <Link
+                to="/marketplace"
+                className="flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#4ECDC4]/20 to-[#FF6B6B]/20 hover:from-[#4ECDC4]/30 hover:to-[#FF6B6B]/30 transition-all duration-300 aspect-[4/3] group"
+              >
+                <div className="text-center">
+                  <div className="w-10 h-10 bg-[#4ECDC4] rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                    <FiArrowRight className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="font-semibold text-[#1A1917] text-sm">View More</span>
+                </div>
+              </Link>
+            )}
+          </div>
         </div>
+
+        {/* Bottom Info Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          // you can change the size of the section between the explore marketplace, ratings, listings and the listed products from here
+          className="mt-8 md:mt-8 p-4 md:p-6 bg-white rounded-2xl shadow-lg border border-gray-100"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-[#4ECDC4]/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <RiShoppingBag3Line className="w-6 h-6 text-[#4ECDC4]" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-[#1A1917]">Marketplace</h3>
+                <p className="text-gray-600 text-xs line-clamp-1">
+                  You can Buy and sell items within the foreign community. Our goal is to make a marketplace where there is no language barrier!
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="text-center">
+                <div className="flex items-center gap-1">
+                  <span className="text-lg font-bold text-[#1A1917]">4.5</span>
+                  <Star className="w-4 h-4 text-[#FFE66D] fill-[#FFE66D]" />
+                </div>
+                <span className="text-[10px] text-gray-500">Rating</span>
+              </div>
+              <div className="w-px h-8 bg-gray-200" />
+              <div className="text-center">
+                <span className="text-lg font-bold text-[#1A1917]">100+</span>
+                {/* <span className="text-lg font-bold text-[#1A1917]">{totalItems}+</span> */}
+                <p className="text-[10px] text-gray-500">Listings</p>
+              </div>
+              <div className="w-10px h-8 bg-gray-200 hidden sm:block" />
+              <Link
+                to="/marketplace"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#1A1917] text-white rounded-full font-medium hover:bg-[#FF6B6B] transition-colors text-sm"
+              >
+                Explore Marketplace
+                <FiArrowRight />
+              </Link>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 };
-
 
 /* =============================================================================
    LOCAL CLASSES CTA - Bold, Engaging Banner
@@ -2712,9 +3175,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <HeroSection />
-       <FloatingBubblesSection guides={guides} />
-      <ServicesSection features={features} />
-           {/* <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
+      <FloatingBubblesSection guides={guides} />
+      {/* <ServicesSection features={features} /> */}
+      {/* <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} /> */}
+      <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} />
+      {/* <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
       <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} /> */}
       <LocalClassesCTA />
       <TestimonialsSection />
