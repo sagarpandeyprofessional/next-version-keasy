@@ -18,33 +18,7 @@ const LeftSidebar = () => {
 
   return (
     <>
-      {/* Desktop Sidebar - Centered vertically */}
-      <aside className="hidden lg:flex fixed left-0 top-1/2 -translate-y-1/2 group w-16 hover:w-48 bg-white border-r border-gray-200 shadow-sm z-40 rounded-r-2xl transition-all duration-300 overflow-hidden">
-  <nav className="flex flex-col items-start gap-3 py-6 w-full px-2">
-    {navItems.map((item) => {
-      const isActive = location.pathname === item.path;
-      const Icon = item.icon;
-
-      return (
-        <Link
-          key={item.path}
-          to={item.path}
-          className={`flex items-center gap-3 w-full px-2 py-2 rounded-xl transition-all ${
-            isActive
-              ? "bg-blue-600 text-white shadow-md"
-              : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
-          }`}
-          title={item.name}
-        >
-          <Icon className="w-5 h-5 shrink-0" />
-          <span className="text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            {item.name}
-          </span>
-        </Link>
-      );
-    })}
-  </nav>
-</aside>
+      {/* Desktop Sidebar - HIDDEN (removed as per user request) */}
 
 
 

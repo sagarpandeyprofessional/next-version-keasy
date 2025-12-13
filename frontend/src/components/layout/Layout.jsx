@@ -117,13 +117,15 @@ const Layout = ({ children }) => {
 }
 
 
+  const isHome = location.pathname === '/';
+
   return (
   <div className="flex min-h-screen flex-col">
       <Navbar />
       <Sidebar />
 
-      <div className="relative flex-grow lg:flex lg:justify-center">
-  <div className={`w-full md:w-4/5 sm:w-full mx-auto px-1  ${showUpcoming ? 'filter blur-sm pointer-events-none select-none' : ''}`}>
+      <div className={`relative flex-grow ${isHome ? '' : 'lg:flex lg:justify-center'}`}>
+  <div className={`w-full ${!isHome ? 'md:w-4/5' : ''} mx-auto ${isHome ? 'px-0' : 'px-1'} pb-20 lg:pb-0 ${showUpcoming ? 'filter blur-sm pointer-events-none select-none' : ''}`}>
     {children}
   </div>
   {showUpcoming && <ComingSoonOverlay />}

@@ -239,7 +239,7 @@ const HeroSection = () => {
       </button>
 
       {/* Slides Container */}
-      <div className="container mx-auto px-4 md:px-8  bg-[#F8FAFB] relative z-10">
+      <div className="px-[3%] bg-[#F8FAFB] relative z-10">
         <AnimatePresence mode="wait">
           {/* SLIDE 1: Welcome Hero */}
           {currentSlide === 0 && (
@@ -515,7 +515,7 @@ const SlideProfessionals = ({ professional }) => {
         {/* Main Headline */}
         <motion.h1 
           variants={fadeInUp}
-          className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A1917] leading-[1.1] mb-6"
+          className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1A1917] leading-[1.1] mb-6"
         >
           Connect with
           <br />
@@ -633,55 +633,12 @@ const SlideProfessionals = ({ professional }) => {
 const SlideGuide = ({ guide, formatViews }) => {
   return (
     <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center min-h-[500px]">
-      {/* Left Content - Image First on this slide */}
-      <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-        className="order-1 relative"
-      >
-        <div className="relative">
-          <div className="absolute -top-6 -left-6 w-full h-full bg-[#FFE66D] rounded-3xl" />
-          <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#FF6B6B] rounded-2xl" />
-          
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-            <img
-              src={guide?.img_url || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop'}
-              alt={guide?.name || 'Popular Guide'}
-              className="w-full h-[400px] md:h-[500px] object-cover"
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop';
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1917]/60 via-transparent to-transparent" />
-          </div>
-
-          {/* Views Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8 }}
-            className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-lg"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-[#FF6B6B]/10 rounded-xl flex items-center justify-center">
-                <FiEye className="w-6 h-6 text-[#FF6B6B]" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-[#1A1917]">{formatViews(guide?.view)}</p>
-                <p className="text-xs text-[#7D786F]">Views</p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Right Content */}
+      {/* Left Content */}
       <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="order-2"
+        className="order-2 lg:order-1"
       >
         {/* Badge */}
         <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF6B6B]/10 rounded-full mb-6">
@@ -692,7 +649,7 @@ const SlideGuide = ({ guide, formatViews }) => {
         {/* Main Headline */}
         <motion.h1 
           variants={fadeInUp}
-          className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A1917] leading-[1.1] mb-6"
+          className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1A1917] leading-[1.1] mb-6"
         >
           {guide?.name || 'Essential Guide for Expats'}
         </motion.h1>
@@ -700,22 +657,10 @@ const SlideGuide = ({ guide, formatViews }) => {
         {/* Description */}
         <motion.p 
           variants={fadeInUp}
-          className="text-lg md:text-xl text-[#5C5850] max-w-lg mb-8 leading-relaxed line-clamp-4"
+          className="text-lg md:text-xl text-[#5C5850] max-w-lg mb-8 leading-relaxed"
         >
           {guide?.description || 'Discover everything you need to know about living in Korea. Our most-read guide by the community.'}
         </motion.p>
-
-        {/* Stats Row */}
-        <motion.div variants={fadeInUp} className="flex items-center gap-6 mb-8">
-          <div className="flex items-center gap-2">
-            <FiEye className="w-5 h-5 text-[#7D786F]" />
-            <span className="text-[#5C5850] font-medium">{formatViews(guide?.view)} views</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <FiHeart className="w-5 h-5 text-[#FF6B6B]" />
-            <span className="text-[#5C5850] font-medium">Community favorite</span>
-          </div>
-        </motion.div>
 
         {/* CTA Buttons */}
         <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
@@ -739,6 +684,61 @@ const SlideGuide = ({ guide, formatViews }) => {
             </motion.button>
           </Link>
         </motion.div>
+
+        {/* Stats Row */}
+        <motion.div variants={fadeInUp} className="flex items-center gap-6 mt-10">
+          <div className="flex items-center gap-2">
+            <FiEye className="w-5 h-5 text-[#7D786F]" />
+            <span className="text-[#5C5850] font-medium">{formatViews(guide?.view)} views</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <FiHeart className="w-5 h-5 text-[#FF6B6B]" />
+            <span className="text-[#5C5850] font-medium">Community favorite</span>
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Right Content - Guide Image */}
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+        className="order-1 lg:order-2 relative"
+      >
+        <div className="relative">
+          <div className="absolute -top-6 -right-6 w-full h-full bg-[#FFE66D] rounded-3xl" />
+          <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-[#FF6B6B] rounded-2xl" />
+          
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+            <img
+              src={guide?.img_url || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop'}
+              alt={guide?.name || 'Popular Guide'}
+              className="w-full h-[400px] md:h-[500px] object-cover"
+              onError={(e) => {
+                e.target.src = 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop';
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1917]/60 via-transparent to-transparent" />
+          </div>
+
+          {/* Views Badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1 }}
+            className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-lg"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-[#FF6B6B]/10 rounded-xl flex items-center justify-center">
+                <FiEye className="w-6 h-6 text-[#FF6B6B]" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-[#1A1917]">{formatViews(guide?.view)}</p>
+                <p className="text-xs text-[#7D786F]">Views</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </motion.div>
     </div>
   );
@@ -768,7 +768,7 @@ const SlideCommunity = ({ communityCount }) => {
         {/* Main Headline */}
         <motion.h1 
           variants={fadeInUp}
-          className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A1917] leading-[1.1] mb-6"
+          className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1A1917] leading-[1.1] mb-6"
         >
           Join {communityCount || '50'}+
           <br />
@@ -910,7 +910,7 @@ const SlideAdvertisement = () => {
         {/* Main Headline */}
         <motion.h1 
           variants={fadeInUp}
-          className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A1917] leading-[1.1] mb-6"
+          className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1A1917] leading-[1.1] mb-6"
         >
           Learn Korean
           <br />
@@ -1106,7 +1106,7 @@ const ServicesSection = ({ features }) => {
 
   return (
     <section className="py-16 bg-[#FAFAF8]">
-      <div className="container mx-auto px-4 md:px-8">
+      <div className="px-[3%]">
         {/* Section Header */}
         <motion.div
           initial="hidden"
@@ -1239,8 +1239,8 @@ const FloatingBubblesSection = () => {
   // Loading skeleton
   if (isLoading) {
     return (
-      <section className="py-12 overflow-hidden bg-white">
-        <div className="container mx-auto px-4 md:px-8 lg:px-12">
+    <section className="py-12 overflow-hidden bg-white">
+      <div className="px-4 md:px-8 lg:px-12">
           <div className="text-center mb-10">
             <span className="text-sm font-semibold text-[#7D789F] uppercase tracking-[0.2em]">
               Popular Guide Topics
@@ -1272,7 +1272,7 @@ const FloatingBubblesSection = () => {
 
   return (
     <section className="py-12 overflow-hidden bg-[#F8FAFB]">
-      <div className="container mx-auto px-4 md:px-8 lg:px-12">
+      <div className="container mx-auto px-[3%]">
         {/* Section Label */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -2041,7 +2041,7 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
 
   return (
     <section className="py-16 bg-[#F8FAFB] overflow-hidden relative">
-      <div className="container mx-auto px-4 md:px-8">
+      <div className="container mx-auto px-[3%]">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -2817,7 +2817,7 @@ const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef
 // background for the marketplace section can be changed here
   return (
     <section className="py-12 md:py-16 lg:py-20 bg-[#F8FAFB]">
-      <div className="container mx-auto px-4 md:px-6 lg:px-8">
+      <div className="container mx-auto px-[3%]">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12">
           <motion.div
@@ -2958,7 +2958,7 @@ const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef
 const LocalClassesCTA = () => {
   return (
     <section className="py-16 bg-[#F8FAFB]">
-      <div className="container mx-auto px-4 md:px-8 ">
+      <div className="container mx-auto px-[3%]">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -3246,7 +3246,7 @@ const TestimonialsSection = () => {
 
   return (
     <section className="py-16 md:py-20 bg-[#F8FAFB] overflow-hidden">
-      <div className="container mx-auto px-4 md:px-8">
+      <div className="container mx-auto px-[3%]">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
           <motion.h2 
@@ -3318,7 +3318,7 @@ const TestimonialsSection = () => {
       </div>
 
       {/* View All Link */}
-      <div className="container mx-auto px-4 md:px-8">
+      <div className="container mx-auto px-[3%]">
         <div className="text-center mt-8">
           <motion.div
             initial={{ opacity: 0 }}
@@ -3350,7 +3350,7 @@ const TestimonialsSection = () => {
 const CTASection = ({ currentUserId }) => {
   return (
     <section className="py-16 bg-[#F8FAFB]">
-      <div className="container mx-auto px-4 md:px-8 bg-[#F8FAFB]">
+      <div className="container mx-auto px-[3%] bg-[#F8FAFB]">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -3428,7 +3428,7 @@ const PartnershipsSection = () => {
 
   return (
     <section className="py-8 md:py-10 bg-[#F8FAFB] border-t border-[#E8E6E1] overflow-hidden">
-      <div className="container mx-auto px-4 md:px-8">
+      <div className="container mx-auto px-[3%]">
         {/* Horizontal Layout: Label on Left, Scrolling Partners on Right */}
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
           
@@ -3544,7 +3544,7 @@ const FeedbackSection = () => {
 
   return (
     <section className="py-16">
-      <div className="container mx-auto px-4 md:px-8 max-w-2xl">
+      <div className="container mx-auto px-[3%] max-w-2xl">
         <motion.div
           initial="hidden"
           whileInView="visible"

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FiSearch, FiX, FiUser } from "react-icons/fi";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FiSearch, FiX, FiUser, FiMenu, FiHome, FiShoppingBag, FiCalendar, FiUsers, FiBookOpen } from "react-icons/fi";
+import { UserRoundCheck } from 'lucide-react';
 import { useAuth } from "../../context/AuthContext";
-import { supabase } from "../../api/supabase-client"; // Adjust the import path as needed
+import { supabase } from "../../api/supabase-client";
 
 const SearchModal = ({ isOpen, onClose, searchQuery, setSearchQuery }) => {
   const [results, setResults] = useState([]);
@@ -242,9 +243,11 @@ const SearchModal = ({ isOpen, onClose, searchQuery, setSearchQuery }) => {
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { profile, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleUserClick = () => {
     if (user) {
@@ -254,50 +257,173 @@ const Navbar = () => {
     }
   };
 
+  // Navigation items
+  const navItems = [
+    { name: "Home", path: "/" },
+    { name: "Marketplace", path: "/marketplace" },
+    { name: "Events", path: "/events" },
+    { name: "Community", path: "/community" },
+    { name: "Guides", path: "/guides" },
+    { name: "Connect", path: "/connect" },
+    { name: "About", path: "/about" },
+  ];
+
+  // Check if current path matches nav item
+  const isActive = (path) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Navigation items with icons
+  const navItemsWithIcons = [
+    { name: "Home", path: "/", icon: FiHome },
+    { name: "Marketplace", path: "/marketplace", icon: FiShoppingBag },
+    { name: "Events", path: "/events", icon: FiCalendar },
+    { name: "Community", path: "/community", icon: FiUsers },
+    { name: "Guides", path: "/guides", icon: FiBookOpen },
+    { name: "Connect", path: "/connect", icon: UserRoundCheck },
+    { name: "About", path: "/about", icon: FiUser },
+  ];
+
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white shadow-sm dark:bg-white">
-        <div className="container mx-auto px-4 lg:pl-24">
-          <div className="flex justify-between items-center h-16 gap-4">
+      {/* Desktop Top Navbar */}
+      <nav className="hidden lg:block sticky top-0 z-50 bg-white shadow-sm">
+        <div className="container mx-auto px-[3%]">
+          <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/" className="flex flex-shrink-0 lg:-ml-18">
-              <div className="text-2xl font-bold text-blue-600">
+            <Link to="/" className="flex-shrink-0">
+              <div className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
                 keasy
               </div>
             </Link>
 
-            {/* Search + User */}
+            {/* Desktop Navigation */}
+            <div className="flex items-center space-x-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActive(item.path)
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+
+            {/* Right Side: Search + User */}
             <div className="flex items-center gap-2">
+              {/* Search Button */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="p-2 rounded-lg transition-colors"
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Search"
               >
-                <FiSearch className="h-5 w-5 text-blue-600" />
+                <FiSearch className="h-5 w-5 text-gray-700" />
               </button>
 
-              {/* User */}
-<button
-  onClick={handleUserClick}
-  className="flex flex-col items-center justify-center h-12 w-12 rounded-full text-blue-600 hover:bg-blue-50 transition-all duration-200"
->
-  {user && profile?.pfp_url ? (
-    <img
-      src={profile.pfp_url}
-      alt={profile.username}
-      className="h-10 w-10 rounded-full object-cover border border-blue-200"
-    />
-  ) : (
-    <>
-      <FiUser className="h-6 w-6 mb-0.5" />
-      {/* <span className="text-[10px] font-medium leading-tight text-gray-600">
-        Sign up
-      </span> */}
-    </>
-  )}
-</button>
-
+              {/* User Button */}
+              <button
+                onClick={handleUserClick}
+                className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-gray-100 transition-all duration-200"
+                aria-label="User profile"
+              >
+                {user && profile?.pfp_url ? (
+                  <img
+                    src={profile.pfp_url}
+                    alt={profile.username}
+                    className="h-9 w-9 rounded-full object-cover border-2 border-blue-200"
+                  />
+                ) : (
+                  <FiUser className="h-5 w-5 text-gray-700" />
+                )}
+              </button>
             </div>
           </div>
+        </div>
+      </nav>
+
+      {/* Mobile Top Bar - Logo + Search Only */}
+      <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
+        <div className="container mx-auto px-[3%]">
+          <div className="flex justify-between items-center h-14">
+            {/* Logo */}
+            <Link to="/" className="flex-shrink-0">
+              <div className="text-xl font-bold text-blue-600">
+                keasy
+              </div>
+            </Link>
+
+            {/* Search Button */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Search"
+            >
+              <FiSearch className="h-5 w-5 text-gray-700" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Navigation with Icons */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div className="flex items-center justify-around h-16 px-2">
+          {navItemsWithIcons.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-xl transition-all ${
+                  active
+                    ? "text-blue-600"
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span
+                  className={`text-[10px] font-medium ${
+                    active ? "text-blue-600" : "text-gray-500"
+                  }`}
+                >
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })}
+          
+          {/* User Icon in Mobile Bottom Nav */}
+          <button
+            onClick={handleUserClick}
+            className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-xl transition-all text-gray-600 hover:text-blue-600"
+          >
+            {user && profile?.pfp_url ? (
+              <img
+                src={profile.pfp_url}
+                alt={profile.username}
+                className="h-6 w-6 rounded-full object-cover border-2 border-blue-200"
+              />
+            ) : (
+              <FiUser className="w-5 h-5" />
+            )}
+            <span className="text-[10px] font-medium text-gray-500">
+              {user ? "Profile" : "Sign In"}
+            </span>
+          </button>
         </div>
       </nav>
 
