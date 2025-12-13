@@ -223,7 +223,7 @@ const HeroSection = () => {
       </button>
 
       {/* Slides Container - FIXED: Added fixed height for both mobile and desktop to prevent layout shifts */}
-      <div className="px-[4%] bg-[#F8FAFB] relative z-10 h-[850px] flex items-center md:h-[650px]">
+      <div className="px-[4%] bg-[#F8FAFB] relative z-10 h-[850px] flex items-center md:h-[575px]">
         <div className="w-full">
           <AnimatePresence mode="wait">
             {/* SLIDE 1: Welcome Hero */}
@@ -2444,9 +2444,9 @@ const TestimonialsSection = () => {
       quote: "Keasy brought many new foreign customers to my store. It’s a great platform for connecting local businesses with the foreign community."
     },
     // {
-    //   name: "Michael",
+    //   name: "Tomato Photo Studio, Korea",
     //   image: "/testimonials/AB.SVG",
-    //   quote: "I found the perfect match. They understood my background and challenges completely."
+    //   quote: "Thanks to KEasy team, I have increased my costumer base and I get to help many foreigners."
     // },
     // {
     //   name: "Jessica",
