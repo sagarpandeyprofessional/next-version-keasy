@@ -222,8 +222,8 @@ const HeroSection = () => {
         <FiArrowRight className="w-5 h-5 md:w-6 md:h-6 text-[#3D3A35] group-hover:text-[#FF6B6B] transition-colors" />
       </button>
 
-      {/* Slides Container - FIXED: Added fixed height for desktop to prevent layout shifts */}
-      <div className="px-[3%] bg-[#F8FAFB] relative z-10 md:h-[650px] md:flex md:items-center">
+      {/* Slides Container - FIXED: Added fixed height for both mobile and desktop to prevent layout shifts */}
+      <div className="px-[4%] bg-[#F8FAFB] relative z-10 h-[850px] flex items-center md:h-[650px]">
         <div className="w-full">
           <AnimatePresence mode="wait">
             {/* SLIDE 1: Welcome Hero */}
@@ -1007,140 +1007,24 @@ const SlideAdvertisement = () => {
 
 
 /* =============================================================================
-   SERVICES SECTION - Clean, Iconographic, Interactive
-   ============================================================================= */
-
-const ServiceCard = ({ title, description, icon: Icon, href, color, delay = 0 }) => {
-  return (
-    <Link to={href}>
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        variants={fadeInUp}
-        transition={{ duration: 0.5, delay }}
-        whileHover={{ y: -8 }}
-        className="group relative bg-white rounded-3xl p-8 border border-[#E8E6E1] hover:border-transparent hover:shadow-2xl transition-all duration-500 h-full"
-      >
-        {/* Hover gradient background */}
-        <div 
-          className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style={{ background: `linear-gradient(135deg, ${color}08 0%, ${color}15 100%)` }}
-        />
-        
-        <div className="relative z-10">
-          {/* Icon */}
-          <div 
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110"
-            style={{ backgroundColor: `${color}15` }}
-          >
-            <Icon className="w-8 h-8" style={{ color }} />
-          </div>
-
-          {/* Title */}
-          <h3 className="text-xl font-bold text-[#1A1917] mb-3 group-hover:text-[#3D3A35] transition-colors">
-            {title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-[#7D786F] leading-relaxed mb-4">
-            {description}
-          </p>
-
-          {/* Arrow Link */}
-          <div className="flex items-center gap-2 font-medium transition-colors" style={{ color }}>
-            <span className="text-sm">Explore</span>
-            <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-          </div>
-        </div>
-      </motion.div>
-    </Link>
-  );
-};
-
-const ServicesSection = ({ features }) => {
-  const serviceData = [
-    {
-      title: 'Marketplace',
-      description: 'Buy, sell, or give away items within our trusted expat community. Safe transactions, real connections.',
-      icon: LuShoppingBag,
-      href: '/marketplace',
-      color: '#FF6B6B',
-    },
-    {
-      title: 'Events',
-      description: 'Discover local events, meetups, and activities. Never miss an opportunity to connect.',
-      icon: LuCalendar,
-      href: '/events',
-      color: '#4ECDC4',
-    },
-    {
-      title: 'Community',
-      description: 'Join groups and connect with fellow expats who share your interests and experiences.',
-      icon: LuUsers,
-      href: '/community',
-      color: '#FFB347',
-    },
-    {
-      title: 'Nearby Places',
-      description: 'Find expat-friendly locations, hidden gems, and essential services in your area.',
-      icon: LuMapPin,
-      href: '/nearby',
-      color: '#9B59B6',
-    },
-  ];
-
-  return (
-    <section className="py-16 bg-[#FAFAF8]">
-      <div className="px-[3%]">
-        {/* Section Header */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="text-center max-w-2xl mx-auto mb-16"
-        >
-          <motion.span 
-            variants={fadeInUp}
-            className="inline-block px-4 py-2 bg-[#4ECDC4]/10 text-[#4ECDC4] rounded-full text-sm font-semibold mb-4"
-          >
-            What do we offer?
-          </motion.span>
-          <motion.h2 
-            variants={fadeInUp}
-            className="text-3xl md:text-4xl lg:text-3xl font-bold text-[#1A1917] mb-4"
-          >
-            We offer services and guides to help you maintain a easy life
-            <span className="text-[#4ECDC4]">  in South Korea</span>
-          </motion.h2>
-          <motion.p 
-            variants={fadeInUp}
-            className="text-xl text-[#7D786F]"
-          >
-            From finding your guides to discovering local stores and tourist attractions, KEasy Platform will guide you.
-          </motion.p>
-        </motion.div>
-
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {serviceData.map((service, index) => (
-            <ServiceCard key={index} {...service} delay={index * 0.1} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-
-/* =============================================================================
    FLOATING BUBBLES - Guide Topics (Auto-Fetch Most Viewed)
+   With gentle floating animation - each bubble moves independently
    ============================================================================= */
 
-const FloatingBubble = ({ title, id, index }) => {
+const FloatingBubble = ({ title, id, index, rowIndex }) => {
   // Truncate to max 8 words
   const truncatedTitle = title.split(' ').slice(0, 8).join(' ') + (title.split(' ').length > 8 ? '...' : '');
+
+  // Generate unique animation values for each bubble
+  // Using index to create variety in movement
+  const uniqueDuration = 4 + (index % 5) * 0.8; // Duration varies between 4-7.2s
+  const uniqueDelay = (index % 7) * 0.3; // Staggered start times
+  const uniqueXRange = 3 + (index % 4) * 2; // X movement varies between 3-9px
+  const uniqueYRange = 2 + (index % 3) * 2; // Y movement varies between 2-6px
+  
+  // Alternate direction based on index for organic feel
+  const xDirection = index % 2 === 0 ? 1 : -1;
+  const yDirection = index % 3 === 0 ? 1 : -1;
 
   return (
     <Link to={id ? `/guides/guide/${id}` : '/guides'}>
@@ -1149,17 +1033,56 @@ const FloatingBubble = ({ title, id, index }) => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4, delay: index * 0.05 }}
+        animate={{
+          x: [0, uniqueXRange * xDirection, 0, -uniqueXRange * xDirection * 0.5, 0],
+          y: [0, uniqueYRange * yDirection, 0, -uniqueYRange * yDirection * 0.7, 0],
+        }}
         whileHover={{ 
           scale: 1.05, 
           backgroundColor: '#0D9488',
+          x: 0,
+          y: 0,
         }}
-        className="inline-block px-5 py-2.5 rounded-full cursor-pointer border-2 border-[#0D9488] bg-white hover:bg-[#0D9488] group transition-all duration-300"
+        className="inline-block px-5 py-2.5 rounded-full cursor-pointer border-2 border-[#0D9488] bg-white hover:bg-[#0D9488] group transition-colors duration-300"
+        style={{
+          animation: `float-${index % 5} ${uniqueDuration}s ease-in-out ${uniqueDelay}s infinite`,
+        }}
       >
         <span className="text-sm font-medium text-[#0D9488] group-hover:text-white whitespace-nowrap transition-colors duration-300">
           {truncatedTitle}
         </span>
       </motion.div>
     </Link>
+  );
+};
+
+// Row wrapper with horizontal drift animation
+const AnimatedRow = ({ children, direction = 'left', speed = 'slow' }) => {
+  const driftAmount = 15; // pixels to drift
+  const duration = speed === 'slow' ? 8 : 5;
+  
+  const driftVariants = {
+    animate: {
+      x: direction === 'left' 
+        ? [0, -driftAmount, 0, driftAmount * 0.5, 0]
+        : [0, driftAmount, 0, -driftAmount * 0.5, 0],
+    }
+  };
+
+  return (
+    <motion.div
+      variants={driftVariants}
+      animate="animate"
+      transition={{
+        duration: duration,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "loop",
+      }}
+      className="flex flex-wrap justify-center items-center gap-3"
+    >
+      {children}
+    </motion.div>
   );
 };
 
@@ -1178,7 +1101,7 @@ const FloatingBubblesSection = () => {
           .select('id, name, view')
           .eq('approved', true)  // Only approved guides
           .order('view', { ascending: false })  // Most viewed first
-          .limit(17);  // Get top 15
+          .limit(18);  // Get top 18 (6 per row x 3 rows)
 
         if (error) {
           console.error('Error fetching guides:', error.message);
@@ -1211,45 +1134,44 @@ const FloatingBubblesSection = () => {
     { id: null, name: "📞 Korean Phone Plans" },
     { id: null, name: "🏥 Healthcare & Insurance" },
     { id: null, name: "🗣️ Learning Korean Basics" },
+    { id: null, name: "🚌 Public Transportation" },
+    { id: null, name: "🛒 Grocery Shopping Tips" },
+    { id: null, name: "💼 Job Hunting Guide" },
+    { id: null, name: "🎓 University Life" },
+    { id: null, name: "🍜 Best Local Restaurants" },
+    { id: null, name: "🏃 Fitness & Gyms" },
   ];
 
   // Use fetched guides or fallback
   const bubbleData = topGuides.length > 0 ? topGuides : fallbackGuides;
 
-  // Distribute bubbles across rows (varying items per row for organic look)
-  const row1 = bubbleData.slice(0, 4);
-  const row2 = bubbleData.slice(4, 8);
-  const row3 = bubbleData.slice(8, 13);
-  const row4 = bubbleData.slice(13, 13 + 4);
+  // Distribute bubbles across 3 rows (5-6 items per row)
+  const row1 = bubbleData.slice(0, 6);
+  const row2 = bubbleData.slice(6, 12);
+  const row3 = bubbleData.slice(12, 18);
 
   // Loading skeleton
   if (isLoading) {
     return (
-    <section className="py-12 overflow-hidden bg-white">
-      <div className="px-4 md:px-8 lg:px-12">
+      <section className="py-12 overflow-hidden bg-[#F8FAFB]">
+        <div className="px-[3%]">
           <div className="text-center mb-10">
-            <span className="text-sm font-semibold text-[#7D789F] uppercase tracking-[0.2em]">
+            <span className="text-3xl font-semibold text-[#7D786F] uppercase tracking-[0.2em]">
               Popular Guide Topics
             </span>
           </div>
-          <div className="max-w-6xl mx-auto space-y-4">
-            {/* Skeleton bubbles */}
-            <div className="flex flex-wrap justify-between items-center gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div 
-                  key={i} 
-                  className="h-10 w-32 md:w-40 bg-gray-200 rounded-full animate-pulse"
-                />
-              ))}
-            </div>
-            <div className="flex flex-wrap justify-center items-center gap-4 px-8 md:px-16">
-              {[1, 2, 3].map((i) => (
-                <div 
-                  key={i} 
-                  className="h-10 w-36 md:w-44 bg-gray-200 rounded-full animate-pulse"
-                />
-              ))}
-            </div>
+          <div className="space-y-4">
+            {/* Skeleton bubbles - 3 rows */}
+            {[1, 2, 3].map((row) => (
+              <div key={row} className="flex flex-wrap justify-center items-center gap-3">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div 
+                    key={i} 
+                    className="h-10 w-32 md:w-40 bg-gray-200 rounded-full animate-pulse"
+                  />
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1258,7 +1180,7 @@ const FloatingBubblesSection = () => {
 
   return (
     <section className="py-12 overflow-hidden bg-[#F8FAFB]">
-      <div className="container mx-auto px-[3%]">
+      <div className="px-[3%]">
         {/* Section Label */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1271,62 +1193,51 @@ const FloatingBubblesSection = () => {
           </span>
         </motion.div>
 
-        {/* Bubbles - Full Width Justified Layout */}
-        <div className="max-w-6xl mx-auto space-y-4">
-          {/* Row 1 - Justify between */}
+        {/* Bubbles - 3 Rows with alternating drift directions */}
+        <div className="space-y-4">
+          {/* Row 1 - Drifts right */}
           {row1.length > 0 && (
-            <div className="flex flex-wrap justify-between items-center gap-1">
+            <AnimatedRow direction="right" speed="slow">
               {row1.map((guide, index) => (
                 <FloatingBubble
                   key={`row1-${guide.id || index}`}
                   title={guide.name}
                   id={guide.id}
                   index={index}
+                  rowIndex={0}
                 />
               ))}
-            </div>
+            </AnimatedRow>
           )}
 
-          {/* Row 2 - Center with spacing */}
+          {/* Row 2 - Drifts left (opposite) */}
           {row2.length > 0 && (
-            <div className="flex flex-wrap justify-center items-center gap-1 px-8 md:px-16">
+            <AnimatedRow direction="left" speed="slow">
               {row2.map((guide, index) => (
                 <FloatingBubble
                   key={`row2-${guide.id || index}`}
                   title={guide.name}
                   id={guide.id}
-                  index={index + 4}
+                  index={index + 6}
+                  rowIndex={1}
                 />
               ))}
-            </div>
+            </AnimatedRow>
           )}
 
-          {/* Row 3 - Justify between */}
+          {/* Row 3 - Drifts right (alternating pattern) */}
           {row3.length > 0 && (
-            <div className="flex flex-wrap justify-between items-center gap-1">
+            <AnimatedRow direction="right" speed="slow">
               {row3.map((guide, index) => (
                 <FloatingBubble
                   key={`row3-${guide.id || index}`}
                   title={guide.name}
                   id={guide.id}
-                  index={index + 7}
+                  index={index + 12}
+                  rowIndex={2}
                 />
               ))}
-            </div>
-          )}
-
-          {/* Row 4 - Center with spacing */}
-          {row4.length > 0 && (
-            <div className="flex flex-wrap justify-center items-center gap-1 px-4 md:px-12">
-              {row4.map((guide, index) => (
-                <FloatingBubble
-                  key={`row4-${guide.id || index}`}
-                  title={guide.name}
-                  id={guide.id}
-                  index={index + 11}
-                />
-              ))}
-            </div>
+            </AnimatedRow>
           )}
         </div>
 
@@ -1360,6 +1271,7 @@ const FloatingBubblesSection = () => {
    - Smooth curves at corners (no breaks)
    - 9 guides in snake pattern
    - Uses CSS for reliable rendering
+   - Mobile: 2-column grid, no vines
    
    ============================================================================= */
 
@@ -1462,6 +1374,7 @@ const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {},
 const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
   const displayGuides = guides.slice(0, 9);
   
+  // Desktop rows (snake pattern)
   const row1 = displayGuides.slice(0, 3);
   const row2 = [...displayGuides.slice(3, 6)].reverse();
   const row3 = displayGuides.slice(6, 9);
@@ -1517,11 +1430,37 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
           </motion.div>
         </div>
 
-        {/* Vine + Cards Container */}
-        <div className="relative">
+        {/* ==================== MOBILE VIEW: Simple 2-Column Grid (No Vines) ==================== */}
+        <div className="md:hidden">
+          <motion.div 
+            className="grid grid-cols-2 gap-4"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            {displayGuides.map((guide, index) => (
+              <motion.div
+                key={guide.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <GrootGuideCard
+                  {...guide}
+                  currentUserId={currentUserId}
+                  onLike={() => onGuideLike(guide.id)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* ==================== DESKTOP VIEW: Vine + Cards Container ==================== */}
+        <div className="relative hidden md:block">
           
           {/* ========== CSS VINE STRUCTURE (Desktop Only) ========== */}
-          <div className="hidden md:block absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+          <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
             
             {/* ROW 1: Horizontal line */}
             <div 
@@ -1593,16 +1532,6 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
               }} 
             />
             
-            {/* LEFT CORNER BOTTOM: Connects vertical to Row 3 */}
-            {/* <div 
-              className="absolute w-12 h-12 border-t-[8px] border-l-[8px] rounded-tl-3xl"
-              style={{ 
-                top: '512px', 
-                left: '0',
-                borderColor: vineColor 
-              }} 
-            /> */}
-            
             {/* ROW 3: Horizontal line */}
             <div 
               className="absolute left-12 right-0 h-2 rounded-full"
@@ -1616,7 +1545,7 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
 
           {/* ==================== ROW 1 ==================== */}
           <motion.div 
-            className="relative z-10 grid grid-cols-8 md:grid-cols-3 gap-4 md:gap-8 pb-16 md:pb-0"
+            className="relative z-10 grid grid-cols-3 gap-8"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1638,17 +1567,9 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
             ))}
           </motion.div>
 
-          {/* Mobile Vine Connector 1 */}
-          <div className="md:hidden flex justify-end pr-8 -mt-8 mb-8">
-            <div 
-              className="w-2 h-16 rounded-full"
-              style={{ backgroundColor: vineColor }}
-            />
-          </div>
-
           {/* ==================== ROW 2 ==================== */}
           <motion.div 
-            className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 py-16 md:py-28"
+            className="relative z-10 grid grid-cols-3 gap-8 py-28"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1671,17 +1592,9 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
             ))}
           </motion.div>
 
-          {/* Mobile Vine Connector 2 */}
-          <div className="md:hidden flex justify-start pl-8 -mt-8 mb-8">
-            <div 
-              className="w-2 h-16 rounded-full"
-              style={{ backgroundColor: vineColor }}
-            />
-          </div>
-
           {/* ==================== ROW 3 ==================== */}
           <motion.div 
-            className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 pt-16 md:pt-0"
+            className="relative z-10 grid grid-cols-3 gap-8"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1727,6 +1640,9 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
   );
 };
 
+/* =============================================================================
+   Marketplace section 
+   ============================================================================= */
 
 const conditionColors = {
   new: '#10B981',
@@ -1822,78 +1738,141 @@ const FeaturedMarketplaceCard = ({ item }) => {
       onClick={handleCardClick}
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.3 }}
-      className="relative h-full min-h-[350px] lg:min-h-full rounded-3xl overflow-hidden cursor-pointer group"
+      className="relative h-full rounded-3xl overflow-hidden cursor-pointer group bg-white shadow-lg"
     >
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src={imageError ? '/no-image.png' : imageUrl}
-          onError={() => setImageError(true)}
-          alt={item.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-        />
-        {/* we can change the colour of the gradient here for the featured product featured background colour change */}
-        <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-white/5 to-transparent" />
-      </div>
+      {/* ==================== MOBILE LAYOUT ==================== */}
+      <div className="lg:hidden">
+        {/* Image Section */}
+        <div className="relative h-[200px] overflow-hidden">
+          <img
+            src={imageError ? '/no-image.png' : imageUrl}
+            onError={() => setImageError(true)}
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+          
+          {/* Top Badges & Actions */}
+          <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+            <span
+              className="px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-lg"
+              style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
+            >
+              {formatCondition(item.condition)}
+            </span>
 
-      {/* Top Badges & Actions */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
-        <span
-          className="px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-lg"
-          style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
-        >
-          {formatCondition(item.condition)}
-        </span>
-
-        <button
-          onClick={handleToggleLike}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
-            isLiked
-              ? 'bg-[#FF6B6B] text-white'
-              : 'bg-white/90 text-gray-600 hover:text-[#FF6B6B]'
-          }`}
-        >
-          {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
-        </button>
-      </div>
-
-      {/* Featured Badge */}
-      {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-        <span className="px-3 py-1.5 bg-[#FFE66D] text-[#1A1917] rounded-full text-xs font-bold shadow-lg">
-          ⭐ Featured
-        </span>
-      </div> */}
-
-      {/* Bottom Content you can change the text colour of featured item name here*/}
-      <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-        <div className="flex items-center gap-3 text-black/80 text-xs mb-2">
-          <span className="flex items-center gap-1">
-            <FiMapPin className="w-3 h-3" />
-            {item.location || 'Korea'}
-          </span>
-          <span className="flex items-center gap-1">
-            <FiEye className="w-3 h-3" />
-            {item.views || 0} views
-          </span>
+            <button
+              onClick={handleToggleLike}
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+                isLiked
+                  ? 'bg-[#FF6B6B] text-white'
+                  : 'bg-white/90 text-gray-600 hover:text-[#FF6B6B]'
+              }`}
+            >
+              {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
-        <h3 className="text-xl lg:text-2xl font-bold text-black mb-2 line-clamp-2">
-          {item.title}
-        </h3>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <p className="text-2xl lg:text-3xl font-bold text-[#4ECDC4]">
-            {formatCurrency(item.price)}
-          </p>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/marketplace/${item.id}`);
-            }}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-[#1A1917] rounded-full font-semibold hover:bg-[#4ECDC4] hover:text-white transition-all duration-300 text-sm group/btn"
+        {/* Content Section - Below Image */}
+        <div className="p-4">
+          <div className="flex items-center gap-3 text-gray-500 text-xs mb-2">
+            <span className="flex items-center gap-1">
+              <FiMapPin className="w-3 h-3" />
+              {item.location || 'Korea'}
+            </span>
+            <span className="flex items-center gap-1">
+              <FiEye className="w-3 h-3" />
+              {item.views || 0} views
+            </span>
+          </div>
+          
+          <h3 className="text-lg font-bold text-[#1A1917] mb-2 line-clamp-2">
+            {item.title}
+          </h3>
+
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xl font-bold text-[#4ECDC4]">
+              {formatCurrency(item.price)}
+            </p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/marketplace/${item.id}`);
+              }}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1A1917] text-white rounded-full font-semibold hover:bg-[#4ECDC4] transition-all duration-300 text-sm group/btn"
+            >
+              View Details
+              <FiArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== DESKTOP LAYOUT ==================== */}
+      <div className="hidden lg:block h-full min-h-[400px]">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src={imageError ? '/no-image.png' : imageUrl}
+            onError={() => setImageError(true)}
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        </div>
+
+        {/* Top Badges & Actions */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
+          <span
+            className="px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-lg"
+            style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
           >
-            View Details
-            <FiArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+            {formatCondition(item.condition)}
+          </span>
+
+          <button
+            onClick={handleToggleLike}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+              isLiked
+                ? 'bg-[#FF6B6B] text-white'
+                : 'bg-white/90 text-gray-600 hover:text-[#FF6B6B]'
+            }`}
+          >
+            {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
           </button>
+        </div>
+
+        {/* Bottom Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+          <div className="flex items-center gap-3 text-white/80 text-xs mb-2">
+            <span className="flex items-center gap-1">
+              <FiMapPin className="w-3 h-3" />
+              {item.location || 'Korea'}
+            </span>
+            <span className="flex items-center gap-1">
+              <FiEye className="w-3 h-3" />
+              {item.views || 0} views
+            </span>
+          </div>
+          <h3 className="text-xl lg:text-2xl font-bold text-white mb-2 line-clamp-2">
+            {item.title}
+          </h3>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p className="text-2xl lg:text-3xl font-bold text-[#4ECDC4]">
+              {formatCurrency(item.price)}
+            </p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/marketplace/${item.id}`);
+              }}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-[#1A1917] rounded-full font-semibold hover:bg-[#4ECDC4] hover:text-white transition-all duration-300 text-sm group/btn"
+            >
+              View Details
+              <FiArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -2903,7 +2882,7 @@ const FeedbackSection = () => {
 
 
 /* =============================================================================
-   AI CHATBOT
+   AI CHATBOT - KEasy Design System
    ============================================================================= */
 
 const companyInfo = `Hey there! I'm your friendly KEasy chatbot — your digital companion for navigating life in South Korea 🇰🇷. Whether you're an international student, expat, or just a traveller, I'm here to guide you through your new life, help you find communities, and make your experience smoother, easier, and more connected.
@@ -2962,6 +2941,7 @@ const AIChatbot = ({ currentUserId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([{ hideInChat: true, role: 'model', text: companyInfo }]);
+  const [isHovered, setIsHovered] = useState(false);
   const chatBodyRef = useRef();
   const navigate = useNavigate();
 
@@ -3026,23 +3006,71 @@ const AIChatbot = ({ currentUserId }) => {
 
   return (
     <>
-      {/* Floating Button */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={handleToggle}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-4 bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] text-white rounded-full shadow-lg shadow-[#FF6B6B]/30"
-      >
-        <Sparkles className="w-5 h-5" />
-        <span className="hidden sm:inline font-semibold">KEasy AI</span>
-      </motion.button>
+      {/* ==================== FLOATING BUTTON - KEasy Style ==================== */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {/* Pulse Animation Ring */}
+        <motion.div
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.5, 0, 0.5]
+          }}
+          transition={{ 
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute inset-0 bg-[#FF6B6B] rounded-full"
+        />
+        
+        {/* Main Button */}
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+          onClick={handleToggle}
+          className="relative flex items-center gap-3 px-5 py-4 bg-[#FF6B6B] text-white rounded-2xl shadow-lg shadow-[#FF6B6B]/30 hover:shadow-xl hover:shadow-[#FF6B6B]/40 transition-all duration-300"
+        >
+          {/* Icon Container */}
+          <div className="relative">
+            <motion.div
+              animate={{ rotate: isHovered ? 360 : 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center"
+            >
+              <Sparkles className="w-5 h-5 text-white" />
+            </motion.div>
+            
+            {/* Online Indicator */}
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#4ECDC4] rounded-full border-2 border-[#FF6B6B]">
+              <span className="absolute inset-0 bg-[#4ECDC4] rounded-full animate-ping opacity-75" />
+            </span>
+          </div>
+          
+          {/* Text - Hidden on small mobile */}
+          <div className="hidden sm:block text-left">
+            <p className="font-bold text-sm leading-tight">KEasy AI</p>
+            <p className="text-[10px] text-white/80">Ask me anything!</p>
+          </div>
+          
+          {/* Arrow indicator on hover */}
+          <motion.div
+            initial={{ opacity: 0, x: -5 }}
+            animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -5 }}
+            className="hidden sm:block"
+          >
+            <FiArrowRight className="w-4 h-4" />
+          </motion.div>
+        </motion.button>
+      </div>
 
-      {/* Chat Window */}
+      {/* ==================== CHAT WINDOW ==================== */}
       <AnimatePresence>
         {isOpen && (
           <>
+            {/* Backdrop for mobile */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -3050,39 +3078,69 @@ const AIChatbot = ({ currentUserId }) => {
               onClick={() => setIsOpen(false)}
               className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 md:hidden"
             />
+            
+            {/* Chat Window */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden md:bottom-24 md:right-6 md:w-[380px] md:h-[550px] inset-4 md:inset-auto flex flex-col"
+              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden md:bottom-24 md:right-6 md:w-[400px] md:h-[550px] inset-4 md:inset-auto flex flex-col border border-gray-100"
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] text-white p-4 flex items-center justify-between">
+              <div className="bg-[#FF6B6B] text-white p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <ChatbotIcon />
+                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
                   <div>
-                    <h3 className="font-semibold">KEasy AI</h3>
-                    <p className="text-xs text-white/80">Always here to help</p>
+                    <h3 className="font-bold">KEasy AI Assistant</h3>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 bg-[#4ECDC4] rounded-full animate-pulse" />
+                      <p className="text-xs text-white/80">Online • Ready to help</p>
+                    </div>
                   </div>
                 </div>
-                <button onClick={handleToggle} className="p-2 hover:bg-white/20 rounded-full">
+                <button 
+                  onClick={handleToggle} 
+                  className="p-2 hover:bg-white/20 rounded-xl transition-colors"
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Messages */}
-              <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-4">
+              <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-4 bg-[#F8FAFB]">
+                {/* Welcome Message */}
                 <div className="flex gap-3 mb-4">
                   <ChatbotIcon />
-                  <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 max-w-[80%]">
-                    <p className="text-sm text-gray-800">Hey there! 👋 How can I help you today?</p>
+                  <div className="bg-white rounded-2xl rounded-bl-sm px-4 py-3 max-w-[80%] shadow-sm border border-gray-100">
+                    <p className="text-sm text-gray-800">Hey there! 👋 I'm your KEasy AI assistant. How can I help you navigate life in Korea today?</p>
                   </div>
                 </div>
+                
+                {/* Quick Actions */}
+                {chatHistory.length === 1 && (
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {['Find communities', 'Marketplace tips', 'Events near me', 'Living in Korea'].map((action) => (
+                      <button
+                        key={action}
+                        onClick={() => {
+                          setMessage(action);
+                          setTimeout(() => handleSend(), 100);
+                        }}
+                        className="px-3 py-1.5 bg-white border border-[#4ECDC4]/30 text-[#4ECDC4] rounded-full text-xs font-medium hover:bg-[#4ECDC4] hover:text-white transition-all duration-300"
+                      >
+                        {action}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                
                 {chatHistory.map((chat, i) => <ChatMessage key={i} chat={chat} />)}
               </div>
 
               {/* Input */}
-              <div className="p-4 border-t border-gray-100">
+              <div className="p-4 border-t border-gray-100 bg-white">
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -3090,7 +3148,7 @@ const AIChatbot = ({ currentUserId }) => {
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                     placeholder="Type your message..."
-                    className="flex-1 px-4 py-3 bg-gray-100 rounded-full outline-none text-sm"
+                    className="flex-1 px-4 py-3 bg-[#F8FAFB] rounded-xl outline-none text-sm border border-gray-200 focus:border-[#4ECDC4] focus:ring-2 focus:ring-[#4ECDC4]/20 transition-all"
                     disabled={isLoading}
                   />
                   <motion.button
@@ -3098,11 +3156,16 @@ const AIChatbot = ({ currentUserId }) => {
                     disabled={!message.trim() || isLoading}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="w-12 h-12 bg-[#FF6B6B] text-white rounded-full flex items-center justify-center disabled:opacity-50"
+                    className="w-12 h-12 bg-[#FF6B6B] text-white rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#e85a5a] transition-colors shadow-lg shadow-[#FF6B6B]/25"
                   >
                     <Send className="w-5 h-5" />
                   </motion.button>
                 </div>
+                
+                {/* Powered by text */}
+                <p className="text-center text-[10px] text-gray-400 mt-2">
+                  Powered by KEasy AI • Your Korea companion
+                </p>
               </div>
             </motion.div>
           </>
