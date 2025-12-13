@@ -2581,8 +2581,6 @@ const TestimonialsSection = () => {
 };
 
 
-
-
 /* =============================================================================
    CTA SECTION - Final Push
    ============================================================================= */
@@ -3138,7 +3136,7 @@ export default function Home() {
       const { data: user } = await supabase.auth.getUser();
       setCurrentUserId(user?.user?.id || null);
 
-      const { data: guidesData } = await supabase.from('guide').select('id, created_at, name, description, img_url, created_by, like').limit(8);
+      const { data: guidesData } = await supabase.from('guide').select('id, created_at, name, description, img_url, created_by, like').limit(9);
       setGuides(guidesData || []);
 
       const { data: marketData } = await supabase.from('marketplace').select('*').eq("verified", true).eq('available', true).limit(20);
