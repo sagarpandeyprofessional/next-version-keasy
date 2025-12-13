@@ -2185,8 +2185,8 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
           </div>
 
           {/* ==================== ROW 1 ==================== */}
-          <motion.div 
-            className="relative z-10 grid grid-cols-8 md:grid-cols-3 gap-4 md:gap-8 pb-16 md:pb-0"
+          <motion.div
+            className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 pb-16 md:pb-0"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -2208,13 +2208,7 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
             ))}
           </motion.div>
 
-          {/* Mobile Vine Connector 1 */}
-          <div className="md:hidden flex justify-end pr-8 -mt-8 mb-8">
-            <div 
-              className="w-2 h-16 rounded-full"
-              style={{ backgroundColor: vineColor }}
-            />
-          </div>
+          {/* Mobile Vine Connector 1 - REMOVED */}
 
           {/* ==================== ROW 2 ==================== */}
           <motion.div 
@@ -2241,13 +2235,7 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
             ))}
           </motion.div>
 
-          {/* Mobile Vine Connector 2 */}
-          <div className="md:hidden flex justify-start pl-8 -mt-8 mb-8">
-            <div 
-              className="w-2 h-16 rounded-full"
-              style={{ backgroundColor: vineColor }}
-            />
-          </div>
+          {/* Mobile Vine Connector 2 - REMOVED */}
 
           {/* ==================== ROW 3 ==================== */}
           <motion.div 
