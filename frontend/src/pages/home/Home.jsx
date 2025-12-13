@@ -2881,192 +2881,341 @@ const FeedbackSection = () => {
 };
 
 
-/* =============================================================================
-   AI CHATBOT - KEasy Design System
-   ============================================================================= */
+const companyInfo = `
+Introduction:
+Hey there! I'm your friendly Keasy chatbot — your digital companion for navigating life in South Korea 🇰🇷. Whether you're an 
+international student, expat, or newcomer, I'm here to guide you through your new life, help you find communities, and make your experience smoother, easier, and more connected.
 
-const companyInfo = `Hey there! I'm your friendly KEasy chatbot — your digital companion for navigating life in South Korea 🇰🇷. Whether you're an international student, expat, or just a traveller, I'm here to guide you through your new life, help you find communities, and make your experience smoother, easier, and more connected.
-
-KEasy is a modern community platform designed to support international people living in South Korea. We bring together everything you need to live, connect, and thrive abroad — all in one place.
+Details:
+Keasy is a modern community platform designed to support international people living in South Korea. We bring together everything you need to 
+live, connect, and thrive abroad — all in one place. From local guides and events to a marketplace for buying and selling goods, Keasy makes settling in feel like home.
 
 Our platform offers:
-- AI-powered assistance for real-time guidance and translation
-- Marketplace to buy and sell new or used items safely
-- Events & Activities listings to help you explore your city
-- Community groups and chats where you can connect with others
-- Blog and resources for legal advice, cultural tips, and local insights
+- AI-powered assistance for real-time guidance and translation.
+- Marketplace to buy and sell new or used items safely.
+- Events & Activities listings to help you explore your city.
+- Community groups and chats where you can connect with others.
+- Blog and resources for legal advice, cultural tips, and local insights.
 
-KEasy's goal is simple: make life easier for foreigners in South Korea through community, technology, and meaningful support.
+Keasy's goal is simple: make life easier for foreigners in South Korea through community, technology, and meaningful support.
+
+Based in Daejeon, South Korea, Keasy was founded by a group of international students who experienced the challenges of living abroad firsthand — and decided to build a solution.
 
 Stay connected with us:
 - Website: https://www.koreaeasy.org
 - Instagram: https://www.instagram.com/keasy_community
 
-At KEasy, we believe in more than just technology — we believe in community. Together, we make Korea feel like home 💙`;
+For partnerships, inquiries, or feedback, reach out to us at keasy.contact@gmail.com
+
+At Keasy, we believe in more than just technology — we believe in community. Together, we make Korea feel like home 💙
+`;
 
 const ChatbotIcon = () => (
-  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FF6B6B] to-[#4ECDC4] flex items-center justify-center">
-    <Sparkles className="w-4 h-4 text-white" />
+  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+    <Sparkles className="w-5 h-5 text-white" />
   </div>
 );
 
 const ChatMessage = ({ chat }) => {
+  const renderFormattedText = (text) => {
+    // Split text into lines
+    const lines = text.split('\n');
+    
+    return lines.map((line, lineIndex) => {
+      // Skip empty lines but preserve spacing
+      if (line.trim() === '') {
+        return <br key={lineIndex} />;
+      }
+
+      // Handle bullet points (•, -, *, numbered lists)
+      const bulletMatch = line.match(/^(\s*)([-•*]|\d+\.)\s+(.+)$/);
+      if (bulletMatch) {
+        const [, indent, bullet, content] = bulletMatch;
+        return (
+          <div key={lineIndex} className="flex gap-2 my-1" style={{ marginLeft: `${indent.length * 8}px` }}>
+            <span className="flex-shrink-0 font-medium">{bullet}</span>
+            <span>{formatInlineText(content)}</span>
+          </div>
+        );
+      }
+
+      // Handle headers (lines that end with :)
+      if (line.match(/^[^:]+:$/)) {
+        return (
+          <div key={lineIndex} className="font-semibold mt-2 mb-1">
+            {formatInlineText(line)}
+          </div>
+        );
+      }
+
+      // Regular paragraph
+      return (
+        <div key={lineIndex} className="my-1">
+          {formatInlineText(line)}
+        </div>
+      );
+    });
+  };
+
+ // Format inline text (bold, italic, links, inline code only)
+  const formatInlineText = (text) => {
+    // Split by inline code, bold, italic, and URLs (NO multiline code blocks here)
+    const parts = text.split(/(`[^`\n]+`|\*\*\*[^*\n]+\*\*\*|\*\*[^*\n]+\*\*|\*[^*\n]+\*|https?:\/\/[^\s]+)/g);
+    
+    return parts.map((part, index) => {
+      if (!part) return null;
+
+      // Inline code (`code`) - single line only
+      if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+        return (
+          <code key={index} className="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
+            {part.slice(1, -1)}
+          </code>
+        );
+      }
+
+      // Bold + Italic (***text***)
+      if (part.startsWith('***') && part.endsWith('***') && part.length > 6) {
+        return (
+          <strong key={index} className="font-bold italic">
+            {part.slice(3, -3)}
+          </strong>
+        );
+      }
+
+      // Bold (**text**)
+      if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+        return (
+          <strong key={index} className="font-semibold">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+
+      // Italic (*text*)
+      if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+        return (
+          <em key={index} className="italic">
+            {part.slice(1, -1)}
+          </em>
+        );
+      }
+
+      // URLs
+      if (part.match(/^https?:\/\/[^\s]+$/)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   if (chat.hideInChat) return null;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className={`flex gap-3 ${chat.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
     >
       {chat.role === 'model' && <ChatbotIcon />}
+      
       <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-        chat.role === 'user'
-          ? 'bg-[#FF6B6B] text-white rounded-br-sm'
-          : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+        chat.role === 'user' 
+          ? 'bg-blue-600 text-white rounded-br-sm' 
+          : 'bg-gray-100 text-gray-900 rounded-bl-sm'
       }`}>
-        <p className="text-sm whitespace-pre-wrap">{chat.text}</p>
+        <div className="text-sm leading-relaxed">
+          {chat.role === 'model' ? renderFormattedText(chat.text) : chat.text}
+        </div>
       </div>
+
       {chat.role === 'user' && (
-        <div className="w-8 h-8 rounded-full bg-[#4ECDC4] flex items-center justify-center text-white">
-          <FiUser className="w-4 h-4" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
+          <FiUser/>
         </div>
       )}
     </motion.div>
   );
 };
 
-const AIChatbot = ({ currentUserId }) => {
+const ChatForm = ({ onSubmit, isLoading }) => {
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const userMessage = message.trim();
+    if (!userMessage || isLoading) return;
+    
+    onSubmit(userMessage);
+    setMessage('');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  return (
+    <div className="flex gap-2 items-center w-full">
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={handleKeyPress}
+        placeholder="Type your message..."
+        className="flex-1 px-4 py-2.5 bg-none border-none rounded-full outline-none text-gray-800 placeholder-gray-500 text-base md:text-sm"
+        disabled={isLoading}
+      />
+      <button
+        onClick={handleSubmit}
+        disabled={!message.trim() || isLoading}
+        className="flex-shrink-0  w-10 h-10 my-1 bg-purple-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+      >
+        <Send className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};
+
+const AIChatbot = ({currentUserId}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState([{ hideInChat: true, role: 'model', text: companyInfo }]);
-  const [isHovered, setIsHovered] = useState(false);
+  const [chatHistory, setChatHistory] = useState([
+    {
+      hideInChat: true,
+      role: 'model',
+      text: companyInfo
+    }
+  ]);
   const chatBodyRef = useRef();
   const navigate = useNavigate();
 
+  // Generate AI response using Gemini API
   const generateBotResponse = async (history) => {
     try {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) throw new Error("API key missing");
+      
+      if (!apiKey) {
+        throw new Error("Gemini API key is missing");
+      }
+
+      // Format history for Gemini API
+      const formattedHistory = history.map(({ role, text }) => ({
+        role: role === 'user' ? 'user' : 'model',
+        parts: [{ text }]
+      }));
 
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
-            contents: history.map(({ role, text }) => ({
-              role: role === 'user' ? 'user' : 'model',
-              parts: [{ text }]
-            })),
-            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+            contents: formattedHistory,
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
+            }
           })
         }
       );
 
-      const data = await response.json();
-      const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response. Please try again.";
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
 
-      setChatHistory(prev => [...prev.filter(msg => msg.text !== 'Thinking...'), { role: 'model', text: botResponse }]);
+      const data = await response.json();
+      const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                         "I apologize, but I couldn't generate a response. Please try again.";
+
+      setChatHistory(prev => [
+        ...prev.filter(msg => msg.text !== 'Thinking...'),
+        { role: 'model', text: botResponse }
+      ]);
     } catch (error) {
-      setChatHistory(prev => [...prev.filter(msg => msg.text !== 'Thinking...'), { role: 'model', text: "I'm having trouble responding. Please try again." }]);
+      console.error('Error generating bot response:', error);
+      setChatHistory(prev => [
+        ...prev.filter(msg => msg.text !== 'Thinking...'),
+        { role: 'model', text: "I apologize, but I'm having trouble responding right now. Please check your internet connection and try again." }
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSend = () => {
-    if (!message.trim() || isLoading) return;
-    const newMessage = { role: 'user', text: message.trim() };
+  const handleSendMessage = (userMessage) => {
+    const newMessage = { role: 'user', text: userMessage };
     setChatHistory(prev => [...prev, newMessage]);
-    setMessage('');
+    
     setIsLoading(true);
     setTimeout(() => {
       setChatHistory(prev => [...prev, { role: 'model', text: 'Thinking...' }]);
-      generateBotResponse([...chatHistory, newMessage]);
-    }, 500);
+      
+      generateBotResponse([
+        ...chatHistory,
+        newMessage,
+        { role: 'user', text: `Using the details provided above if needed, please address this query: ${userMessage}` }
+      ]);
+    }, 600);
   };
 
   useEffect(() => {
     if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: 'smooth' });
+      chatBodyRef.current.scrollTo({
+        top: chatBodyRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [chatHistory]);
 
-  const handleToggle = () => {
-    if (currentUserId) {
-      setIsOpen(!isOpen);
-      if (isOpen) setChatHistory([{ hideInChat: true, role: 'model', text: companyInfo }]);
-    } else {
-      alert("Please sign in to use the AI Chatbot.");
-      navigate('/signin');
+  const handlePopUp = () => {
+    if(currentUserId){
+      if(isOpen == true) {
+        setIsOpen(false)
+        setChatHistory([])
+      }
+      else setIsOpen(true);
     }
-  };
+    else {
+      alert("Please sign in to use the AI Chatbot.");
+      navigate('/signin')
+    };
+  }
 
   return (
     <>
-      {/* ==================== FLOATING BUTTON - KEasy Style ==================== */}
-      <div className="fixed bottom-6 right-6 z-50">
-        {/* Pulse Animation Ring */}
-        <motion.div
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0, 0.5]
-          }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute inset-0 bg-[#FF6B6B] rounded-full"
-        />
-        
-        {/* Main Button */}
-        <motion.button
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onHoverStart={() => setIsHovered(true)}
-          onHoverEnd={() => setIsHovered(false)}
-          onClick={handleToggle}
-          className="relative flex items-center gap-3 px-5 py-4 bg-[#FF6B6B] text-white rounded-2xl shadow-lg shadow-[#FF6B6B]/30 hover:shadow-xl hover:shadow-[#FF6B6B]/40 transition-all duration-300"
-        >
-          {/* Icon Container */}
-          <div className="relative">
-            <motion.div
-              animate={{ rotate: isHovered ? 360 : 0 }}
-              transition={{ duration: 0.5 }}
-              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center"
-            >
-              <Sparkles className="w-5 h-5 text-white" />
-            </motion.div>
-            
-            {/* Online Indicator */}
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#4ECDC4] rounded-full border-2 border-[#FF6B6B]">
-              <span className="absolute inset-0 bg-[#4ECDC4] rounded-full animate-ping opacity-75" />
-            </span>
-          </div>
-          
-          {/* Text - Hidden on small mobile */}
-          <div className="hidden sm:block text-left">
-            <p className="font-bold text-sm leading-tight">KEasy AI</p>
-            <p className="text-[10px] text-white/80">Ask me anything!</p>
-          </div>
-          
-          {/* Arrow indicator on hover */}
-          <motion.div
-            initial={{ opacity: 0, x: -5 }}
-            animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -5 }}
-            className="hidden sm:block"
-          >
-            <FiArrowRight className="w-4 h-4" />
-          </motion.div>
-        </motion.button>
-      </div>
+      {/* Floating Chat Button */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={handlePopUp}
+        className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
+      >
+        <Sparkles className="w-5 h-5 text-white" />
+        <span className="hidden sm:inline font-medium">keasy AI</span>
+      </motion.button>
 
-      {/* ==================== CHAT WINDOW ==================== */}
+      {/* Chat Popup */}
       <AnimatePresence>
         {isOpen && (
           <>
@@ -3076,96 +3225,78 @@ const AIChatbot = ({ currentUserId }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 md:hidden"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
             />
-            
-            {/* Chat Window */}
+
+            {/* Chat Container */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden md:bottom-24 md:right-6 md:w-[400px] md:h-[550px] inset-4 md:inset-auto flex flex-col border border-gray-100"
+              initial={{ 
+                opacity: 0,
+                scale: 0.95,
+                y: 20
+              }}
+              animate={{ 
+                opacity: 0.95,
+                scale: 1,
+                y: 0
+              }}
+              exit={{ 
+                opacity: 0,
+                scale: 0.95,
+                y: 20
+              }}
+              transition={{ 
+                type: "spring",
+                damping: 25,
+                stiffness: 300
+              }}
+              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden
+                md:bottom-24 md:right-6 md:w-[400px] md:h-[600px]
+                inset-4 md:inset-auto"
             >
               {/* Header */}
-              <div className="bg-[#FF6B6B] text-white p-4 flex items-center justify-between">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </div>
+                  <ChatbotIcon />
                   <div>
-                    <h3 className="font-bold">KEasy AI Assistant</h3>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 bg-[#4ECDC4] rounded-full animate-pulse" />
-                      <p className="text-xs text-white/80">Online • Ready to help</p>
-                    </div>
+                    <h3 className="font-semibold text-lg text-white">keasy AI</h3>
+                    <p className="text-xs text-blue-100">Always here to help</p>
                   </div>
                 </div>
-                <button 
-                  onClick={handleToggle} 
-                  className="p-2 hover:bg-white/20 rounded-xl transition-colors"
+                <button
+                  onClick={handlePopUp}
+                  className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Messages */}
-              <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-4 bg-[#F8FAFB]">
+              {/* Chat Body */}
+              <div
+                ref={chatBodyRef}
+                className="flex-1 overflow-y-auto p-4 bg-white"
+                style={{ height: 'calc(100% - 130px)' }}
+              >
                 {/* Welcome Message */}
                 <div className="flex gap-3 mb-4">
                   <ChatbotIcon />
-                  <div className="bg-white rounded-2xl rounded-bl-sm px-4 py-3 max-w-[80%] shadow-sm border border-gray-100">
-                    <p className="text-sm text-gray-800">Hey there! 👋 I'm your KEasy AI assistant. How can I help you navigate life in Korea today?</p>
+                  <div className="max-w-[80%] bg-gray-100 text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3">
+                    <p className="text-sm leading-relaxed">
+                      Hey there 👋<br/>
+                      How can I help you today?
+                    </p>
                   </div>
                 </div>
-                
-                {/* Quick Actions */}
-                {chatHistory.length === 1 && (
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {['Find communities', 'Marketplace tips', 'Events near me', 'Living in Korea'].map((action) => (
-                      <button
-                        key={action}
-                        onClick={() => {
-                          setMessage(action);
-                          setTimeout(() => handleSend(), 100);
-                        }}
-                        className="px-3 py-1.5 bg-white border border-[#4ECDC4]/30 text-[#4ECDC4] rounded-full text-xs font-medium hover:bg-[#4ECDC4] hover:text-white transition-all duration-300"
-                      >
-                        {action}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                
-                {chatHistory.map((chat, i) => <ChatMessage key={i} chat={chat} />)}
+
+                {/* Chat History */}
+                {chatHistory.map((chat, index) => (
+                  <ChatMessage key={index} chat={chat} />
+                ))}
               </div>
 
-              {/* Input */}
-              <div className="p-4 border-t border-gray-100 bg-white">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder="Type your message..."
-                    className="flex-1 px-4 py-3 bg-[#F8FAFB] rounded-xl outline-none text-sm border border-gray-200 focus:border-[#4ECDC4] focus:ring-2 focus:ring-[#4ECDC4]/20 transition-all"
-                    disabled={isLoading}
-                  />
-                  <motion.button
-                    onClick={handleSend}
-                    disabled={!message.trim() || isLoading}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-12 h-12 bg-[#FF6B6B] text-white rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#e85a5a] transition-colors shadow-lg shadow-[#FF6B6B]/25"
-                  >
-                    <Send className="w-5 h-5" />
-                  </motion.button>
-                </div>
-                
-                {/* Powered by text */}
-                <p className="text-center text-[10px] text-gray-400 mt-2">
-                  Powered by KEasy AI • Your Korea companion
-                </p>
+              {/* Chat Footer */}
+              <div className="py-3 pt-1 px-1 bg-white border-t border-gray-200">
+                <ChatForm onSubmit={handleSendMessage} isLoading={isLoading} />
               </div>
             </motion.div>
           </>
