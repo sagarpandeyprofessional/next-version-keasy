@@ -203,23 +203,7 @@ const HeroSection = () => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Animated Background Shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(255,107,107,0.15) 0%, transparent 70%)' }}
-        />
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
-          className="absolute -bottom-32 -left-32 w-[600px] h-[600px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(78,205,196,0.12) 0%, transparent 70%)' }}
-        />
-      </div>
+
 
       {/* Navigation Arrows */}
       <button
