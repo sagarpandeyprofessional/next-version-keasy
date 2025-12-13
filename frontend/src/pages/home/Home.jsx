@@ -238,74 +238,76 @@ const HeroSection = () => {
         <FiArrowRight className="w-5 h-5 md:w-6 md:h-6 text-[#3D3A35] group-hover:text-[#FF6B6B] transition-colors" />
       </button>
 
-      {/* Slides Container */}
-      <div className="px-[3%] bg-[#F8FAFB] relative z-10">
-        <AnimatePresence mode="wait">
-          {/* SLIDE 1: Welcome Hero */}
-          {currentSlide === 0 && (
-            <motion.div
-              key="slide-1"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <SlideWelcome />
-            </motion.div>
-          )}
+      {/* Slides Container - FIXED: Added fixed height for desktop to prevent layout shifts */}
+      <div className="px-[3%] bg-[#F8FAFB] relative z-10 md:h-[650px] md:flex md:items-center">
+        <div className="w-full">
+          <AnimatePresence mode="wait">
+            {/* SLIDE 1: Welcome Hero */}
+            {currentSlide === 0 && (
+              <motion.div
+                key="slide-1"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                <SlideWelcome />
+              </motion.div>
+            )}
 
-          {/* SLIDE 2: Professionals */}
-          {currentSlide === 1 && (
-            <motion.div
-              key="slide-2"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <SlideProfessionals professional={featuredProfessional} />
-            </motion.div>
-          )}
+            {/* SLIDE 2: Professionals */}
+            {currentSlide === 1 && (
+              <motion.div
+                key="slide-2"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                <SlideProfessionals professional={featuredProfessional} />
+              </motion.div>
+            )}
 
-          {/* SLIDE 3: Most Viewed Guide */}
-          {currentSlide === 2 && (
-            <motion.div
-              key="slide-3"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <SlideGuide guide={topGuide} formatViews={formatViews} />
-            </motion.div>
-          )}
+            {/* SLIDE 3: Most Viewed Guide */}
+            {currentSlide === 2 && (
+              <motion.div
+                key="slide-3"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                <SlideGuide guide={topGuide} formatViews={formatViews} />
+              </motion.div>
+            )}
 
-          {/* SLIDE 4: Community */}
-          {currentSlide === 3 && (
-            <motion.div
-              key="slide-4"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <SlideCommunity communityCount={communityCount} />
-            </motion.div>
-          )}
+            {/* SLIDE 4: Community */}
+            {currentSlide === 3 && (
+              <motion.div
+                key="slide-4"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                <SlideCommunity communityCount={communityCount} />
+              </motion.div>
+            )}
 
-          {/* SLIDE 5: Advertisement */}
-          {currentSlide === 4 && (
-            <motion.div
-              key="slide-5"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <SlideAdvertisement />
-            </motion.div>
-          )}
-        </AnimatePresence>
+            {/* SLIDE 5: Advertisement */}
+            {currentSlide === 4 && (
+              <motion.div
+                key="slide-5"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                <SlideAdvertisement />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Slide Indicators (small dots at bottom - optional, subtle) */}
