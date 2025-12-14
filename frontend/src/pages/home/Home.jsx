@@ -2035,7 +2035,7 @@ const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef
   }
 // background for the marketplace section can be changed here
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-[#F8FAFB]">
+    <section className="py-12 md:py-16 lg:py-10 bg-[#F8FAFB]">
       <div className="container mx-auto px-[3%]">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12">
@@ -2176,7 +2176,7 @@ const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef
 
 const LocalClassesCTA = () => {
   return (
-    <section className="py-16 bg-[#F8FAFB]">
+    <section className="py-10 bg-[#F8FAFB]">
       <div className="container mx-auto px-[3%]">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -2464,7 +2464,7 @@ const TestimonialsSection = () => {
   const allTestimonials = [...testimonials, ...testimonials];
 
   return (
-    <section className="py-16 md:py-20 bg-[#F8FAFB] overflow-hidden">
+    <section className="py-16 md:py-10 bg-[#F8FAFB] overflow-hidden">
       <div className="container mx-auto px-[3%]">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
@@ -2545,13 +2545,13 @@ const TestimonialsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Link
+            {/* <Link
               to="/reviews"
               className="inline-flex items-center gap-2 text-[#FF6B6B] hover:text-[#E85555] font-semibold transition-colors"
             >
               Read more testimonials
               <FiArrowRight className="w-10 h-10" />
-            </Link>
+            </Link> */}
           </motion.div>
         </div>
       </div>
@@ -2566,7 +2566,7 @@ const TestimonialsSection = () => {
 
 const CTASection = ({ currentUserId }) => {
   return (
-    <section className="py-16 bg-[#F8FAFB]">
+    <section className="py-0 pb-20 bg-[#F8FAFB]">
       <div className="container mx-auto px-[3%] bg-[#F8FAFB]">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
