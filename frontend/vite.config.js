@@ -1,14 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import tailwind from '@tailwindcss/vite'  // rename import to avoid confusion
+import tailwind from '@tailwindcss/vite'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    tailwind(),  // call the plugin as a function
+    tailwind(),
   ],
   server: {
+    host: true,          // 🔑 THIS IS THE FIX
     port: 3000,
     proxy: {
       '/api': {

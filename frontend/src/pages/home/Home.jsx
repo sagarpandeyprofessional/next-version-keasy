@@ -2443,11 +2443,11 @@ const TestimonialsSection = () => {
       image: "/testimonials/Yoon.svg",
       quote: "Keasy brought many new foreign customers to my store. It’s a great platform for connecting local businesses with the foreign community."
     },
-    // {
-    //   name: "Tomato Photo Studio, Korea",
-    //   image: "/testimonials/AB.SVG",
-    //   quote: "Thanks to KEasy team, I have increased my costumer base and I get to help many foreigners."
-    // },
+    {
+      name: "Tomato Photo Studio, Korea",
+      image: "/testimonials/photostudio.svg",
+      quote: "Thanks to KEasy team, I have increased my costumer base and I get to help many foreigners."
+    },
     // {
     //   name: "Jessica",
     //   image: "/testimonials/AB.SVG",
