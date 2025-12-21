@@ -910,7 +910,7 @@ const SlideAdvertisement = () => {
 
         {/* CTA Buttons */}
         <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
-          <Link to="/events">
+          <a href="https://invite.kakao.com/tc/zPLgnWBMnk" target='_blank'>
             <motion.button
               whileHover={{ scale: 1.02, boxShadow: '0 20px 40px rgba(255,107,107,0.3)' }}
               whileTap={{ scale: 0.98 }}
@@ -919,8 +919,8 @@ const SlideAdvertisement = () => {
               Find Classes
               <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
             </motion.button>
-          </Link>
-          <Link to="/contact">
+          </a>
+          <a href="https://invite.kakao.com/tc/zPLgnWBMnk" target='_blank'>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -928,7 +928,7 @@ const SlideAdvertisement = () => {
             >
               Contact Us
             </motion.button>
-          </Link>
+          </a>
         </motion.div>
       </motion.div>
 
@@ -2218,7 +2218,7 @@ const LocalClassesCTA = () => {
                 All levels are welcome!
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link to="/events">
+                <a href="https://invite.kakao.com/tc/zPLgnWBMnk" target='_blank'>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -2226,7 +2226,7 @@ const LocalClassesCTA = () => {
                   >
                     Join Free Class
                   </motion.button>
-                </Link>
+                </a>
                 <Link to="/community">
                   <motion.button
                     whileHover={{ scale: 1.02 }}

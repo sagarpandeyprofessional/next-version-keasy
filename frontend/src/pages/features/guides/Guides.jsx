@@ -499,7 +499,7 @@ const Guides = () => {
           HEADER SECTION
           Contains title, description, and create guide button
           ==================================================================== */}
-      <header className=" border-b border-gray-200 sticky top-0 z-30">
+      <header className="bg-gray-50 border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Title and Create Button Row */}
           <div className="flex items-center justify-between py-4">
