@@ -265,6 +265,7 @@ const Navbar = () => {
     { name: "Community", path: "/community" },
     { name: "Guides", path: "/guides" },
     { name: "Connect", path: "/connect" },
+    { name: "Jobs", path: "/jobs" },
     { name: "About", path: "/about" },
   ];
 

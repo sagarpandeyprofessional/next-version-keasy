@@ -143,6 +143,7 @@ Keasy is more than a service — it's a space to belong, grow, and thrive.`,
       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&sat=-100'
     }
   ];
+  
 
   return (
     <div className="min-h-screen">
@@ -219,6 +220,7 @@ Keasy is more than a service — it's a space to belong, grow, and thrive.`,
           ))}
         </div>
 
+
         {/* What Makes Us Different */}
         <div
           className="mt-16 bg-white rounded-lg p-8 lg:p-12 shadow-sm"
@@ -253,7 +255,6 @@ Keasy is more than a service — it's a space to belong, grow, and thrive.`,
 
       {/* Team Section */}
       <TeamSection />
-
       {/* Instagram Section */}
       {/* <InstagramFollow /> */}
     </div>
