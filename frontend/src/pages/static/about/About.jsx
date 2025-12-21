@@ -34,18 +34,26 @@ const TeamSection = () => {
     { 
       name: 'Sagar Pandey', 
       title: 'CEO & Founder', 
-      image: '/team/sagar_pandey.jpg',
+      image: '/team/sagar.jpg',
       website: 'https://www.linkedin.com/in/sagaa', 
       linkedin: 'https://www.linkedin.com/in/sagar1998m', 
       email: 'sagar.pandey.professional@gmail.com' 
     },
     { 
       name: 'Firdavs Salokhiddinov', 
-      title: 'Co-Founder | AI & Software Engineer', 
+      title: 'CTO & Co-Founder', 
       image: '/team/firdavs_salokhiddinov.jpg', 
       website: 'https://firdavssalokhiddinov.github.io/MyPortfolio/', 
       linkedin: 'https://www.linkedin.com/in/firdavs-salokhiddinov-0288b1215/', 
       email: 'firdavssalokhiddinov@gmail.com' 
+    },
+    { 
+      name: 'Gevariya Sahil Nandlalbhai', 
+      title: 'AI & Software Engineer', 
+      image: '/team/sahil.jpg', 
+      website: 'https://github.com/Yoosahil06', 
+      linkedin: 'https://github.com/Yoosahil06', 
+      email: 'sahil.gevariya06@gmail.com ' 
     }
   ];
 
@@ -64,6 +72,73 @@ const TeamSection = () => {
             <TeamMember 
               key={member.name} 
               {...member} 
+              delay={0.1 + (index * 0.1)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CertificationCard = ({ name, title, image, delay, date}) => (
+  <div 
+    className=" rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-2"
+    style={{ animation: `fadeInUp 0.6s ease-out ${delay}s both` }}
+  >
+    <div className="aspect-square">
+      <img src={image} alt={name} className="w-full h-full object-cover" />
+    </div>
+    <div className=" text-center">
+      <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
+      <h4 className="text-base font-bold text-gray-900 mb-1">{title}</h4>
+      <p className="text-sm text-gray-600 mb-4  pb-6">{date}</p>
+      
+    </div>
+  </div>
+);
+
+// Team Section Component
+const CertificationSection = () => {
+  const certifications = [
+    { 
+      name: 'Korea Entreprenuership',
+      title: 'Foundation(U300+)',
+      image: './u300.png',
+      date: '2024'
+    },{ 
+      name: 'Korea Invention',
+      title: 'Promotion Association',
+      image: './oasis1.svg',
+      date: '2024'
+    },{ 
+      name: 'Minister of SMEs and Startups',
+      title: 'Republic of Korea',
+      image: './visa-rec.svg',
+      date: '2024'
+    },{ 
+      name: 'Korea Invention',
+      title: 'Promotion Association',
+      image: './oasis8.svg',
+      date: '2025'
+    },
+  ];
+
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <div className="max-w-7xl mx-auto">
+        <h1 
+          className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-16"
+          style={{ animation: 'fadeIn 0.8s ease-out' }}
+        >
+          Certifications & Awards
+        </h1>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
+          {certifications.map((cert, index) => (
+            <CertificationCard 
+              key={cert.name} 
+              {...cert} 
               delay={0.1 + (index * 0.1)}
             />
           ))}
@@ -142,7 +217,7 @@ We aim to bring together trustworthy information, real community, and helpful to
       content: `There's no reason to go through it alone. Whether you're finding your first home, searching for a job, or just looking for good food — we're here to help. Our platform unifies what's scattered and makes the complicated simple.
 
 Keasy is more than a service — it's a space to belong, grow, and thrive.`,
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&sat=-100'
+      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
     }
   ];
   
@@ -257,8 +332,9 @@ Keasy is more than a service — it's a space to belong, grow, and thrive.`,
 
       {/* Team Section */}
       <TeamSection />
+      <CertificationSection />
       {/* Instagram Section */}
-      {/* <InstagramFollow /> */}
+      <InstagramFollow />
     </div>
   );
 };

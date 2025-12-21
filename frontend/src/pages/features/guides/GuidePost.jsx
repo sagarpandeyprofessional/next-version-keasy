@@ -19,7 +19,8 @@ import {
   FileText,
   Lightbulb,
   ChevronDown,
-  MoreHorizontal
+  MoreHorizontal,
+  AlertCircle
 } from 'lucide-react';
 
 export default function GuideEditor() {
@@ -27,6 +28,17 @@ export default function GuideEditor() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  
+  // Metadata (separate from content)
+  const [metadata, setMetadata] = useState({
+    title: '',
+    description: '',
+    coverImage: null,
+    coverImageUrl: ''
+  });
+  const [metadataCompleted, setMetadataCompleted] = useState(false);
+  
+  // Content blocks
   const [blocks, setBlocks] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [hoveredBlock, setHoveredBlock] = useState(null);
@@ -82,6 +94,52 @@ export default function GuideEditor() {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
+  };
+
+  const handleCoverImageUpload = (file) => {
+    if (!file) return;
+    
+    // Validate square aspect ratio
+    const img = new window.Image();
+    const url = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      const aspectRatio = img.width / img.height;
+      if (aspectRatio < 0.9 || aspectRatio > 1.1) {
+        alert('Please upload a square image (1:1 aspect ratio)');
+        URL.revokeObjectURL(url);
+        return;
+      }
+      
+      setMetadata(prev => ({
+        ...prev,
+        coverImage: file,
+        coverImageUrl: url
+      }));
+    };
+    
+    img.src = url;
+  };
+
+  const proceedToContent = () => {
+    if (!metadata.title.trim()) {
+      alert('Please enter a title');
+      return;
+    }
+    if (!metadata.description.trim()) {
+      alert('Please enter a description');
+      return;
+    }
+    if (!metadata.coverImage) {
+      alert('Please upload a square cover image');
+      return;
+    }
+    if (!selectedCategory) {
+      alert('Please select a category');
+      return;
+    }
+    
+    setMetadataCompleted(true);
   };
 
   const addBlock = (type, afterIndex = null) => {
@@ -141,19 +199,12 @@ export default function GuideEditor() {
     updateBlock(blockId, { file, url });
   };
 
-  const uploadImage = async (file, guideTitle, createdAt) => {
+  const uploadImage = async (file, folderPath) => {
     try {
       const fileExt = file.name.split(".").pop();
       const timestamp = Date.now();
       const randomStr = Math.random().toString(36).substring(7);
-      
-      // Create folder structure: user_id/guide_title_created_at/timestamp_random.ext
-      const sanitizedTitle = guideTitle.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-      console.log(guideTitle)
-      const folderName = `${sanitizedTitle}_${createdAt}`;
-      const fileName = `${user.id}/${folderName}/${timestamp}_${randomStr}.${fileExt}`;
-
-      console.log('Uploading to path:', fileName);
+      const fileName = `${user.id}/${folderPath}/${timestamp}_${randomStr}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('guides')
@@ -163,7 +214,6 @@ export default function GuideEditor() {
         });
 
       if (uploadError) {
-        console.error('Upload error details:', uploadError);
         throw new Error(`Failed to upload image: ${uploadError.message}`);
       }
 
@@ -182,38 +232,10 @@ export default function GuideEditor() {
     }
   };
 
-  const extractMetadata = () => {
-    let title = '';
-    let description = '';
-    let coverImageBlock = null;
+  const buildContentSections = () => {
     const contentSections = [];
-    let foundTitle = false;
-    let foundDescription = false;
-    let foundCoverImage = false;
 
     for (const block of blocks) {
-      // Extract first heading as title
-      if (!foundTitle && block.type === 'heading' && block.content.trim()) {
-        title = block.content.trim();
-        foundTitle = true;
-        continue;
-      }
-
-      // Extract first text as description
-      if (!foundDescription && block.type === 'text' && block.content.trim()) {
-        description = block.content.trim();
-        foundDescription = true;
-        continue;
-      }
-
-      // Extract first image as cover
-      if (!foundCoverImage && block.type === 'image' && (block.url || block.file)) {
-        coverImageBlock = block;
-        foundCoverImage = true;
-        continue;
-      }
-
-      // Add all remaining blocks to content
       if (block.type === 'text' && block.content.trim()) {
         contentSections.push({ type: 'text', body: block.content });
       } else if (block.type === 'heading' && block.content.trim()) {
@@ -247,41 +269,25 @@ export default function GuideEditor() {
       }
     }
 
-    return { title, description, coverImageBlock, contentSections };
+    return contentSections;
   };
 
   const handleSave = async () => {
-    if (!selectedCategory) {
-      alert('Please select a category');
-      return;
-    }
-
     setSaving(true);
 
     try {
-      const { title, description, coverImageBlock, contentSections } = extractMetadata();
-
-      if (!title) {
-        alert('Please add at least one heading as the title');
-        setSaving(false);
-        return;
-      }
-
-      // Create folder name: created_at_created_by
       const timestamp = Date.now();
       const folderPath = `${timestamp}_${user.id}`;
 
-      // Upload cover image
-      let coverImageUrl = '';
-      if (coverImageBlock?.file) {
-        coverImageUrl = await uploadImage(coverImageBlock.file, folderPath);
-      }
+      // Upload cover image (required metadata)
+      const coverImageUrl = await uploadImage(metadata.coverImage, folderPath);
 
-      // Upload section images
+      // Build and upload content images
+      const contentSections = buildContentSections();
       const processedSections = await Promise.all(
         contentSections.map(async (section) => {
           if (section.type === 'image' && section.file) {
-            const imageUrl = await uploadImage(section.file, title, timestamp);
+            const imageUrl = await uploadImage(section.file, folderPath);
             return { 
               type: section.type, 
               url: imageUrl, 
@@ -297,29 +303,17 @@ export default function GuideEditor() {
         sections: processedSections,
         tags: tags
       };
+
       const { data, error } = await supabase
         .from('guide')
         .insert({
-          name: title,
-          description: description || '',
+          name: metadata.title,
+          description: metadata.description,
           img_url: coverImageUrl,
           content: content,
           category: selectedCategory,
           created_by: user.id,
           view: 0,
-
-
-
-
-
-
-// update
-
-
-
-
-
-
           like: {}
         })
         .select()
@@ -565,7 +559,7 @@ export default function GuideEditor() {
           <div className="space-y-2 mx-10">
             {block.items?.map((item, idx) => (
               <div key={idx} className="flex items-start gap-2">
-                <span className="text-gray-400 mt-2 ">•</span>
+                <span className="text-gray-400 mt-2">•</span>
                 <input
                   type="text"
                   value={item}
@@ -782,50 +776,192 @@ export default function GuideEditor() {
     );
   }
 
+  // Metadata form (shown first)
+  if (!metadataCompleted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+          <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Sparkles className="w-6 h-6 text-blue-600" />
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Create Your Guide</h1>
+            </div>
+            
+            <p className="text-gray-600 mb-8">
+              This information will appear in the guides feed and help users discover your content.
+            </p>
+
+            <div className="space-y-6">
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Category <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={metadata.title}
+                  onChange={(e) => setMetadata(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter a compelling title for your guide"
+                  maxLength={100}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-sm text-gray-500 mt-1">{metadata.title.length}/100 characters</p>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={metadata.description}
+                  onChange={(e) => setMetadata(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Write a brief description that will attract readers"
+                  maxLength={300}
+                  rows={4}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                />
+                <p className="text-sm text-gray-500 mt-1">{metadata.description.length}/300 characters</p>
+              </div>
+
+              {/* Cover Image */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Cover Image (Square) <span className="text-red-500">*</span>
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                  {metadata.coverImageUrl ? (
+                    <div className="space-y-3">
+                      <img 
+                        src={metadata.coverImageUrl} 
+                        alt="Cover preview" 
+                        className="w-48 h-48 mx-auto rounded-lg object-cover border-2 border-gray-200"
+                      />
+                      <button
+                        onClick={() => setMetadata(prev => ({ ...prev, coverImage: null, coverImageUrl: '' }))}
+                        className="text-sm text-red-600 hover:text-red-700"
+                      >
+                        Remove image
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Image className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <label className="cursor-pointer">
+                        <span className="text-blue-600 hover:text-blue-700 font-medium">Upload an image</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCoverImageUpload(e.target.files?.[0])}
+                          className="hidden"
+                        />
+                      </label>
+                      <p className="text-sm text-gray-500 mt-2">Square format (1:1 ratio) required</p>
+                      <p className="text-xs text-gray-400 mt-1">This will be used as your guide's icon in the feed</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Info Box */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
+                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-900">
+                  <p className="font-medium mb-1">Why we collect this separately:</p>
+                  <ul className="list-disc list-inside space-y-1 text-blue-800">
+                    <li>Optimized for feed display and discovery</li>
+                    <li>Custom branding independent of content</li>
+                    <li>Better SEO and sharing previews</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-8">
+              <button
+                onClick={() => navigate('/guides')}
+                className="flex-1 px-6 py-3 text-gray-600 hover:text-gray-900 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={proceedToContent}
+                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Continue to Content
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Content editor (shown after metadata)
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="flex-1 sm:flex-none sm:w-48 p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Category</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button
-              onClick={() => navigate('/guides')}
-              className="flex-1 sm:flex-none px-4 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 sm:flex-none px-4 py-2 bg-blue-600 text-white text-sm rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {saving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4" />
-                  Publish
-                </>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              {metadata.coverImageUrl && (
+                <img 
+                  src={metadata.coverImageUrl} 
+                  alt={metadata.title}
+                  className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                />
               )}
-            </button>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold text-gray-900 truncate">{metadata.title}</h2>
+                <p className="text-xs text-gray-500 truncate">{metadata.description}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMetadataCompleted(false)}
+                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium"
+              >
+                Edit Info
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {saving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    Publish
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -841,7 +977,7 @@ export default function GuideEditor() {
                 onMouseEnter={() => setHoveredBlock(block.id)}
                 onMouseLeave={() => setHoveredBlock(null)}
               >
-                {/* Left Controls - Hidden on mobile */}
+                {/* Left Controls */}
                 <div className={`hidden md:flex absolute left-0 top-0 -ml-12 items-start gap-1 transition-opacity ${hoveredBlock === block.id ? 'opacity-100' : 'opacity-0'}`}>
                   <button
                     onClick={() => setActiveDropdown(activeDropdown === `add-${block.id}` ? null : `add-${block.id}`)}
@@ -860,7 +996,7 @@ export default function GuideEditor() {
                   {renderBlock(block, index)}
                 </div>
 
-                {/* Right Controls - Always visible on mobile */}
+                {/* Right Controls */}
                 <div className={`absolute right-0 top-0 -mr-2 md:-mr-10 transition-opacity ${hoveredBlock === block.id || window.innerWidth < 768 ? 'opacity-100' : 'opacity-0'}`}>
                   <button
                     onClick={() => setActiveDropdown(activeDropdown === `options-${block.id}` ? null : `options-${block.id}`)}
@@ -912,15 +1048,15 @@ export default function GuideEditor() {
               className="group w-full text-left py-3 px-2 text-gray-400 hover:text-gray-600 flex items-center gap-2 transition-colors"
             >
               <Plus className="w-5 h-5" />
-              <span className="text-base md:text-lg">Click to add content</span>
+              <span className="text-base md:text-lg">Start creating your guide content</span>
             </button>
             {activeDropdown === 'initial' && <BlockMenu blockIndex={null} />}
           </div>
         )}
 
-        {/* Mobile Add Button - Floating */}
+        {/* Mobile Add Button */}
         {blocks.length > 0 && (
-          <div className="md:hidden fixed bottom-18 left-1/2 transform -translate-x-1/2 z-40">
+          <div className="md:hidden fixed bottom-20 left-1/2 transform -translate-x-1/2 z-40">
             <button
               onClick={() => setActiveDropdown(activeDropdown === 'mobile-add' ? null : 'mobile-add')}
               className="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
@@ -928,7 +1064,7 @@ export default function GuideEditor() {
               <Plus className="w-6 h-6" />
             </button>
             {activeDropdown === 'mobile-add' && (
-              <div className="absolute bottom-80 right-0 mb-2">
+              <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 mb-2">
                 <BlockMenu blockIndex={blocks.length - 1} />
               </div>
             )}

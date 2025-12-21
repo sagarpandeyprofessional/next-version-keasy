@@ -21,7 +21,7 @@
  * @requires lucide-react
  * @requires supabase-client
  * 
- * @author Your Name
+ * @author Sagar Pandey
  * @version 2.0.0
  */
 
@@ -499,7 +499,7 @@ const Guides = () => {
           HEADER SECTION
           Contains title, description, and create guide button
           ==================================================================== */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+      <header className=" border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Title and Create Button Row */}
           <div className="flex items-center justify-between py-4">
@@ -943,12 +943,7 @@ const GuideListCard = ({
           </div>
         )}
         
-        {/* Category Badge - Positioned on image */}
-        {category && (
-          <span className="absolute top-1.5 left-1.5 px-2 py-0.5 text-[10px] font-semibold bg-white/90 backdrop-blur-sm text-gray-700 rounded-full shadow-sm">
-            {getCategoryName(category)}
-          </span>
-        )}
+       
       </div>
 
       {/* Guide Info */}
@@ -959,6 +954,13 @@ const GuideListCard = ({
             {name || 'Untitled Guide'}
           </h3>
         </div>
+
+         {/* Category Badge - Positioned on image */}
+        {category && (
+          <span className='text-xs font-medium line-clamp-1 text-gray-900'>
+           {getCategoryName(category)}
+          </span>
+        )}
 
         {/* Author and Stats Row */}
         <div className="flex items-center justify-between mt-2">

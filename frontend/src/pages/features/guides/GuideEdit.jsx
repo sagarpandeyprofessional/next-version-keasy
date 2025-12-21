@@ -19,7 +19,9 @@ import {
   FileText,
   Lightbulb,
   ChevronDown,
-  MoreHorizontal
+  MoreHorizontal,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 
 export default function GuideEdit() {
@@ -28,6 +30,19 @@ export default function GuideEdit() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [originalGuide, setOriginalGuide] = useState(null);
+  
+  // Metadata (separate from content)
+  const [metadata, setMetadata] = useState({
+    title: '',
+    description: '',
+    coverImage: null,
+    coverImageUrl: '',
+    existingCoverUrl: ''
+  });
+  const [editingMetadata, setEditingMetadata] = useState(false);
+  
+  // Content blocks
   const [blocks, setBlocks] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [hoveredBlock, setHoveredBlock] = useState(null);
@@ -36,7 +51,6 @@ export default function GuideEdit() {
   const [tagInput, setTagInput] = useState('');
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [originalGuide, setOriginalGuide] = useState(null);
 
   useEffect(() => {
     checkAuthAndLoadGuide();
@@ -64,9 +78,17 @@ export default function GuideEdit() {
       }
       
       setUser(user);
+      await loadGuide(user.id);
+    } catch (error) {
+      console.error('Auth error:', error);
+      alert('Sign in to edit guides');
+      navigate('/guides');
+    }
+  };
 
-      // Fetch the guide
-      const { data: guide, error } = await supabase
+  const loadGuide = async (userId) => {
+    try {
+      const { data, error } = await supabase
         .from('guide')
         .select('*')
         .eq('id', id)
@@ -74,135 +96,83 @@ export default function GuideEdit() {
 
       if (error) throw error;
 
-      // Check if user is the owner
-      if (guide.created_by !== user.id) {
-        alert('You can only edit your own guides');
-        navigate(`/guides/guide/${id}`);
+      if (!data) {
+        alert('Guide not found');
+        navigate('/guides');
         return;
       }
 
-      setOriginalGuide(guide);
-      loadGuideIntoEditor(guide);
-      setLoading(false);
-    } catch (error) {
-      console.error('Load error:', error);
-      alert('Failed to load guide');
-      navigate('/guides');
-    }
-  };
+      if (data.created_by !== userId) {
+        alert('You can only edit your own guides');
+        navigate('/guides');
+        return;
+      }
 
-  const loadGuideIntoEditor = (guide) => {
-    const loadedBlocks = [];
-    
-    // Add title as heading block
-    if (guide.name) {
-      loadedBlocks.push({
-        id: Date.now() + Math.random(),
-        type: 'heading',
-        content: guide.name
+      setOriginalGuide(data);
+
+      // Load metadata
+      setMetadata({
+        title: data.name || '',
+        description: data.description || '',
+        coverImage: null,
+        coverImageUrl: '',
+        existingCoverUrl: data.img_url || ''
       });
-    }
 
-    // Add description as text block
-    if (guide.description) {
-      loadedBlocks.push({
-        id: Date.now() + Math.random() + 0.1,
-        type: 'text',
-        content: guide.description
-      });
-    }
+      setSelectedCategory(data.category || '');
 
-    // Add cover image as image block
-    if (guide.img_url) {
-      loadedBlocks.push({
-        id: Date.now() + Math.random() + 0.2,
-        type: 'image',
-        url: guide.img_url,
-        caption: '',
-        file: null
-      });
-    }
-
-    // Load content sections
-    if (guide.content?.sections) {
-      guide.content.sections.forEach((section, idx) => {
-        const blockId = Date.now() + Math.random() + idx + 0.3;
+      // Load content blocks
+      const content = data.content || {};
+      const sections = content.sections || [];
+      const loadedBlocks = sections.map((section, index) => {
+        const blockId = Date.now() + index + Math.random();
         
-        if (section.type === 'text') {
-          loadedBlocks.push({
+        if (section.type === 'text' || section.type === 'heading' || 
+            section.type === 'quote' || section.type === 'tip') {
+          return {
             id: blockId,
-            type: 'text',
+            type: section.type,
             content: section.body || ''
-          });
-        } else if (section.type === 'heading') {
-          loadedBlocks.push({
-            id: blockId,
-            type: 'heading',
-            content: section.body || ''
-          });
+          };
         } else if (section.type === 'image') {
-          loadedBlocks.push({
+          return {
             id: blockId,
             type: 'image',
             url: section.url || '',
             caption: section.caption || '',
             file: null
-          });
-        } else if (section.type === 'tip') {
-          loadedBlocks.push({
-            id: blockId,
-            type: 'tip',
-            content: section.body || ''
-          });
-        } else if (section.type === 'quote') {
-          loadedBlocks.push({
-            id: blockId,
-            type: 'quote',
-            content: section.body || ''
-          });
-        } else if (section.type === 'delimiter') {
-          loadedBlocks.push({
-            id: blockId,
-            type: 'delimiter',
-            content: ''
-          });
+          };
         } else if (section.type === 'list') {
-          loadedBlocks.push({
+          return {
             id: blockId,
             type: 'list',
             items: section.items || ['']
-          });
-        } else if (section.type === 'links') {
-          loadedBlocks.push({
+          };
+        } else if (section.type === 'delimiter') {
+          return {
             id: blockId,
-            type: 'links',
-            items: section.items || [{ name: '', url: '' }]
-          });
-        } else if (section.type === 'app_links') {
-          loadedBlocks.push({
+            type: 'delimiter',
+            content: ''
+          };
+        } else if (['links', 'app_links', 'pdf_links', 'social_links'].includes(section.type)) {
+          return {
             id: blockId,
-            type: 'app_links',
-            items: section.items || [{ label: 'Play Store', url: '' }]
-          });
-        } else if (section.type === 'pdf_links') {
-          loadedBlocks.push({
-            id: blockId,
-            type: 'pdf_links',
-            items: section.items || [{ label: '', url: '' }]
-          });
-        } else if (section.type === 'social_links') {
-          loadedBlocks.push({
-            id: blockId,
-            type: 'social_links',
-            items: section.items || [{ name: '', url: '' }]
-          });
+            type: section.type,
+            items: section.items || []
+          };
         }
-      });
-    }
+        
+        return null;
+      }).filter(Boolean);
 
-    setBlocks(loadedBlocks);
-    setSelectedCategory(guide.category || '');
-    setTags(guide.content?.tags || []);
+      setBlocks(loadedBlocks);
+      setTags(content.tags || []);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading guide:', error);
+      alert('Failed to load guide');
+      navigate('/guides');
+    }
   };
 
   const fetchCategories = async () => {
@@ -217,6 +187,47 @@ export default function GuideEdit() {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
+  };
+
+  const handleCoverImageUpload = (file) => {
+    if (!file) return;
+    
+    const img = new window.Image();
+    const url = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      const aspectRatio = img.width / img.height;
+      if (aspectRatio < 0.9 || aspectRatio > 1.1) {
+        alert('Please upload a square image (1:1 aspect ratio)');
+        URL.revokeObjectURL(url);
+        return;
+      }
+      
+      setMetadata(prev => ({
+        ...prev,
+        coverImage: file,
+        coverImageUrl: url
+      }));
+    };
+    
+    img.src = url;
+  };
+
+  const saveMetadataChanges = () => {
+    if (!metadata.title.trim()) {
+      alert('Please enter a title');
+      return;
+    }
+    if (!metadata.description.trim()) {
+      alert('Please enter a description');
+      return;
+    }
+    if (!selectedCategory) {
+      alert('Please select a category');
+      return;
+    }
+    
+    setEditingMetadata(false);
   };
 
   const addBlock = (type, afterIndex = null) => {
@@ -276,15 +287,12 @@ export default function GuideEdit() {
     updateBlock(blockId, { file, url });
   };
 
-  const uploadImage = async (file, guideTitle, createdAt) => {
+  const uploadImage = async (file, folderPath) => {
     try {
       const fileExt = file.name.split(".").pop();
       const timestamp = Date.now();
       const randomStr = Math.random().toString(36).substring(7);
-      
-      const sanitizedTitle = guideTitle.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-      const folderName = `${sanitizedTitle}_${createdAt}`;
-      const fileName = `${user.id}/${folderName}/${timestamp}_${randomStr}.${fileExt}`;
+      const fileName = `${user.id}/${folderPath}/${timestamp}_${randomStr}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('guides')
@@ -293,7 +301,9 @@ export default function GuideEdit() {
           upsert: false
         });
 
-      if (uploadError) throw new Error(`Failed to upload image: ${uploadError.message}`);
+      if (uploadError) {
+        throw new Error(`Failed to upload image: ${uploadError.message}`);
+      }
 
       const { data: urlData } = supabase.storage
         .from('guides')
@@ -310,34 +320,10 @@ export default function GuideEdit() {
     }
   };
 
-  const extractMetadata = () => {
-    let title = '';
-    let description = '';
-    let coverImageBlock = null;
+  const buildContentSections = () => {
     const contentSections = [];
-    let foundTitle = false;
-    let foundDescription = false;
-    let foundCoverImage = false;
 
     for (const block of blocks) {
-      if (!foundTitle && block.type === 'heading' && block.content.trim()) {
-        title = block.content.trim();
-        foundTitle = true;
-        continue;
-      }
-
-      if (!foundDescription && block.type === 'text' && block.content.trim()) {
-        description = block.content.trim();
-        foundDescription = true;
-        continue;
-      }
-
-      if (!foundCoverImage && block.type === 'image' && (block.url || block.file)) {
-        coverImageBlock = block;
-        foundCoverImage = true;
-        continue;
-      }
-
       if (block.type === 'text' && block.content.trim()) {
         contentSections.push({ type: 'text', body: block.content });
       } else if (block.type === 'heading' && block.content.trim()) {
@@ -371,43 +357,29 @@ export default function GuideEdit() {
       }
     }
 
-    return { title, description, coverImageBlock, contentSections };
+    return contentSections;
   };
 
   const handleSave = async () => {
-    if (!selectedCategory) {
-      alert('Please select a category');
-      return;
-    }
-
     setSaving(true);
 
     try {
-      const { title, description, coverImageBlock, contentSections } = extractMetadata();
+      const timestamp = originalGuide.created_at ? new Date(originalGuide.created_at).getTime() : Date.now();
+      const folderPath = `${timestamp}_${user.id}`;
 
-      if (!title) {
-        alert('Please add at least one heading as the title');
-        setSaving(false);
-        return;
+      let finalCoverUrl = metadata.existingCoverUrl;
+
+      // Upload new cover image if changed
+      if (metadata.coverImage) {
+        finalCoverUrl = await uploadImage(metadata.coverImage, folderPath);
       }
 
-      const timestamp = originalGuide.created_at ? 
-        new Date(originalGuide.created_at).getTime() : 
-        Date.now();
-
-      // Upload cover image if new file
-      let coverImageUrl = originalGuide.img_url || '';
-      if (coverImageBlock?.file) {
-        coverImageUrl = await uploadImage(coverImageBlock.file, title, timestamp);
-      } else if (coverImageBlock?.url) {
-        coverImageUrl = coverImageBlock.url;
-      }
-
-      // Upload section images
+      // Build and upload content images
+      const contentSections = buildContentSections();
       const processedSections = await Promise.all(
         contentSections.map(async (section) => {
           if (section.type === 'image' && section.file) {
-            const imageUrl = await uploadImage(section.file, title, timestamp);
+            const imageUrl = await uploadImage(section.file, folderPath);
             return { 
               type: section.type, 
               url: imageUrl, 
@@ -427,9 +399,9 @@ export default function GuideEdit() {
       const { error } = await supabase
         .from('guide')
         .update({
-          name: title,
-          description: description || '',
-          img_url: coverImageUrl,
+          name: metadata.title,
+          description: metadata.description,
+          img_url: finalCoverUrl,
           content: content,
           category: selectedCategory
         })
@@ -555,19 +527,37 @@ export default function GuideEdit() {
         <div className="border-t border-gray-200 my-1"></div>
         
         {index > 0 && (
-          <button onClick={() => { moveBlock(index, 'up'); setActiveDropdown(null); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50">
+          <button
+            onClick={() => {
+              moveBlock(index, 'up');
+              setActiveDropdown(null);
+            }}
+            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
+          >
             Move up
           </button>
         )}
         {index < blocks.length - 1 && (
-          <button onClick={() => { moveBlock(index, 'down'); setActiveDropdown(null); }} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50">
+          <button
+            onClick={() => {
+              moveBlock(index, 'down');
+              setActiveDropdown(null);
+            }}
+            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
+          >
             Move down
           </button>
         )}
         
         <div className="border-t border-gray-200 my-1"></div>
         
-        <button onClick={() => { deleteBlock(block.id); setActiveDropdown(null); }} className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600">
+        <button
+          onClick={() => {
+            deleteBlock(block.id);
+            setActiveDropdown(null);
+          }}
+          className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600"
+        >
           Delete
         </button>
       </div>
@@ -793,6 +783,12 @@ export default function GuideEdit() {
                 />
               </div>
             ))}
+            <button
+              onClick={() => updateBlock(block.id, { items: [...block.items, { label: '', url: '' }] })}
+              className="text-sm text-blue-600 hover:text-blue-700"
+            >
+              + Add PDF
+            </button>
           </div>
         );
 
@@ -825,8 +821,17 @@ export default function GuideEdit() {
                 />
               </div>
             ))}
+            <button
+              onClick={() => updateBlock(block.id, { items: [...block.items, { name: '', url: '' }] })}
+              className="text-sm text-blue-600 hover:text-blue-700"
+            >
+              + Add social link
+            </button>
           </div>
         );
+      
+      default:
+        return null;
     }
   };
 
@@ -834,57 +839,188 @@ export default function GuideEdit() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading editor...</p>
+          <Loader2 className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading guide...</p>
         </div>
       </div>
     );
   }
 
+  // Metadata edit modal
+  if (editingMetadata) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+          <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Sparkles className="w-6 h-6 text-blue-600" />
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Edit Guide Info</h1>
+            </div>
+            
+            <p className="text-gray-600 mb-8">
+              Update the information that appears in the guides feed.
+            </p>
+
+            <div className="space-y-6">
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Category <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={metadata.title}
+                  onChange={(e) => setMetadata(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter a compelling title for your guide"
+                  maxLength={100}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-sm text-gray-500 mt-1">{metadata.title.length}/100 characters</p>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={metadata.description}
+                  onChange={(e) => setMetadata(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Write a brief description that will attract readers"
+                  maxLength={300}
+                  rows={4}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                />
+                <p className="text-sm text-gray-500 mt-1">{metadata.description.length}/300 characters</p>
+              </div>
+
+              {/* Cover Image */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Cover Image (Square) <span className="text-red-500">*</span>
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                  {(metadata.coverImageUrl || metadata.existingCoverUrl) ? (
+                    <div className="space-y-3">
+                      <img 
+                        src={metadata.coverImageUrl || metadata.existingCoverUrl} 
+                        alt="Cover preview" 
+                        className="w-48 h-48 mx-auto rounded-lg object-cover border-2 border-gray-200"
+                      />
+                      <label className="cursor-pointer text-sm text-blue-600 hover:text-blue-700 block">
+                        Change image
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCoverImageUpload(e.target.files?.[0])}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    <div>
+                      <Image className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <label className="cursor-pointer">
+                        <span className="text-blue-600 hover:text-blue-700 font-medium">Upload an image</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCoverImageUpload(e.target.files?.[0])}
+                          className="hidden"
+                        />
+                      </label>
+                      <p className="text-sm text-gray-500 mt-2">Square format (1:1 ratio) required</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-8">
+              <button
+                onClick={() => setEditingMetadata(false)}
+                className="flex-1 px-6 py-3 text-gray-600 hover:text-gray-900 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveMetadataChanges}
+                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Content editor
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="flex-1 sm:flex-none sm:w-48 p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Category</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button
-              onClick={() => navigate(`/guides/guide/${id}`)}
-              className="flex-1 sm:flex-none px-4 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 sm:flex-none px-4 py-2 bg-blue-600 text-white text-sm rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {saving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4" />
-                  Update
-                </>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              {(metadata.coverImageUrl || metadata.existingCoverUrl) && (
+                <img 
+                  src={metadata.coverImageUrl || metadata.existingCoverUrl} 
+                  alt={metadata.title}
+                  className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                />
               )}
-            </button>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold text-gray-900 truncate">{metadata.title}</h2>
+                <p className="text-xs text-gray-500 truncate">{metadata.description}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setEditingMetadata(true)}
+                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium"
+              >
+                Edit Info
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="animate-spin h-4 w-4" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    Update
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -900,7 +1036,7 @@ export default function GuideEdit() {
                 onMouseEnter={() => setHoveredBlock(block.id)}
                 onMouseLeave={() => setHoveredBlock(null)}
               >
-                {/* Left Controls - Hidden on mobile */}
+                {/* Left Controls */}
                 <div className={`hidden md:flex absolute left-0 top-0 -ml-12 items-start gap-1 transition-opacity ${hoveredBlock === block.id ? 'opacity-100' : 'opacity-0'}`}>
                   <button
                     onClick={() => setActiveDropdown(activeDropdown === `add-${block.id}` ? null : `add-${block.id}`)}
@@ -919,7 +1055,7 @@ export default function GuideEdit() {
                   {renderBlock(block, index)}
                 </div>
 
-                {/* Right Controls - Always visible on mobile */}
+                {/* Right Controls */}
                 <div className={`absolute right-0 top-0 -mr-2 md:-mr-10 transition-opacity ${hoveredBlock === block.id || window.innerWidth < 768 ? 'opacity-100' : 'opacity-0'}`}>
                   <button
                     onClick={() => setActiveDropdown(activeDropdown === `options-${block.id}` ? null : `options-${block.id}`)}
@@ -977,9 +1113,9 @@ export default function GuideEdit() {
           </div>
         )}
 
-        {/* Mobile Add Button - Floating */}
+        {/* Mobile Add Button */}
         {blocks.length > 0 && (
-          <div className="md:hidden fixed bottom-18 left-1/2 transform -translate-x-1/2 z-40">
+          <div className="md:hidden fixed bottom-20 left-1/2 transform -translate-x-1/2 z-40">
             <button
               onClick={() => setActiveDropdown(activeDropdown === 'mobile-add' ? null : 'mobile-add')}
               className="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
@@ -987,7 +1123,7 @@ export default function GuideEdit() {
               <Plus className="w-6 h-6" />
             </button>
             {activeDropdown === 'mobile-add' && (
-              <div className="absolute bottom-80 right-0 mb-2">
+              <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 mb-2">
                 <BlockMenu blockIndex={blocks.length - 1} />
               </div>
             )}
