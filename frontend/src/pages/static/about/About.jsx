@@ -111,12 +111,14 @@ const CertificationSection = () => {
       title: 'Promotion Association',
       image: './oasis1.svg',
       date: '2024'
-    },{ 
-      name: 'Minister of SMEs and Startups',
-      title: 'Republic of Korea',
-      image: './visa-rec.svg',
-      date: '2024'
-    },{ 
+    },
+    // { 
+    //   name: 'Minister of SMEs and Startups',
+    //   title: 'Republic of Korea',
+    //   image: './visa-rec.svg',
+    //   date: '2024'
+    // },
+    { 
       name: 'Korea Invention',
       title: 'Promotion Association',
       image: './oasis8.svg',
@@ -334,7 +336,7 @@ Keasy is more than a service — it's a space to belong, grow, and thrive.`,
       <TeamSection />
       <CertificationSection />
       {/* Instagram Section */}
-      <InstagramFollow />
+      {/* <InstagramFollow /> */}
     </div>
   );
 };
