@@ -237,18 +237,18 @@ const Professionals = ({isMobile}) => {
   return (
     <>
       <div className="text-center mb-12 md:mb-16 relative">
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+        {/* <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
           We've helped thousands of members reach their goals
         </h1>
         <p className="text-sm md:text-xl text-gray-600">
           Don't just take it from us. Succeed with us!
-        </p>
+        </p> */}
 
         {/* Action Button */}
         {!loadingUserProfile && user && (
           <>
             {/* Mobile: Icon Button (Top Right) */}
-            {isMobile ? (
+            {/* {isMobile ? (
               <button
                 onClick={handleProfileAction}
                 className="fixed bottom-18 right-6 z-40 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all hover:scale-110"
@@ -265,7 +265,7 @@ const Professionals = ({isMobile}) => {
                 )}
               </button>
             ) : (
-              /* Desktop: Text Button (Below Header) */
+              /* Desktop: Text Button (Below Header) 
               <div className="mt-6">
                 <button
                   onClick={handleProfileAction}
@@ -288,7 +288,7 @@ const Professionals = ({isMobile}) => {
                   )}
                 </button>
               </div>
-            )}
+            )} */}
           </>
         )}
       </div>
