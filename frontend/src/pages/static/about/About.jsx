@@ -73,83 +73,7 @@ const TeamSection = () => {
   );
 };
 
-// Certification Card Component
-const CertificationCard = ({ name, issuer, image, delay, link }) => (
-  <div 
-    className="bg-white rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
-    style={{ animation: fadeInUp 0.6s ease-out ${delay}s both }}
-  >
-    {/* Certification Image /}
-    <div className="aspect-square bg-gray-200 flex items-center justify-center p-6">
-      <img
-        src={image}
-        alt={name}
-        className="w-full h-full object-contain"
-      />
-    </div>
 
-    {/ Certification Info */}
-    <div className="p-6 text-center">
-      <h3 className="text-lg font-bold text-gray-900 mb-1">
-        {name}
-      </h3>
-      <p className="text-sm text-gray-600 mb-4">
-        {issuer}
-      </p>
-
-      {link && (
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-full hover:bg-gray-800 transition-colors"
-        >
-          View Certificate
-        </a>
-      )}
-    </div>
-  </div>
-);
-// Certifications Section Component
-const CertificationsSection = () => {
-  const certifications = [
-    {
-      name: 'AWS Certified Solutions Architect',
-      issuer: 'Amazon Web Services',
-      image: '/certifications/aws_solutions_architect.png',
-      link: 'https://www.credly.com/',
-    },
-    {
-      name: 'Google Data Analytics',
-      issuer: 'Google',
-      image: '/certifications/google_data_analytics.png',
-      link: 'https://www.coursera.org/',
-    },
-  ];
-
-  return (
-    <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <h1
-          className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-16"
-          style={{ animation: 'fadeIn 0.8s ease-out' }}
-        >
-          Certifications & Professional Credentials
-        </h1>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
-          {certifications.map((cert, index) => (
-            <CertificationCard
-              key={cert.name}
-              {...cert}
-              delay={0.1 + index * 0.1}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 // Instagram Follow Component
 const InstagramFollow = () => {
@@ -333,7 +257,6 @@ Keasy is more than a service — it's a space to belong, grow, and thrive.`,
 
       {/* Team Section */}
       <TeamSection />
-      <CertificationsSection />
       {/* Instagram Section */}
       {/* <InstagramFollow /> */}
     </div>
