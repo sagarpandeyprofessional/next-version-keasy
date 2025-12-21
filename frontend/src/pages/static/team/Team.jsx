@@ -34,8 +34,8 @@ export default function TeamPage() {
       name: 'Sagar Pandey', 
       title: 'CEO & Founder', 
       image: '/team/sagar_pandey.jpg', 
-      website: 'https://www.linkedin.com/in/sagaa', 
-      linkedin: 'https://www.linkedin.com/in/sagar1998m', 
+      website: 'https://www.montemflumen.org/', 
+      linkedin: 'https://www.linkedin.com/in/sagar1998m/', 
       email: 'sagar.pandey.professional@gmail.com' 
     },
     { 

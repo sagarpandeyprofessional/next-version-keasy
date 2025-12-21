@@ -339,10 +339,10 @@ const SlideWelcome = () => {
           variants={fadeInUp}
           className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1A1917] leading-[1.1] mb-6"
         >
-          Make Korea
+          Make South Korea
           <br />
           <span className="relative inline-block">
-            feel like
+            feel more
             <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
               <motion.path
                 initial={{ pathLength: 0 }}
@@ -356,15 +356,15 @@ const SlideWelcome = () => {
             </svg>
           </span>
           <br />
-          <span className="text-[#FF6B6B]">home</span>
+          <span className="text-[#FF6B6B]">like home</span>
         </motion.h1>
 
         {/* Subheadline */}
         <motion.p 
           variants={fadeInUp}
-          className="text-lg md:text-xl text-[#5C5850] max-w-lg mb-8 leading-relaxed"
+          className="text-lg md:text-xl text-[#5C5850] max-w-3xl mb-8 leading-relaxed"
         >
-          Join the community of over 250+ foreigners who've found KEASY community. 
+          Join the community of over 250+ foreigners who've found KEASY as their community hor help and socialize. 
           Connect, explore, and thrive in South Korea with real support from people who understands and willing to support you.
         </motion.p>
 
@@ -434,21 +434,21 @@ const SlideWelcome = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-[#1A1917]/60 via-transparent to-transparent" />
           </div>
 
-          {/* Floating Quote Card */}
+          Floating Quote Card
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="absolute -bottom-8 -left-8 md:left-8 max-w-[280px] bg-white rounded-2xl p-5 shadow-xl"
+            className="absolute -bottom-8 left-2 md:left-6 max-w-[px] bg-white rounded-2xl p-4 shadow-xl"
           >
-            <FaQuoteLeft className="text-[#FF6B6B]/20 text-2xl mb-2" />
-            <p className="text-[#3D3A35] text-sm leading-relaxed mb-3">
+            <FaQuoteLeft className="text-[#FF6B6B]/20 text-xs mb-1" />
+            <p className="text-[#3D3A35] text-xs leading-relaxed mb-1">
               "KEasy helped me with navigating the first couple of week in Korea. Thank you KEasy Team!"
             </p>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF6B6B] to-[#FF8A8A]" />
               <div>
-                <p className="text-sm font-semibold text-[#1A1917]">Mr. Steven</p>
+                <p className="text-xs font-semibold text-[#1A1917]">Mr. Steven</p>
                 <p className="text-xs text-[#7D786F]">English Teacher, Woosong University</p>
               </div>
             </div>
@@ -483,133 +483,113 @@ const SlideWelcome = () => {
    ============================================================================= */
 
 const SlideProfessionals = ({ professional }) => {
+  const navigate = useNavigate()
+
   return (
-    <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center min-h-[500px]">
-      {/* Left Content */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={staggerContainer}
-        className="order-2 lg:order-1"
-      >
-        {/* Badge */}
-        <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-2 bg-[#4ECDC4]/10 rounded-full mb-6">
-          <span className="w-2 h-2 bg-[#4ECDC4] rounded-full animate-pulse" />
-          <span className="text-sm font-medium text-[#4ECDC4]">KEasy's Trusted Professionals</span>
-        </motion.div>
+    <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[500px]">
+      
+      {/* Right Photo Section */}
+      <div className="relative lg:order-2">
+        <div className="rounded-2xl overflow-hidden shadow-xl relative">
+          <img
+            src={
+              professional?.img_url ||
+              '/testimonials/hee.svg' 
+            }
+            alt={professional?.name || 'Professional'}
+            className="w-full h-[500px] lg:h-[600px] object-fit"
+          />
 
-        {/* Main Headline */}
-        <motion.h1 
-          variants={fadeInUp}
-          className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1A1917] leading-[1.1] mb-6"
-        >
-          Connect with
-          <br />
-          <span className="text-[#4ECDC4]"> KEasy Verified Experts</span>
-        </motion.h1>
-
-        {/* Subheadline */}
-        <motion.p 
-          variants={fadeInUp}
-          className="text-lg md:text-xl text-[#5C5850] max-w-lg mb-8 leading-relaxed"
-        >
-          Get free English consultations from verified professionals. 
-          Real estate, legal advice, Visas, Jobs & more all tailored for foreigners in Korea.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
-          <Link to="/connect">
-            <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 20px 40px rgba(78,205,196,0.3)' }}
-              whileTap={{ scale: 0.98 }}
-              className="group px-8 py-4 bg-[#4ECDC4] text-white rounded-2xl font-semibold text-lg shadow-lg shadow-[#4ECDC4]/25 flex items-center gap-3 transition-all duration-300"
-            >
-              Find Professionals
-              <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-          </Link>
-          <Link to="/about">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="px-8 py-4 bg-white border-2 border-[#E8E6E1] text-[#3D3A35] rounded-2xl font-semibold text-lg hover:border-[#4ECDC4] hover:text-[#4ECDC4] transition-all duration-300"
-            >
-              Learn More
-            </motion.button>
-          </Link>
-        </motion.div>
-
-        {/* Trust Badges */}
-        <motion.div variants={fadeInUp} className="flex items-center gap-4 mt-10">
-          <div className="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full">
-            <span className="text-green-600">✓</span>
-            <span className="text-sm font-medium text-green-700">Verified</span>
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full">
-            <span className="text-blue-600">🛡️</span>
-            <span className="text-sm font-medium text-blue-700">Trusted</span>
-          </div>
-          {/* <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-full">
-            <span className="text-purple-600">⭐</span>
-            <span className="text-sm font-medium text-purple-700">Top Rated</span>
-          </div> */}
-        </motion.div>
-      </motion.div>
-
-      {/* Right Content - Professional Image */}
-      <motion.div
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-        className="order-1 lg:order-2 relative"
-      >
-        <div className="relative">
-          <div className="absolute -top-6 -right-6 w-full h-full bg-[#FF6B6B] rounded-3xl" />
-          <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-[#4ECDC4] rounded-2xl" />
-          
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-            <img
-              src={professional?.img_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=700&fit=crop'}
-              alt={professional?.full_name || 'Professional'}
-              className="w-full h-[400px] md:h-[500px] object-cover"
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=700&fit=crop';
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1917]/70 via-transparent to-transparent" />
-            
-            {/* Professional Info Overlay */}
-            <div className="absolute bottom-6 left-6 right-6">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#4ECDC4]">
-                    <img 
-                      src={professional?.img_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop'} 
-                      alt={professional?.full_name || 'Professional'}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-[#1A1917]">{professional?.full_name || 'Expert Professional'}</p>
-                    <p className="text-sm text-[#7D786F]">{professional?.role || 'Verified Expert'}</p>
-                  </div>
-                  <div className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
-                    <span className="text-green-600 text-sm">✓</span>
-                    <span className="text-xs font-medium text-green-700">Verified</span>
-                  </div>
+          {/* Card Overlay */}
+          <div className="absolute bottom-6 left-6 right-6 max-w-sm">
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-[#4ECDC4] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-xl">"</span>
                 </div>
-                {professional?.quote && (
-                  <p className="mt-3 text-sm text-[#5C5850] italic">"{professional.quote}"</p>
-                )}
+                <div>
+                  <p className="text-gray-700 italic mb-2">
+                    "It's time for a change for South Korea welcome and support the foreign residents to make South Korea their second home"
+                  </p>
+                  <p className="font-bold text-gray-900">Kim Hee Gyeong</p>
+                  <p className="text-gray-600 text-sm">Local Community Officer</p>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* ✅ Verified Badge */}
+          <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2 shadow-md">
+            <div className="w-5 h-5 rounded-full bg-[#4ECDC4] flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-white"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <span className="font-semibold text-gray-900 text-sm">
+              Verified by KEasy
+            </span>
+          </div>
         </div>
-      </motion.div>
+      </div>
+
+      {/* Left Text Section */}
+      <div className="space-y-6 lg:order-1">
+        
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#4ECDC4]/10 rounded-full">
+          <span className="w-2 h-2 bg-[#4ECDC4] rounded-full animate-pulse" />
+          <span className="text-sm font-medium text-[#4ECDC4]">
+            KEasy's Trusted Professionals
+          </span>
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900">
+          Connect with verified
+          <br />
+          <span className="text-[#4ECDC4]">KEasy Experts</span>
+        </h1>
+
+        {/* Description */}
+        <p className="text-lg text-gray-600 max-w-2xl leading-relaxed">
+          Get free English consultations from verified professionals.
+          Real estate, legal advice, Visas, Jobs & more all tailored for foreigners in Korea.
+        </p>
+
+        {/* Buttons */}
+        <div className="flex flex-wrap gap-4 pt-4">
+          <button
+            onClick={() => navigate('/connect')}
+            className="px-8 py-3 bg-[#4ECDC4] text-white rounded-xl font-semibold hover:bg-[#3db8af] transition-colors flex items-center gap-2"
+          >
+            Find Professionals
+            <FiArrowRight className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={() => navigate('/connect')}
+            className="px-8 py-3 bg-white border border-gray-300 text-gray-800 rounded-xl font-semibold hover:border-[#4ECDC4] hover:text-[#4ECDC4] transition-colors"
+          >
+            Learn More
+          </button>
+        </div>
+      </div>
     </div>
-  );
-};
+  )
+}
+
+
+
 
 
 /* =============================================================================
@@ -1818,7 +1798,7 @@ const FeaturedMarketplaceCard = ({ item }) => {
             alt={item.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          {/* <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" /> */}
         </div>
 
         {/* Top Badges & Actions */}
@@ -1844,7 +1824,7 @@ const FeaturedMarketplaceCard = ({ item }) => {
 
         {/* Bottom Content */}
         <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-          <div className="flex items-center gap-3 text-white/80 text-xs mb-2">
+          <div className="flex items-center gap-3 text-[#6B7280] text-xs mb-2">
             <span className="flex items-center gap-1">
               <FiMapPin className="w-3 h-3" />
               {item.location || 'Korea'}
@@ -1854,21 +1834,21 @@ const FeaturedMarketplaceCard = ({ item }) => {
               {item.views || 0} views
             </span>
           </div>
-          <h3 className="text-xl lg:text-2xl font-bold text-white mb-2 line-clamp-2">
+          <h3 className="text-xl lg:text-2xl font-bold text-[#1A1917] mb-2 line-clamp-2">
             {item.title}
           </h3>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <p className="text-2xl lg:text-3xl font-bold text-[#4ECDC4]">
+            <p className="text-2xl lg:text-3xl font-bold text-[#FF6B6B]">
               {formatCurrency(item.price)}
             </p>
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/marketplace/${item.id}`);
-              }}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-[#1A1917] rounded-full font-semibold hover:bg-[#4ECDC4] hover:text-white transition-all duration-300 text-sm group/btn"
-            >
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/marketplace/${item.id}`);
+                }}
+                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1A1917] text-white rounded-full font-semibold hover:bg-[#4ECDC4] transition-all duration-300 text-sm group/btn"
+              >
               View Details
               <FiArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
             </button>
