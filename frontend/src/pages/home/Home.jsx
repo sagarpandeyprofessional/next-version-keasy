@@ -2375,57 +2375,57 @@ const TestimonialsSection = () => {
   const testimonials = [
     {
       name: "Abhishek, Nepal",
-      image: "/testimonials/Abhishek.svg",
+      image: "./testimonials/Abhishek.svg",
       quote: "KEasy has changed my life in Korea. I was confused about everything in South Korea, but KEasy guides saved my life."
     },
     {
       name: "Nada, Egypt",
-      image: "/testimonials/Nada.svg",
+      image: "./testimonials/Nada.svg",
       quote: "Keasy made my life in Korea so much easier. I met new friends and found affordable second-hand items through the marketplace."
     },
     {
       name: "Kevin, Korea",
-      image: "/testimonials/Kevin.svg",
+      image: "./testimonials/Kevin.svg",
       quote: "Being part of KEasy community is a must for foreigners. It helps foreigners communicate and participate  Thank you for this amazing platform!"
     },
      {
       name: "Vedika, India",
-      image: "/testimonials/Vedika.svg",
+      image: "./testimonials/Vedika.svg",
       quote: "I can't imagine my life in Korea without KEasy. It's my go-to platform for everything!"
     },
     {
       name: "Khalil, Egypt",
-      image: "/testimonials/Khalil.svg",
+      image: "./testimonials/Khalil.svg",
       quote: "Keasy helped me meet great people in Korea and discover events I wouldn’t have found on my own. It’s been a huge help for my social life."
     },
     {
       name: "Bhoomika, India",
-      image: "/testimonials/Bhoomika.svg",
+      image: "./testimonials/Bhoomika.svg",
       quote: "KEasy community support is unmatched. I always get helpful advice from fellow expats here."
     },
     {
       name: "Zakaria, Egypt",
-      image: "/testimonials/Zakaria.svg",
+      image: "./testimonials/Zakaria.svg",
       quote: "Keasy helped me meet amazing people and join fun events in Korea. It made settling in much easier."
     },
     {
       name: "Rupesh, Nepal",
-      image: "/testimonials/Rupesh.svg",
+      image: "./testimonials/Rupesh.svg",
       quote: "KEasy understands what expats need. Every feature is thoughtfully designed for our community."
     },
     {
       name: "Vedika, India",
-      image: "/testimonials/Vedika.svg",
+      image: "./testimonials/Vedika.svg",
       quote: "I can't imagine my life in Korea without KEasy. It's my go-to platform for everything!"
     },
     {
       name: "Yoon, Korea",
-      image: "/testimonials/Yoon.svg",
+      image: "./testimonials/Yoon.svg",
       quote: "Keasy brought many new foreign customers to my store. It’s a great platform for connecting local businesses with the foreign community."
     },
     {
       name: "Tomato Photo Studio, Korea",
-      image: "/testimonials/photostudio.svg",
+      image: "./testimonials/photostudio.svg",
       quote: "Thanks to KEasy team, I have increased my costumer base and I get to help many foreigners."
     },
     // {
