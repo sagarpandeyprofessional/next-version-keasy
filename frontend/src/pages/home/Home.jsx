@@ -497,12 +497,12 @@ const SlideProfessionals = ({ professional }) => {
               '/testimonials/hee.svg' 
             }
             alt={professional?.name || 'Professional'}
-            className="w-full h-[500px] lg:h-[600px] object-fit"
+            className="w-full h-[500px] lg:h-[500px] object-cover"
           />
 
           {/* Card Overlay */}
           <div className="absolute bottom-6 left-6 right-6 max-w-sm">
-            <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+            {/* <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[#4ECDC4] rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xl">"</span>
@@ -515,7 +515,7 @@ const SlideProfessionals = ({ professional }) => {
                   <p className="text-gray-600 text-sm">Local Community Officer</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* ✅ Verified Badge */}
@@ -3446,10 +3446,7 @@ export default function Home() {
       <HeroSection />
       <FloatingBubblesSection guides={guides} />
       <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
-      {/* <ServicesSection features={features} /> */}
-      {/* <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} /> */}
       <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} />
-      {/* <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} /> */}
       <LocalClassesCTA />
       <TestimonialsSection />
       <CTASection currentUserId={currentUserId} />
