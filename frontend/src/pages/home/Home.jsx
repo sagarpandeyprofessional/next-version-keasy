@@ -1432,12 +1432,13 @@ const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {},
 
 /* Main Guides Section */
 const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
-  const displayGuides = guides.slice(0, 9);
+  const displayGuides = guides.slice(0, 13); // Get first 13 guides
   
   // Desktop rows (snake pattern)
-  const row1 = displayGuides.slice(0, 3);
-  const row2 = [...displayGuides.slice(3, 6)].reverse();
-  const row3 = displayGuides.slice(6, 9);
+  const row1 = displayGuides.slice(10, 14);
+  // const row2 = [...displayGuides.slice(3, 6)].reverse();
+  const row2 = displayGuides.slice(4, 7);
+  const row3 = displayGuides.slice(7, 10);
 
   // Light green color
   const vineColor = '#81C784';
@@ -3390,7 +3391,7 @@ export default function Home() {
       const { data: user } = await supabase.auth.getUser();
       setCurrentUserId(user?.user?.id || null);
 
-      const { data: guidesData } = await supabase.from('guide').select('id, created_at, name, description, img_url, created_by, like').limit(9);
+      const { data: guidesData } = await supabase.from('guide').select('id, created_at, name, description, img_url, created_by, like').limit(19);
       setGuides(guidesData || []);
 
       const { data: marketData } = await supabase.from('marketplace').select('*').eq("verified", true).eq('available', true).limit(20);
