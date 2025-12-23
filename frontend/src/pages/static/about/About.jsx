@@ -34,7 +34,7 @@ const TeamSection = () => {
     { 
       name: 'Sagar Pandey', 
       title: 'CEO & Founder', 
-      image: '/team/sagar.jpg',
+      image: '/team/sagar.png',
       website: 'https://www.linkedin.com/in/sagaa', 
       linkedin: 'https://www.linkedin.com/in/sagar1998m', 
       email: 'sagar.pandey.professional@gmail.com' 
@@ -42,7 +42,7 @@ const TeamSection = () => {
     { 
       name: 'Firdavs Salokhiddinov', 
       title: 'CTO & Co-Founder', 
-      image: '/team/firdavs_salokhiddinov.jpg', 
+      image: '/team/fred.png', 
       website: 'https://firdavssalokhiddinov.github.io/MyPortfolio/', 
       linkedin: 'https://www.linkedin.com/in/firdavs-salokhiddinov-0288b1215/', 
       email: 'firdavssalokhiddinov@gmail.com' 
@@ -50,7 +50,7 @@ const TeamSection = () => {
     { 
       name: 'Gevariya Sahil Nandlalbhai', 
       title: 'AI & Software Engineer', 
-      image: '/team/sahil.jpg', 
+      image: '/team/sahil.png', 
       website: 'https://github.com/Yoosahil06', 
       linkedin: 'https://github.com/Yoosahil06', 
       email: 'sahil.gevariya06@gmail.com ' 
