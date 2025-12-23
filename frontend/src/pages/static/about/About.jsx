@@ -65,7 +65,7 @@ const TeamSection = () => {
           style={{ animation: 'fadeIn 0.8s ease-out' }}
         >
           Meet the team who dares to create differently.
-        </h1>
+        </h1>›
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
           {teamMembers.map((member, index) => (

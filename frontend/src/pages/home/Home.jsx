@@ -1255,7 +1255,7 @@ const FloatingBubblesSection = () => {
    
    ============================================================================= */
 
-/* Groot Vine Guide Card */
+/* Guide Card - Square image (160x160) on left, flexible content on right */
 const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {}, view, onLike, currentUserId }) => {
   const [author, setAuthor] = useState("KEasy Team");
   const isLiked = currentUserId && like[currentUserId] === true;
@@ -1281,70 +1281,150 @@ const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {},
         transition={{ duration: 0.3 }}
         className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-[#81C784]/30 hover:border-[#81C784]/60"
       >
-        {/* Image with Fade Effect */}
-        <div className="relative h-[120px] overflow-hidden">
-          {img_url ? (
-            <>
+        
+        {/* ==================== MOBILE: Original Vertical Layout ==================== */}
+        <div className="md:hidden">
+          {/* Image with Fade Effect */}
+          <div className="relative h-[120px] overflow-hidden">
+            {img_url ? (
+              <>
+                <img 
+                  src={img_url} 
+                  alt={name} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
+              </>
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#81C784] to-[#66BB6A] flex items-center justify-center">
+                <span className="text-4xl">🌿</span>
+              </div>
+            )}
+            
+            {/* Like Button - Mobile */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onLike();
+              }}
+              className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
+                isLiked 
+                  ? 'bg-[#FF6B6B] text-white' 
+                  : 'bg-white/90 backdrop-blur-sm text-[#7D786F] hover:text-[#FF6B6B]'
+              }`}
+            >
+              {isLiked ? <FaHeart className="w-3 h-3" /> : <FiHeart className="w-3 h-3" />}
+            </button>
+
+            {/* Stats Badge - Mobile */}
+            <div className="absolute bottom-2 left-2 flex items-center gap-1">
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+                <FiEye className="w-2.5 h-2.5" />
+                {view || 0}
+              </span>
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+                <FiHeart className="w-2.5 h-2.5" />
+                {likesCount}
+              </span>
+            </div>
+          </div>
+
+          {/* Content - Mobile */}
+          <div className="p-3">
+            <h3 className="text-sm font-bold text-[#1A1917] line-clamp-1 mb-1 group-hover:text-[#4CAF50] transition-colors">
+              {name}
+            </h3>
+            <p className="text-xs text-[#7D786F] line-clamp-2 mb-2">
+              {description || "Discover helpful tips for life in Korea."}
+            </p>
+            
+            {/* Footer - Mobile */}
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#7D786F]">by {author}</span>
+              <span className="flex items-center gap-1 text-[10px] font-semibold text-[#4CAF50]">
+                Read guide
+                <FiArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ==================== DESKTOP: Square Image (160x160) + Flexible Content ==================== */}
+        <div className="hidden md:flex h-[160px]">
+          
+          {/* LEFT SIDE: Square Image (160px × 160px) */}
+          <div className="relative w-[160px] h-[160px] flex-shrink-0 overflow-hidden">
+            {img_url ? (
               <img 
                 src={img_url} 
                 alt={name} 
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
-            </>
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#81C784] to-[#66BB6A] flex items-center justify-center">
-              <span className="text-4xl">🌿</span>
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#81C784] to-[#66BB6A] flex items-center justify-center">
+                <span className="text-4xl">🌿</span>
+              </div>
+            )}
+
+            {/* Stats Badge - Bottom Left of Image */}
+            <div className="absolute bottom-2 left-2 flex items-center gap-1">
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+                <FiEye className="w-2.5 h-2.5" />
+                {view || 0}
+              </span>
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+                <FiHeart className="w-2.5 h-2.5" />
+                {likesCount}
+              </span>
             </div>
-          )}
-          
-          {/* Like Button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onLike();
-            }}
-            className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
-              isLiked 
-                ? 'bg-[#FF6B6B] text-white' 
-                : 'bg-white/90 backdrop-blur-sm text-[#7D786F] hover:text-[#FF6B6B]'
-            }`}
-          >
-            {isLiked ? <FaHeart className="w-3 h-3" /> : <FiHeart className="w-3 h-3" />}
-          </button>
-
-          {/* Stats Badge */}
-          <div className="absolute bottom-2 left-2 flex items-center gap-1">
-            <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
-              <FiEye className="w-2.5 h-2.5" />
-              {view || 0}
-            </span>
-            <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
-              <FiHeart className="w-2.5 h-2.5" />
-              {likesCount}
-            </span>
           </div>
+
+          {/* RIGHT SIDE: Content (Flexible - takes remaining space) */}
+          <div className="flex-1 h-full p-4 flex flex-col justify-between">
+            
+            {/* Top Section: Title + Like Button */}
+            <div>
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h3 className="text-sm font-bold text-[#1A1917] line-clamp-2 group-hover:text-[#4CAF50] transition-colors flex-1">
+                  {name}
+                </h3>
+                
+                {/* Like Button - Top Right */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onLike();
+                  }}
+                  className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
+                    isLiked 
+                      ? 'bg-[#FF6B6B] text-white' 
+                      : 'bg-gray-100 text-[#7D786F] hover:text-[#FF6B6B] hover:bg-gray-200'
+                  }`}
+                >
+                  {isLiked ? <FaHeart className="w-3 h-3" /> : <FiHeart className="w-3 h-3" />}
+                </button>
+              </div>
+
+              {/* Description - 3 lines max */}
+              <p className="text-xs text-[#7D786F] line-clamp-3">
+                {description || "Discover helpful tips for life in Korea."}
+              </p>
+            </div>
+
+            {/* Bottom Section: Author + Read Guide */}
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#7D786F]">by {author}</span>
+              <span className="flex items-center gap-1 text-[10px] font-semibold text-[#4CAF50]">
+                Read guide
+                <FiArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </div>
+          </div>
+          
         </div>
 
-        {/* Content */}
-        <div className="p-3">
-          <h3 className="text-sm font-bold text-[#1A1917] line-clamp-1 mb-1 group-hover:text-[#4CAF50] transition-colors">
-            {name}
-          </h3>
-          <p className="text-xs text-[#7D786F] line-clamp-2 mb-2">
-            {description || "Discover helpful tips for life in Korea."}
-          </p>
-          
-          {/* Footer */}
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-[#7D786F]">by {author}</span>
-            <span className="flex items-center gap-1 text-[10px] font-semibold text-[#4CAF50]">
-              Read guide
-              <FiArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </div>
-        </div>
       </motion.div>
     </Link>
   );
@@ -1364,7 +1444,7 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
 
   return (
     <section className="py-16 bg-[#F8FAFB] overflow-hidden relative">
-      <div className="container mx-auto px-[3%]">
+      <div className="container mx-auto px-[5%]">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
