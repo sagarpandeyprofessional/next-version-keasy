@@ -1291,7 +1291,7 @@ const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {},
                 <img 
                   src={img_url} 
                   alt={name} 
-                  className="w-full h-full object-cover group-hover:scale-1 transition-transform duration-700" 
+                  className="w-full h-full object-cover group-hover:scale-100 transition-transform duration-700" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
               </>
