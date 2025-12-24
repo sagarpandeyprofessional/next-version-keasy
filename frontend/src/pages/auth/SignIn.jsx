@@ -159,7 +159,6 @@ const SignIn = () => {
             initial={{ opacity: 0, x: 20, rotateY: -15 }}
             animate={{ opacity: 1, x: 0, rotateY: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            // whileHover={{ rotateY: 2 }}
             style={{
               transformStyle: "preserve-3d",
               perspective: "1000px"
