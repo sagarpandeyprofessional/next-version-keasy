@@ -507,7 +507,7 @@ export default function GuideDetail() {
 
         {/* Main Content Card */}
         <article className="rounded-2xl overflow-hidden">
-          {/* Cover Image */}
+          {/* Thumbnail */}
           {guide.img_url && (
             <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-gray-100">
               <img

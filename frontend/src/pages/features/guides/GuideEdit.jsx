@@ -112,7 +112,7 @@ export default function GuideEdit() {
       });
     }
 
-    // Add cover image as image block
+    // Add thumbnail as image block
     if (guide.img_url) {
       loadedBlocks.push({
         id: Date.now() + Math.random() + 0.2,
@@ -395,12 +395,12 @@ export default function GuideEdit() {
         new Date(originalGuide.created_at).getTime() : 
         Date.now();
 
-      // Upload cover image if new file
-      let coverImageUrl = originalGuide.img_url || '';
+      // Upload thumbnail if new file
+      let thumbnailUrl = originalGuide.img_url || '';
       if (coverImageBlock?.file) {
-        coverImageUrl = await uploadImage(coverImageBlock.file, title, timestamp);
+        thumbnailUrl = await uploadImage(coverImageBlock.file, title, timestamp);
       } else if (coverImageBlock?.url) {
-        coverImageUrl = coverImageBlock.url;
+        thumbnailUrl = coverImageBlock.url;
       }
 
       // Upload section images
@@ -429,7 +429,7 @@ export default function GuideEdit() {
         .update({
           name: title,
           description: description || '',
-          img_url: coverImageUrl,
+          img_url: thumbnailUrl,
           content: content,
           category: selectedCategory
         })
