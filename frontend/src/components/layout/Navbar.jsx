@@ -265,6 +265,7 @@ const Navbar = () => {
     { name: "Community", path: "/community" },
     { name: "Guides", path: "/guides" },
     { name: "Connect", path: "/connect" },
+    { name: "Jobs", path: "/jobs" },
     { name: "About", path: "/about" },
   ];
 
@@ -365,7 +366,8 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Search Button */}
+            <div className="flex flex-row">
+              {/* Search Button */}
             <button
               onClick={() => setIsSearchOpen(true)}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -373,6 +375,24 @@ const Navbar = () => {
             >
               <FiSearch className="h-5 w-5 text-gray-700" />
             </button>
+
+            {/* User Button */}
+              <button
+                onClick={handleUserClick}
+                className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-gray-100 transition-all duration-200"
+                aria-label="User profile"
+              >
+                {user && profile?.pfp_url ? (
+                  <img
+                    src={profile.pfp_url}
+                    alt={profile.username}
+                    className="h-7 w-7 rounded-full object-cover border-2 border-blue-200"
+                  />
+                ) : (
+                  <FiUser className="h-5 w-5 text-gray-700" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

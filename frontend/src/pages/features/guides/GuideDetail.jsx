@@ -19,6 +19,7 @@ export default function GuideDetail() {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
   const [isLiking, setIsLiking] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
@@ -77,6 +78,7 @@ export default function GuideDetail() {
             setAuthor("Unknown Author");
           } else {
             setAuthor(userData?.username || "Unknown Author");
+            
           }
         }
       } catch (err) {
@@ -91,6 +93,21 @@ export default function GuideDetail() {
       fetchGuideAndAuthor();
     }
   }, [id]);
+
+  // to check if user is author or not
+  useEffect(() => {
+    const checkIsOwner= () => {
+      if(user != null){
+        if(guide?.created_by){
+          if(guide.created_by === user.id){
+            setIsOwner(true)
+          }
+        }
+      }
+    }
+
+    checkIsOwner()
+  }, [guide, user])
 
   if (loading) {
     return (
@@ -524,10 +541,36 @@ export default function GuideDetail() {
 
           {/* Header Section */}
           <div className="px-0 md:px-10 py-auto pt-4">
+
+            <div className="flex flex-row">
             {/* Title */}
             <h1 className="font-sans text-1xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
               {guide.name}
             </h1>
+
+            {isOwner && (
+              <Link
+                to={`/guides/edit/${guide.id}`}
+                className="flex items-center justify-center w-6 h-6 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all"
+                title="Edit guide"
+              >
+                <svg 
+                  className="w-4 h-4" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" 
+                  />
+                </svg>
+             </Link>
+                )}
+            </div>
+            
 
             {/* Meta Info */}
             <div className="flex flex-wrap items-center justify-between text-sm text-gray-600 mb-2">

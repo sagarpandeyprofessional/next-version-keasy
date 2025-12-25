@@ -222,8 +222,8 @@ const HeroSection = () => {
         <FiArrowRight className="w-5 h-5 md:w-6 md:h-6 text-[#3D3A35] group-hover:text-[#FF6B6B] transition-colors" />
       </button>
 
-      {/* Slides Container - FIXED: Added fixed height for desktop to prevent layout shifts */}
-      <div className="px-[3%] bg-[#F8FAFB] relative z-10 md:h-[650px] md:flex md:items-center">
+      {/* Slides Container - FIXED: Added fixed height for both mobile and desktop to prevent layout shifts */}
+      <div className="px-[4%] bg-[#F8FAFB] relative z-10 h-[850px] flex items-center md:h-[575px]">
         <div className="w-full">
           <AnimatePresence mode="wait">
             {/* SLIDE 1: Welcome Hero */}
@@ -339,10 +339,10 @@ const SlideWelcome = () => {
           variants={fadeInUp}
           className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1A1917] leading-[1.1] mb-6"
         >
-          Make Korea
+          Make South Korea
           <br />
           <span className="relative inline-block">
-            feel like
+            feel more
             <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
               <motion.path
                 initial={{ pathLength: 0 }}
@@ -356,15 +356,15 @@ const SlideWelcome = () => {
             </svg>
           </span>
           <br />
-          <span className="text-[#FF6B6B]">home</span>
+          <span className="text-[#FF6B6B]">like home</span>
         </motion.h1>
 
         {/* Subheadline */}
         <motion.p 
           variants={fadeInUp}
-          className="text-lg md:text-xl text-[#5C5850] max-w-lg mb-8 leading-relaxed"
+          className="text-lg md:text-xl text-[#5C5850] max-w-3xl mb-8 leading-relaxed"
         >
-          Join the community of over 250+ foreigners who've found KEASY community. 
+          Join the community of over 250+ foreigners who've found KEASY as their community hor help and socialize. 
           Connect, explore, and thrive in South Korea with real support from people who understands and willing to support you.
         </motion.p>
 
@@ -434,21 +434,21 @@ const SlideWelcome = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-[#1A1917]/60 via-transparent to-transparent" />
           </div>
 
-          {/* Floating Quote Card */}
+          Floating Quote Card
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="absolute -bottom-8 -left-8 md:left-8 max-w-[280px] bg-white rounded-2xl p-5 shadow-xl"
+            className="absolute -bottom-8 left-2 md:left-6 max-w-[px] bg-white rounded-2xl p-4 shadow-xl"
           >
-            <FaQuoteLeft className="text-[#FF6B6B]/20 text-2xl mb-2" />
-            <p className="text-[#3D3A35] text-sm leading-relaxed mb-3">
+            <FaQuoteLeft className="text-[#FF6B6B]/20 text-xs mb-1" />
+            <p className="text-[#3D3A35] text-xs leading-relaxed mb-1">
               "KEasy helped me with navigating the first couple of week in Korea. Thank you KEasy Team!"
             </p>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF6B6B] to-[#FF8A8A]" />
               <div>
-                <p className="text-sm font-semibold text-[#1A1917]">Mr. Steven</p>
+                <p className="text-xs font-semibold text-[#1A1917]">Mr. Steven</p>
                 <p className="text-xs text-[#7D786F]">English Teacher, Woosong University</p>
               </div>
             </div>
@@ -483,133 +483,113 @@ const SlideWelcome = () => {
    ============================================================================= */
 
 const SlideProfessionals = ({ professional }) => {
+  const navigate = useNavigate()
+
   return (
-    <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center min-h-[500px]">
-      {/* Left Content */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={staggerContainer}
-        className="order-2 lg:order-1"
-      >
-        {/* Badge */}
-        <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-2 bg-[#4ECDC4]/10 rounded-full mb-6">
-          <span className="w-2 h-2 bg-[#4ECDC4] rounded-full animate-pulse" />
-          <span className="text-sm font-medium text-[#4ECDC4]">KEasy's Trusted Professionals</span>
-        </motion.div>
+    <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[500px]">
+      
+      {/* Right Photo Section */}
+      <div className="relative lg:order-2">
+        <div className="rounded-2xl overflow-hidden shadow-xl relative">
+          <img
+            src={
+              professional?.img_url ||
+              '/testimonials/hee.svg' 
+            }
+            alt={professional?.name || 'Professional'}
+            className="w-full h-[500px] lg:h-[500px] object-cover"
+          />
 
-        {/* Main Headline */}
-        <motion.h1 
-          variants={fadeInUp}
-          className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#1A1917] leading-[1.1] mb-6"
-        >
-          Connect with
-          <br />
-          <span className="text-[#4ECDC4]"> KEasy Verified Experts</span>
-        </motion.h1>
-
-        {/* Subheadline */}
-        <motion.p 
-          variants={fadeInUp}
-          className="text-lg md:text-xl text-[#5C5850] max-w-lg mb-8 leading-relaxed"
-        >
-          Get free English consultations from verified professionals. 
-          Real estate, legal advice, Visas, Jobs & more all tailored for foreigners in Korea.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
-          <Link to="/connect">
-            <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 20px 40px rgba(78,205,196,0.3)' }}
-              whileTap={{ scale: 0.98 }}
-              className="group px-8 py-4 bg-[#4ECDC4] text-white rounded-2xl font-semibold text-lg shadow-lg shadow-[#4ECDC4]/25 flex items-center gap-3 transition-all duration-300"
-            >
-              Find Professionals
-              <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-          </Link>
-          <Link to="/about">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="px-8 py-4 bg-white border-2 border-[#E8E6E1] text-[#3D3A35] rounded-2xl font-semibold text-lg hover:border-[#4ECDC4] hover:text-[#4ECDC4] transition-all duration-300"
-            >
-              Learn More
-            </motion.button>
-          </Link>
-        </motion.div>
-
-        {/* Trust Badges */}
-        <motion.div variants={fadeInUp} className="flex items-center gap-4 mt-10">
-          <div className="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full">
-            <span className="text-green-600">✓</span>
-            <span className="text-sm font-medium text-green-700">Verified</span>
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full">
-            <span className="text-blue-600">🛡️</span>
-            <span className="text-sm font-medium text-blue-700">Trusted</span>
-          </div>
-          {/* <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-full">
-            <span className="text-purple-600">⭐</span>
-            <span className="text-sm font-medium text-purple-700">Top Rated</span>
-          </div> */}
-        </motion.div>
-      </motion.div>
-
-      {/* Right Content - Professional Image */}
-      <motion.div
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-        className="order-1 lg:order-2 relative"
-      >
-        <div className="relative">
-          <div className="absolute -top-6 -right-6 w-full h-full bg-[#FF6B6B] rounded-3xl" />
-          <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-[#4ECDC4] rounded-2xl" />
-          
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-            <img
-              src={professional?.img_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=700&fit=crop'}
-              alt={professional?.full_name || 'Professional'}
-              className="w-full h-[400px] md:h-[500px] object-cover"
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=700&fit=crop';
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1917]/70 via-transparent to-transparent" />
-            
-            {/* Professional Info Overlay */}
-            <div className="absolute bottom-6 left-6 right-6">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#4ECDC4]">
-                    <img 
-                      src={professional?.img_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop'} 
-                      alt={professional?.full_name || 'Professional'}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-[#1A1917]">{professional?.full_name || 'Expert Professional'}</p>
-                    <p className="text-sm text-[#7D786F]">{professional?.role || 'Verified Expert'}</p>
-                  </div>
-                  <div className="flex items-center gap-1 px-3 py-1 bg-green-100 rounded-full">
-                    <span className="text-green-600 text-sm">✓</span>
-                    <span className="text-xs font-medium text-green-700">Verified</span>
-                  </div>
+          {/* Card Overlay */}
+          <div className="absolute bottom-6 left-6 right-6 max-w-sm">
+            {/* <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-[#4ECDC4] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-xl">"</span>
                 </div>
-                {professional?.quote && (
-                  <p className="mt-3 text-sm text-[#5C5850] italic">"{professional.quote}"</p>
-                )}
+                <div>
+                  <p className="text-gray-700 italic mb-2">
+                    "It's time for a change for South Korea welcome and support the foreign residents to make South Korea their second home"
+                  </p>
+                  <p className="font-bold text-gray-900">Kim Hee Gyeong</p>
+                  <p className="text-gray-600 text-sm">Local Community Officer</p>
+                </div>
               </div>
+            </div> */}
+          </div>
+
+          {/* ✅ Verified Badge */}
+          <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2 shadow-md">
+            <div className="w-5 h-5 rounded-full bg-[#4ECDC4] flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-white"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
             </div>
+            <span className="font-semibold text-gray-900 text-sm">
+              Verified by KEasy
+            </span>
           </div>
         </div>
-      </motion.div>
+      </div>
+
+      {/* Left Text Section */}
+      <div className="space-y-6 lg:order-1">
+        
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#4ECDC4]/10 rounded-full">
+          <span className="w-2 h-2 bg-[#4ECDC4] rounded-full animate-pulse" />
+          <span className="text-sm font-medium text-[#4ECDC4]">
+            KEasy's Trusted Professionals
+          </span>
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900">
+          Connect with verified
+          <br />
+          <span className="text-[#4ECDC4]">KEasy Experts</span>
+        </h1>
+
+        {/* Description */}
+        <p className="text-lg text-gray-600 max-w-2xl leading-relaxed">
+          Get free English consultations from verified professionals.
+          Real estate, legal advice, Visas, Jobs & more all tailored for foreigners in Korea.
+        </p>
+
+        {/* Buttons */}
+        <div className="flex flex-wrap gap-4 pt-4">
+          <button
+            onClick={() => navigate('/connect')}
+            className="px-8 py-3 bg-[#4ECDC4] text-white rounded-xl font-semibold hover:bg-[#3db8af] transition-colors flex items-center gap-2"
+          >
+            Find Professionals
+            <FiArrowRight className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={() => navigate('/connect')}
+            className="px-8 py-3 bg-white border border-gray-300 text-gray-800 rounded-xl font-semibold hover:border-[#4ECDC4] hover:text-[#4ECDC4] transition-colors"
+          >
+            Learn More
+          </button>
+        </div>
+      </div>
     </div>
-  );
-};
+  )
+}
+
+
+
 
 
 /* =============================================================================
@@ -930,7 +910,7 @@ const SlideAdvertisement = () => {
 
         {/* CTA Buttons */}
         <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
-          <Link to="/events">
+          <a href="https://invite.kakao.com/tc/zPLgnWBMnk" target='_blank'>
             <motion.button
               whileHover={{ scale: 1.02, boxShadow: '0 20px 40px rgba(255,107,107,0.3)' }}
               whileTap={{ scale: 0.98 }}
@@ -939,8 +919,8 @@ const SlideAdvertisement = () => {
               Find Classes
               <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
             </motion.button>
-          </Link>
-          <Link to="/contact">
+          </a>
+          <a href="https://invite.kakao.com/tc/zPLgnWBMnk" target='_blank'>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -948,7 +928,7 @@ const SlideAdvertisement = () => {
             >
               Contact Us
             </motion.button>
-          </Link>
+          </a>
         </motion.div>
       </motion.div>
 
@@ -1007,140 +987,24 @@ const SlideAdvertisement = () => {
 
 
 /* =============================================================================
-   SERVICES SECTION - Clean, Iconographic, Interactive
-   ============================================================================= */
-
-const ServiceCard = ({ title, description, icon: Icon, href, color, delay = 0 }) => {
-  return (
-    <Link to={href}>
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        variants={fadeInUp}
-        transition={{ duration: 0.5, delay }}
-        whileHover={{ y: -8 }}
-        className="group relative bg-white rounded-3xl p-8 border border-[#E8E6E1] hover:border-transparent hover:shadow-2xl transition-all duration-500 h-full"
-      >
-        {/* Hover gradient background */}
-        <div 
-          className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style={{ background: `linear-gradient(135deg, ${color}08 0%, ${color}15 100%)` }}
-        />
-        
-        <div className="relative z-10">
-          {/* Icon */}
-          <div 
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110"
-            style={{ backgroundColor: `${color}15` }}
-          >
-            <Icon className="w-8 h-8" style={{ color }} />
-          </div>
-
-          {/* Title */}
-          <h3 className="text-xl font-bold text-[#1A1917] mb-3 group-hover:text-[#3D3A35] transition-colors">
-            {title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-[#7D786F] leading-relaxed mb-4">
-            {description}
-          </p>
-
-          {/* Arrow Link */}
-          <div className="flex items-center gap-2 font-medium transition-colors" style={{ color }}>
-            <span className="text-sm">Explore</span>
-            <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-          </div>
-        </div>
-      </motion.div>
-    </Link>
-  );
-};
-
-const ServicesSection = ({ features }) => {
-  const serviceData = [
-    {
-      title: 'Marketplace',
-      description: 'Buy, sell, or give away items within our trusted expat community. Safe transactions, real connections.',
-      icon: LuShoppingBag,
-      href: '/marketplace',
-      color: '#FF6B6B',
-    },
-    {
-      title: 'Events',
-      description: 'Discover local events, meetups, and activities. Never miss an opportunity to connect.',
-      icon: LuCalendar,
-      href: '/events',
-      color: '#4ECDC4',
-    },
-    {
-      title: 'Community',
-      description: 'Join groups and connect with fellow expats who share your interests and experiences.',
-      icon: LuUsers,
-      href: '/community',
-      color: '#FFB347',
-    },
-    {
-      title: 'Nearby Places',
-      description: 'Find expat-friendly locations, hidden gems, and essential services in your area.',
-      icon: LuMapPin,
-      href: '/nearby',
-      color: '#9B59B6',
-    },
-  ];
-
-  return (
-    <section className="py-16 bg-[#FAFAF8]">
-      <div className="px-[3%]">
-        {/* Section Header */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="text-center max-w-2xl mx-auto mb-16"
-        >
-          <motion.span 
-            variants={fadeInUp}
-            className="inline-block px-4 py-2 bg-[#4ECDC4]/10 text-[#4ECDC4] rounded-full text-sm font-semibold mb-4"
-          >
-            What do we offer?
-          </motion.span>
-          <motion.h2 
-            variants={fadeInUp}
-            className="text-3xl md:text-4xl lg:text-3xl font-bold text-[#1A1917] mb-4"
-          >
-            We offer services and guides to help you maintain a easy life
-            <span className="text-[#4ECDC4]">  in South Korea</span>
-          </motion.h2>
-          <motion.p 
-            variants={fadeInUp}
-            className="text-xl text-[#7D786F]"
-          >
-            From finding your guides to discovering local stores and tourist attractions, KEasy Platform will guide you.
-          </motion.p>
-        </motion.div>
-
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {serviceData.map((service, index) => (
-            <ServiceCard key={index} {...service} delay={index * 0.1} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-
-/* =============================================================================
    FLOATING BUBBLES - Guide Topics (Auto-Fetch Most Viewed)
+   With gentle floating animation - each bubble moves independently
    ============================================================================= */
 
-const FloatingBubble = ({ title, id, index }) => {
+const FloatingBubble = ({ title, id, index, rowIndex }) => {
   // Truncate to max 8 words
   const truncatedTitle = title.split(' ').slice(0, 8).join(' ') + (title.split(' ').length > 8 ? '...' : '');
+
+  // Generate unique animation values for each bubble
+  // Using index to create variety in movement
+  const uniqueDuration = 4 + (index % 5) * 0.8; // Duration varies between 4-7.2s
+  const uniqueDelay = (index % 7) * 0.3; // Staggered start times
+  const uniqueXRange = 3 + (index % 4) * 2; // X movement varies between 3-9px
+  const uniqueYRange = 2 + (index % 3) * 2; // Y movement varies between 2-6px
+  
+  // Alternate direction based on index for organic feel
+  const xDirection = index % 2 === 0 ? 1 : -1;
+  const yDirection = index % 3 === 0 ? 1 : -1;
 
   return (
     <Link to={id ? `/guides/guide/${id}` : '/guides'}>
@@ -1149,17 +1013,56 @@ const FloatingBubble = ({ title, id, index }) => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4, delay: index * 0.05 }}
+        animate={{
+          x: [0, uniqueXRange * xDirection, 0, -uniqueXRange * xDirection * 0.5, 0],
+          y: [0, uniqueYRange * yDirection, 0, -uniqueYRange * yDirection * 0.7, 0],
+        }}
         whileHover={{ 
           scale: 1.05, 
           backgroundColor: '#0D9488',
+          x: 0,
+          y: 0,
         }}
-        className="inline-block px-5 py-2.5 rounded-full cursor-pointer border-2 border-[#0D9488] bg-white hover:bg-[#0D9488] group transition-all duration-300"
+        className="inline-block px-5 py-2.5 rounded-full cursor-pointer border-2 border-[#0D9488] bg-white hover:bg-[#0D9488] group transition-colors duration-300"
+        style={{
+          animation: `float-${index % 5} ${uniqueDuration}s ease-in-out ${uniqueDelay}s infinite`,
+        }}
       >
         <span className="text-sm font-medium text-[#0D9488] group-hover:text-white whitespace-nowrap transition-colors duration-300">
           {truncatedTitle}
         </span>
       </motion.div>
     </Link>
+  );
+};
+
+// Row wrapper with horizontal drift animation
+const AnimatedRow = ({ children, direction = 'left', speed = 'slow' }) => {
+  const driftAmount = 15; // pixels to drift
+  const duration = speed === 'slow' ? 8 : 5;
+  
+  const driftVariants = {
+    animate: {
+      x: direction === 'left' 
+        ? [0, -driftAmount, 0, driftAmount * 0.5, 0]
+        : [0, driftAmount, 0, -driftAmount * 0.5, 0],
+    }
+  };
+
+  return (
+    <motion.div
+      variants={driftVariants}
+      animate="animate"
+      transition={{
+        duration: duration,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "loop",
+      }}
+      className="flex flex-wrap justify-center items-center gap-3"
+    >
+      {children}
+    </motion.div>
   );
 };
 
@@ -1178,7 +1081,7 @@ const FloatingBubblesSection = () => {
           .select('id, name, view')
           .eq('approved', true)  // Only approved guides
           .order('view', { ascending: false })  // Most viewed first
-          .limit(17);  // Get top 15
+          .limit(18);  // Get top 18 (6 per row x 3 rows)
 
         if (error) {
           console.error('Error fetching guides:', error.message);
@@ -1211,45 +1114,44 @@ const FloatingBubblesSection = () => {
     { id: null, name: "📞 Korean Phone Plans" },
     { id: null, name: "🏥 Healthcare & Insurance" },
     { id: null, name: "🗣️ Learning Korean Basics" },
+    { id: null, name: "🚌 Public Transportation" },
+    { id: null, name: "🛒 Grocery Shopping Tips" },
+    { id: null, name: "💼 Job Hunting Guide" },
+    { id: null, name: "🎓 University Life" },
+    { id: null, name: "🍜 Best Local Restaurants" },
+    { id: null, name: "🏃 Fitness & Gyms" },
   ];
 
   // Use fetched guides or fallback
   const bubbleData = topGuides.length > 0 ? topGuides : fallbackGuides;
 
-  // Distribute bubbles across rows (varying items per row for organic look)
-  const row1 = bubbleData.slice(0, 4);
-  const row2 = bubbleData.slice(4, 8);
-  const row3 = bubbleData.slice(8, 13);
-  const row4 = bubbleData.slice(13, 13 + 4);
+  // Distribute bubbles across 3 rows (5-6 items per row)
+  const row1 = bubbleData.slice(0, 6);
+  const row2 = bubbleData.slice(6, 12);
+  const row3 = bubbleData.slice(12, 18);
 
   // Loading skeleton
   if (isLoading) {
     return (
-    <section className="py-12 overflow-hidden bg-white">
-      <div className="px-4 md:px-8 lg:px-12">
+      <section className="py-12 overflow-hidden bg-[#F8FAFB]">
+        <div className="px-[3%]">
           <div className="text-center mb-10">
-            <span className="text-sm font-semibold text-[#7D789F] uppercase tracking-[0.2em]">
+            <span className="text-3xl font-semibold text-[#7D786F] uppercase tracking-[0.2em]">
               Popular Guide Topics
             </span>
           </div>
-          <div className="max-w-6xl mx-auto space-y-4">
-            {/* Skeleton bubbles */}
-            <div className="flex flex-wrap justify-between items-center gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div 
-                  key={i} 
-                  className="h-10 w-32 md:w-40 bg-gray-200 rounded-full animate-pulse"
-                />
-              ))}
-            </div>
-            <div className="flex flex-wrap justify-center items-center gap-4 px-8 md:px-16">
-              {[1, 2, 3].map((i) => (
-                <div 
-                  key={i} 
-                  className="h-10 w-36 md:w-44 bg-gray-200 rounded-full animate-pulse"
-                />
-              ))}
-            </div>
+          <div className="space-y-4">
+            {/* Skeleton bubbles - 3 rows */}
+            {[1, 2, 3].map((row) => (
+              <div key={row} className="flex flex-wrap justify-center items-center gap-3">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div 
+                    key={i} 
+                    className="h-10 w-32 md:w-40 bg-gray-200 rounded-full animate-pulse"
+                  />
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1258,7 +1160,7 @@ const FloatingBubblesSection = () => {
 
   return (
     <section className="py-12 overflow-hidden bg-[#F8FAFB]">
-      <div className="container mx-auto px-[3%]">
+      <div className="px-[3%]">
         {/* Section Label */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1271,62 +1173,51 @@ const FloatingBubblesSection = () => {
           </span>
         </motion.div>
 
-        {/* Bubbles - Full Width Justified Layout */}
-        <div className="max-w-6xl mx-auto space-y-4">
-          {/* Row 1 - Justify between */}
+        {/* Bubbles - 3 Rows with alternating drift directions */}
+        <div className="space-y-4">
+          {/* Row 1 - Drifts right */}
           {row1.length > 0 && (
-            <div className="flex flex-wrap justify-between items-center gap-1">
+            <AnimatedRow direction="right" speed="slow">
               {row1.map((guide, index) => (
                 <FloatingBubble
                   key={`row1-${guide.id || index}`}
                   title={guide.name}
                   id={guide.id}
                   index={index}
+                  rowIndex={0}
                 />
               ))}
-            </div>
+            </AnimatedRow>
           )}
 
-          {/* Row 2 - Center with spacing */}
+          {/* Row 2 - Drifts left (opposite) */}
           {row2.length > 0 && (
-            <div className="flex flex-wrap justify-center items-center gap-1 px-8 md:px-16">
+            <AnimatedRow direction="left" speed="slow">
               {row2.map((guide, index) => (
                 <FloatingBubble
                   key={`row2-${guide.id || index}`}
                   title={guide.name}
                   id={guide.id}
-                  index={index + 4}
+                  index={index + 6}
+                  rowIndex={1}
                 />
               ))}
-            </div>
+            </AnimatedRow>
           )}
 
-          {/* Row 3 - Justify between */}
+          {/* Row 3 - Drifts right (alternating pattern) */}
           {row3.length > 0 && (
-            <div className="flex flex-wrap justify-between items-center gap-1">
+            <AnimatedRow direction="right" speed="slow">
               {row3.map((guide, index) => (
                 <FloatingBubble
                   key={`row3-${guide.id || index}`}
                   title={guide.name}
                   id={guide.id}
-                  index={index + 7}
+                  index={index + 12}
+                  rowIndex={2}
                 />
               ))}
-            </div>
-          )}
-
-          {/* Row 4 - Center with spacing */}
-          {row4.length > 0 && (
-            <div className="flex flex-wrap justify-center items-center gap-1 px-4 md:px-12">
-              {row4.map((guide, index) => (
-                <FloatingBubble
-                  key={`row4-${guide.id || index}`}
-                  title={guide.name}
-                  id={guide.id}
-                  index={index + 11}
-                />
-              ))}
-            </div>
+            </AnimatedRow>
           )}
         </div>
 
@@ -1360,10 +1251,11 @@ const FloatingBubblesSection = () => {
    - Smooth curves at corners (no breaks)
    - 9 guides in snake pattern
    - Uses CSS for reliable rendering
+   - Mobile: 2-column grid, no vines
    
    ============================================================================= */
 
-/* Groot Vine Guide Card */
+/* Guide Card - Square image (160x160) on left, flexible content on right */
 const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {}, view, onLike, currentUserId }) => {
   const [author, setAuthor] = useState("KEasy Team");
   const isLiked = currentUserId && like[currentUserId] === true;
@@ -1389,70 +1281,150 @@ const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {},
         transition={{ duration: 0.3 }}
         className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-[#81C784]/30 hover:border-[#81C784]/60"
       >
-        {/* Image with Fade Effect */}
-        <div className="relative h-[120px] overflow-hidden">
-          {img_url ? (
-            <>
+        
+        {/* ==================== MOBILE: Original Vertical Layout ==================== */}
+        <div className="md:hidden">
+          {/* Image with Fade Effect */}
+          <div className="relative h-[120px] overflow-hidden">
+            {img_url ? (
+              <>
+                <img 
+                  src={img_url} 
+                  alt={name} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
+              </>
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#81C784] to-[#66BB6A] flex items-center justify-center">
+                <span className="text-4xl">🌿</span>
+              </div>
+            )}
+            
+            {/* Like Button - Mobile */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onLike();
+              }}
+              className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
+                isLiked 
+                  ? 'bg-[#FF6B6B] text-white' 
+                  : 'bg-white/90 backdrop-blur-sm text-[#7D786F] hover:text-[#FF6B6B]'
+              }`}
+            >
+              {isLiked ? <FaHeart className="w-3 h-3" /> : <FiHeart className="w-3 h-3" />}
+            </button>
+
+            {/* Stats Badge - Mobile */}
+            <div className="absolute bottom-2 left-2 flex items-center gap-1">
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+                <FiEye className="w-2.5 h-2.5" />
+                {view || 0}
+              </span>
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+                <FiHeart className="w-2.5 h-2.5" />
+                {likesCount}
+              </span>
+            </div>
+          </div>
+
+          {/* Content - Mobile */}
+          <div className="p-3">
+            <h3 className="text-sm font-bold text-[#1A1917] line-clamp-1 mb-1 group-hover:text-[#4CAF50] transition-colors">
+              {name}
+            </h3>
+            <p className="text-xs text-[#7D786F] line-clamp-2 mb-2">
+              {description || "Discover helpful tips for life in Korea."}
+            </p>
+            
+            {/* Footer - Mobile */}
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#7D786F]">by {author}</span>
+              <span className="flex items-center gap-1 text-[10px] font-semibold text-[#4CAF50]">
+                Read guide
+                <FiArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ==================== DESKTOP: Square Image (160x160) + Flexible Content ==================== */}
+        <div className="hidden md:flex h-[160px]">
+          
+          {/* LEFT SIDE: Square Image (160px × 160px) */}
+          <div className="relative w-[160px] h-[160px] flex-shrink-0 overflow-hidden">
+            {img_url ? (
               <img 
                 src={img_url} 
                 alt={name} 
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
-            </>
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#81C784] to-[#66BB6A] flex items-center justify-center">
-              <span className="text-4xl">🌿</span>
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#81C784] to-[#66BB6A] flex items-center justify-center">
+                <span className="text-4xl">🌿</span>
+              </div>
+            )}
+
+            {/* Stats Badge - Bottom Left of Image */}
+            <div className="absolute bottom-2 left-2 flex items-center gap-1">
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+                <FiEye className="w-2.5 h-2.5" />
+                {view || 0}
+              </span>
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
+                <FiHeart className="w-2.5 h-2.5" />
+                {likesCount}
+              </span>
             </div>
-          )}
-          
-          {/* Like Button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onLike();
-            }}
-            className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
-              isLiked 
-                ? 'bg-[#FF6B6B] text-white' 
-                : 'bg-white/90 backdrop-blur-sm text-[#7D786F] hover:text-[#FF6B6B]'
-            }`}
-          >
-            {isLiked ? <FaHeart className="w-3 h-3" /> : <FiHeart className="w-3 h-3" />}
-          </button>
-
-          {/* Stats Badge */}
-          <div className="absolute bottom-2 left-2 flex items-center gap-1">
-            <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
-              <FiEye className="w-2.5 h-2.5" />
-              {view || 0}
-            </span>
-            <span className="flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded-full text-white text-[10px]">
-              <FiHeart className="w-2.5 h-2.5" />
-              {likesCount}
-            </span>
           </div>
+
+          {/* RIGHT SIDE: Content (Flexible - takes remaining space) */}
+          <div className="flex-1 h-full p-4 flex flex-col justify-between">
+            
+            {/* Top Section: Title + Like Button */}
+            <div>
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h3 className="text-sm font-bold text-[#1A1917] line-clamp-2 group-hover:text-[#4CAF50] transition-colors flex-1">
+                  {name}
+                </h3>
+                
+                {/* Like Button - Top Right */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onLike();
+                  }}
+                  className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
+                    isLiked 
+                      ? 'bg-[#FF6B6B] text-white' 
+                      : 'bg-gray-100 text-[#7D786F] hover:text-[#FF6B6B] hover:bg-gray-200'
+                  }`}
+                >
+                  {isLiked ? <FaHeart className="w-3 h-3" /> : <FiHeart className="w-3 h-3" />}
+                </button>
+              </div>
+
+              {/* Description - 3 lines max */}
+              <p className="text-xs text-[#7D786F] line-clamp-3">
+                {description || "Discover helpful tips for life in Korea."}
+              </p>
+            </div>
+
+            {/* Bottom Section: Author + Read Guide */}
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#7D786F]">by {author}</span>
+              <span className="flex items-center gap-1 text-[10px] font-semibold text-[#4CAF50]">
+                Read guide
+                <FiArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </div>
+          </div>
+          
         </div>
 
-        {/* Content */}
-        <div className="p-3">
-          <h3 className="text-sm font-bold text-[#1A1917] line-clamp-1 mb-1 group-hover:text-[#4CAF50] transition-colors">
-            {name}
-          </h3>
-          <p className="text-xs text-[#7D786F] line-clamp-2 mb-2">
-            {description || "Discover helpful tips for life in Korea."}
-          </p>
-          
-          {/* Footer */}
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-[#7D786F]">by {author}</span>
-            <span className="flex items-center gap-1 text-[10px] font-semibold text-[#4CAF50]">
-              Read guide
-              <FiArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </div>
-        </div>
       </motion.div>
     </Link>
   );
@@ -1460,18 +1432,20 @@ const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {},
 
 /* Main Guides Section */
 const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
-  const displayGuides = guides.slice(0, 9);
+  const displayGuides = guides.slice(0, 13); // Get first 13 guides
   
-  const row1 = displayGuides.slice(0, 3);
-  const row2 = [...displayGuides.slice(3, 6)].reverse();
-  const row3 = displayGuides.slice(6, 9);
+  // Desktop rows (snake pattern)
+  const row1 = displayGuides.slice(10, 14);
+  // const row2 = [...displayGuides.slice(3, 6)].reverse();
+  const row2 = displayGuides.slice(4, 7);
+  const row3 = displayGuides.slice(7, 10);
 
   // Light green color
   const vineColor = '#81C784';
 
   return (
     <section className="py-16 bg-[#F8FAFB] overflow-hidden relative">
-      <div className="container mx-auto px-[3%]">
+      <div className="container mx-auto px-[5%]">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -1517,11 +1491,37 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
           </motion.div>
         </div>
 
-        {/* Vine + Cards Container */}
-        <div className="relative">
+        {/* ==================== MOBILE VIEW: Simple 2-Column Grid (No Vines) ==================== */}
+        <div className="md:hidden">
+          <motion.div 
+            className="grid grid-cols-2 gap-4"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            {displayGuides.map((guide, index) => (
+              <motion.div
+                key={guide.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <GrootGuideCard
+                  {...guide}
+                  currentUserId={currentUserId}
+                  onLike={() => onGuideLike(guide.id)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* ==================== DESKTOP VIEW: Vine + Cards Container ==================== */}
+        <div className="relative hidden md:block">
           
           {/* ========== CSS VINE STRUCTURE (Desktop Only) ========== */}
-          <div className="hidden md:block absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+          <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
             
             {/* ROW 1: Horizontal line */}
             <div 
@@ -1593,16 +1593,6 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
               }} 
             />
             
-            {/* LEFT CORNER BOTTOM: Connects vertical to Row 3 */}
-            {/* <div 
-              className="absolute w-12 h-12 border-t-[8px] border-l-[8px] rounded-tl-3xl"
-              style={{ 
-                top: '512px', 
-                left: '0',
-                borderColor: vineColor 
-              }} 
-            /> */}
-            
             {/* ROW 3: Horizontal line */}
             <div 
               className="absolute left-12 right-0 h-2 rounded-full"
@@ -1616,7 +1606,7 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
 
           {/* ==================== ROW 1 ==================== */}
           <motion.div 
-            className="relative z-10 grid grid-cols-8 md:grid-cols-3 gap-4 md:gap-8 pb-16 md:pb-0"
+            className="relative z-10 grid grid-cols-3 gap-8"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1638,17 +1628,9 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
             ))}
           </motion.div>
 
-          {/* Mobile Vine Connector 1 */}
-          <div className="md:hidden flex justify-end pr-8 -mt-8 mb-8">
-            <div 
-              className="w-2 h-16 rounded-full"
-              style={{ backgroundColor: vineColor }}
-            />
-          </div>
-
           {/* ==================== ROW 2 ==================== */}
           <motion.div 
-            className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 py-16 md:py-28"
+            className="relative z-10 grid grid-cols-3 gap-8 py-28"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1671,17 +1653,9 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
             ))}
           </motion.div>
 
-          {/* Mobile Vine Connector 2 */}
-          <div className="md:hidden flex justify-start pl-8 -mt-8 mb-8">
-            <div 
-              className="w-2 h-16 rounded-full"
-              style={{ backgroundColor: vineColor }}
-            />
-          </div>
-
           {/* ==================== ROW 3 ==================== */}
           <motion.div 
-            className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 pt-16 md:pt-0"
+            className="relative z-10 grid grid-cols-3 gap-8"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1727,6 +1701,9 @@ const GuidesSection = ({ guides, currentUserId, onGuideLike, guidesRef }) => {
   );
 };
 
+/* =============================================================================
+   Marketplace section 
+   ============================================================================= */
 
 const conditionColors = {
   new: '#10B981',
@@ -1822,78 +1799,141 @@ const FeaturedMarketplaceCard = ({ item }) => {
       onClick={handleCardClick}
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.3 }}
-      className="relative h-full min-h-[350px] lg:min-h-full rounded-3xl overflow-hidden cursor-pointer group"
+      className="relative h-full rounded-3xl overflow-hidden cursor-pointer group bg-white shadow-lg"
     >
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src={imageError ? '/no-image.png' : imageUrl}
-          onError={() => setImageError(true)}
-          alt={item.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-        />
-        {/* we can change the colour of the gradient here for the featured product featured background colour change */}
-        <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-white/5 to-transparent" />
-      </div>
+      {/* ==================== MOBILE LAYOUT ==================== */}
+      <div className="lg:hidden">
+        {/* Image Section */}
+        <div className="relative h-[200px] overflow-hidden">
+          <img
+            src={imageError ? '/no-image.png' : imageUrl}
+            onError={() => setImageError(true)}
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+          
+          {/* Top Badges & Actions */}
+          <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+            <span
+              className="px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-lg"
+              style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
+            >
+              {formatCondition(item.condition)}
+            </span>
 
-      {/* Top Badges & Actions */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
-        <span
-          className="px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-lg"
-          style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
-        >
-          {formatCondition(item.condition)}
-        </span>
-
-        <button
-          onClick={handleToggleLike}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
-            isLiked
-              ? 'bg-[#FF6B6B] text-white'
-              : 'bg-white/90 text-gray-600 hover:text-[#FF6B6B]'
-          }`}
-        >
-          {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
-        </button>
-      </div>
-
-      {/* Featured Badge */}
-      {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-        <span className="px-3 py-1.5 bg-[#FFE66D] text-[#1A1917] rounded-full text-xs font-bold shadow-lg">
-          ⭐ Featured
-        </span>
-      </div> */}
-
-      {/* Bottom Content you can change the text colour of featured item name here*/}
-      <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-        <div className="flex items-center gap-3 text-black/80 text-xs mb-2">
-          <span className="flex items-center gap-1">
-            <FiMapPin className="w-3 h-3" />
-            {item.location || 'Korea'}
-          </span>
-          <span className="flex items-center gap-1">
-            <FiEye className="w-3 h-3" />
-            {item.views || 0} views
-          </span>
+            <button
+              onClick={handleToggleLike}
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+                isLiked
+                  ? 'bg-[#FF6B6B] text-white'
+                  : 'bg-white/90 text-gray-600 hover:text-[#FF6B6B]'
+              }`}
+            >
+              {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
-        <h3 className="text-xl lg:text-2xl font-bold text-black mb-2 line-clamp-2">
-          {item.title}
-        </h3>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <p className="text-2xl lg:text-3xl font-bold text-[#4ECDC4]">
-            {formatCurrency(item.price)}
-          </p>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/marketplace/${item.id}`);
-            }}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-[#1A1917] rounded-full font-semibold hover:bg-[#4ECDC4] hover:text-white transition-all duration-300 text-sm group/btn"
+        {/* Content Section - Below Image */}
+        <div className="p-4">
+          <div className="flex items-center gap-3 text-gray-500 text-xs mb-2">
+            <span className="flex items-center gap-1">
+              <FiMapPin className="w-3 h-3" />
+              {item.location || 'Korea'}
+            </span>
+            <span className="flex items-center gap-1">
+              <FiEye className="w-3 h-3" />
+              {item.views || 0} views
+            </span>
+          </div>
+          
+          <h3 className="text-lg font-bold text-[#1A1917] mb-2 line-clamp-2">
+            {item.title}
+          </h3>
+
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xl font-bold text-[#4ECDC4]">
+              {formatCurrency(item.price)}
+            </p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/marketplace/${item.id}`);
+              }}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1A1917] text-white rounded-full font-semibold hover:bg-[#4ECDC4] transition-all duration-300 text-sm group/btn"
+            >
+              View Details
+              <FiArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== DESKTOP LAYOUT ==================== */}
+      <div className="hidden lg:block h-full min-h-[400px]">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src={imageError ? '/no-image.png' : imageUrl}
+            onError={() => setImageError(true)}
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+          {/* <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" /> */}
+        </div>
+
+        {/* Top Badges & Actions */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
+          <span
+            className="px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-lg"
+            style={{ backgroundColor: conditionColors[item.condition] || '#6B7280' }}
           >
-            View Details
-            <FiArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+            {formatCondition(item.condition)}
+          </span>
+
+          <button
+            onClick={handleToggleLike}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+              isLiked
+                ? 'bg-[#FF6B6B] text-white'
+                : 'bg-white/90 text-gray-600 hover:text-[#FF6B6B]'
+            }`}
+          >
+            {isLiked ? <FaHeart className="w-4 h-4" /> : <FiHeart className="w-4 h-4" />}
           </button>
+        </div>
+
+        {/* Bottom Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+          <div className="flex items-center gap-3 text-[#6B7280] text-xs mb-2">
+            <span className="flex items-center gap-1">
+              <FiMapPin className="w-3 h-3" />
+              {item.location || 'Korea'}
+            </span>
+            <span className="flex items-center gap-1">
+              <FiEye className="w-3 h-3" />
+              {item.views || 0} views
+            </span>
+          </div>
+          <h3 className="text-xl lg:text-2xl font-bold text-[#1A1917] mb-2 line-clamp-2">
+            {item.title}
+          </h3>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p className="text-2xl lg:text-3xl font-bold text-[#FF6B6B]">
+              {formatCurrency(item.price)}
+            </p>
+            <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/marketplace/${item.id}`);
+                }}
+                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1A1917] text-white rounded-full font-semibold hover:bg-[#4ECDC4] transition-all duration-300 text-sm group/btn"
+              >
+              View Details
+              <FiArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -2056,7 +2096,7 @@ const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef
   }
 // background for the marketplace section can be changed here
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-[#F8FAFB]">
+    <section className="py-12 md:py-16 lg:py-10 bg-[#F8FAFB]">
       <div className="container mx-auto px-[3%]">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 md:mb-12">
@@ -2197,7 +2237,7 @@ const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef
 
 const LocalClassesCTA = () => {
   return (
-    <section className="py-16 bg-[#F8FAFB]">
+    <section className="py-10 bg-[#F8FAFB]">
       <div className="container mx-auto px-[3%]">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -2259,7 +2299,7 @@ const LocalClassesCTA = () => {
                 All levels are welcome!
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link to="/events">
+                <a href="https://invite.kakao.com/tc/zPLgnWBMnk" target='_blank'>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -2267,7 +2307,7 @@ const LocalClassesCTA = () => {
                   >
                     Join Free Class
                   </motion.button>
-                </Link>
+                </a>
                 <Link to="/community">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -2416,59 +2456,59 @@ const TestimonialsSection = () => {
   const testimonials = [
     {
       name: "Abhishek, Nepal",
-      image: "/testimonials/Abhishek.svg",
+      image: "./testimonials/Abhishek.svg",
       quote: "KEasy has changed my life in Korea. I was confused about everything in South Korea, but KEasy guides saved my life."
     },
     {
       name: "Nada, Egypt",
-      image: "/testimonials/Nada.svg",
+      image: "./testimonials/Nada.svg",
       quote: "Keasy made my life in Korea so much easier. I met new friends and found affordable second-hand items through the marketplace."
     },
     {
       name: "Kevin, Korea",
-      image: "/testimonials/Kevin.svg",
+      image: "./testimonials/Kevin.svg",
       quote: "Being part of KEasy community is a must for foreigners. It helps foreigners communicate and participate  Thank you for this amazing platform!"
     },
      {
       name: "Vedika, India",
-      image: "/testimonials/Vedika.svg",
+      image: "./testimonials/Vedika.svg",
       quote: "I can't imagine my life in Korea without KEasy. It's my go-to platform for everything!"
     },
     {
       name: "Khalil, Egypt",
-      image: "/testimonials/Khalil.svg",
+      image: "./testimonials/Khalil.svg",
       quote: "Keasy helped me meet great people in Korea and discover events I wouldn’t have found on my own. It’s been a huge help for my social life."
     },
     {
       name: "Bhoomika, India",
-      image: "/testimonials/Bhoomika.svg",
+      image: "./testimonials/Bhoomika.svg",
       quote: "KEasy community support is unmatched. I always get helpful advice from fellow expats here."
     },
     {
       name: "Zakaria, Egypt",
-      image: "/testimonials/Zakaria.svg",
+      image: "./testimonials/Zakaria.svg",
       quote: "Keasy helped me meet amazing people and join fun events in Korea. It made settling in much easier."
     },
     {
       name: "Rupesh, Nepal",
-      image: "/testimonials/Rupesh.svg",
+      image: "./testimonials/Rupesh.svg",
       quote: "KEasy understands what expats need. Every feature is thoughtfully designed for our community."
     },
     {
       name: "Vedika, India",
-      image: "/testimonials/Vedika.svg",
+      image: "./testimonials/Vedika.svg",
       quote: "I can't imagine my life in Korea without KEasy. It's my go-to platform for everything!"
     },
     {
       name: "Yoon, Korea",
-      image: "/testimonials/Yoon.svg",
+      image: "./testimonials/Yoon.svg",
       quote: "Keasy brought many new foreign customers to my store. It’s a great platform for connecting local businesses with the foreign community."
     },
-    // {
-    //   name: "Michael",
-    //   image: "/testimonials/AB.SVG",
-    //   quote: "I found the perfect match. They understood my background and challenges completely."
-    // },
+    {
+      name: "Tomato Photo Studio, Korea",
+      image: "./testimonials/photostudio.svg",
+      quote: "Thanks to KEasy team, I have increased my costumer base and I get to help many foreigners."
+    },
     // {
     //   name: "Jessica",
     //   image: "/testimonials/AB.SVG",
@@ -2485,7 +2525,7 @@ const TestimonialsSection = () => {
   const allTestimonials = [...testimonials, ...testimonials];
 
   return (
-    <section className="py-16 md:py-20 bg-[#F8FAFB] overflow-hidden">
+    <section className="py-16 md:py-10 bg-[#F8FAFB] overflow-hidden">
       <div className="container mx-auto px-[3%]">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
@@ -2566,13 +2606,13 @@ const TestimonialsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Link
+            {/* <Link
               to="/reviews"
               className="inline-flex items-center gap-2 text-[#FF6B6B] hover:text-[#E85555] font-semibold transition-colors"
             >
               Read more testimonials
               <FiArrowRight className="w-10 h-10" />
-            </Link>
+            </Link> */}
           </motion.div>
         </div>
       </div>
@@ -2587,7 +2627,7 @@ const TestimonialsSection = () => {
 
 const CTASection = ({ currentUserId }) => {
   return (
-    <section className="py-16 bg-[#F8FAFB]">
+    <section className="py-0 pb-20 bg-[#F8FAFB]">
       <div className="container mx-auto px-[3%] bg-[#F8FAFB]">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -2902,207 +2942,422 @@ const FeedbackSection = () => {
 };
 
 
-/* =============================================================================
-   AI CHATBOT
-   ============================================================================= */
+const companyInfo = `
+Introduction:
+Hey there! I'm your friendly Keasy chatbot — your digital companion for navigating life in South Korea 🇰🇷. Whether you're an 
+international student, expat, or newcomer, I'm here to guide you through your new life, help you find communities, and make your experience smoother, easier, and more connected.
 
-const companyInfo = `Hey there! I'm your friendly KEasy chatbot — your digital companion for navigating life in South Korea 🇰🇷. Whether you're an international student, expat, or just a traveller, I'm here to guide you through your new life, help you find communities, and make your experience smoother, easier, and more connected.
-
-KEasy is a modern community platform designed to support international people living in South Korea. We bring together everything you need to live, connect, and thrive abroad — all in one place.
+Details:
+Keasy is a modern community platform designed to support international people living in South Korea. We bring together everything you need to 
+live, connect, and thrive abroad — all in one place. From local guides and events to a marketplace for buying and selling goods, Keasy makes settling in feel like home.
 
 Our platform offers:
-- AI-powered assistance for real-time guidance and translation
-- Marketplace to buy and sell new or used items safely
-- Events & Activities listings to help you explore your city
-- Community groups and chats where you can connect with others
-- Blog and resources for legal advice, cultural tips, and local insights
+- AI-powered assistance for real-time guidance and translation.
+- Marketplace to buy and sell new or used items safely.
+- Events & Activities listings to help you explore your city.
+- Community groups and chats where you can connect with others.
+- Blog and resources for legal advice, cultural tips, and local insights.
 
-KEasy's goal is simple: make life easier for foreigners in South Korea through community, technology, and meaningful support.
+Keasy's goal is simple: make life easier for foreigners in South Korea through community, technology, and meaningful support.
+
+Based in Daejeon, South Korea, Keasy was founded by a group of international students who experienced the challenges of living abroad firsthand — and decided to build a solution.
 
 Stay connected with us:
 - Website: https://www.koreaeasy.org
 - Instagram: https://www.instagram.com/keasy_community
 
-At KEasy, we believe in more than just technology — we believe in community. Together, we make Korea feel like home 💙`;
+For partnerships, inquiries, or feedback, reach out to us at keasy.contact@gmail.com
+
+At Keasy, we believe in more than just technology — we believe in community. Together, we make Korea feel like home 💙
+`;
 
 const ChatbotIcon = () => (
-  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FF6B6B] to-[#4ECDC4] flex items-center justify-center">
-    <Sparkles className="w-4 h-4 text-white" />
+  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+    <Sparkles className="w-5 h-5 text-white" />
   </div>
 );
 
 const ChatMessage = ({ chat }) => {
+  const renderFormattedText = (text) => {
+    // Split text into lines
+    const lines = text.split('\n');
+    
+    return lines.map((line, lineIndex) => {
+      // Skip empty lines but preserve spacing
+      if (line.trim() === '') {
+        return <br key={lineIndex} />;
+      }
+
+      // Handle bullet points (•, -, *, numbered lists)
+      const bulletMatch = line.match(/^(\s*)([-•*]|\d+\.)\s+(.+)$/);
+      if (bulletMatch) {
+        const [, indent, bullet, content] = bulletMatch;
+        return (
+          <div key={lineIndex} className="flex gap-2 my-1" style={{ marginLeft: `${indent.length * 8}px` }}>
+            <span className="flex-shrink-0 font-medium">{bullet}</span>
+            <span>{formatInlineText(content)}</span>
+          </div>
+        );
+      }
+
+      // Handle headers (lines that end with :)
+      if (line.match(/^[^:]+:$/)) {
+        return (
+          <div key={lineIndex} className="font-semibold mt-2 mb-1">
+            {formatInlineText(line)}
+          </div>
+        );
+      }
+
+      // Regular paragraph
+      return (
+        <div key={lineIndex} className="my-1">
+          {formatInlineText(line)}
+        </div>
+      );
+    });
+  };
+
+ // Format inline text (bold, italic, links, inline code only)
+  const formatInlineText = (text) => {
+    // Split by inline code, bold, italic, and URLs (NO multiline code blocks here)
+    const parts = text.split(/(`[^`\n]+`|\*\*\*[^*\n]+\*\*\*|\*\*[^*\n]+\*\*|\*[^*\n]+\*|https?:\/\/[^\s]+)/g);
+    
+    return parts.map((part, index) => {
+      if (!part) return null;
+
+      // Inline code (`code`) - single line only
+      if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+        return (
+          <code key={index} className="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
+            {part.slice(1, -1)}
+          </code>
+        );
+      }
+
+      // Bold + Italic (***text***)
+      if (part.startsWith('***') && part.endsWith('***') && part.length > 6) {
+        return (
+          <strong key={index} className="font-bold italic">
+            {part.slice(3, -3)}
+          </strong>
+        );
+      }
+
+      // Bold (**text**)
+      if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+        return (
+          <strong key={index} className="font-semibold">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+
+      // Italic (*text*)
+      if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+        return (
+          <em key={index} className="italic">
+            {part.slice(1, -1)}
+          </em>
+        );
+      }
+
+      // URLs
+      if (part.match(/^https?:\/\/[^\s]+$/)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   if (chat.hideInChat) return null;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className={`flex gap-3 ${chat.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
     >
       {chat.role === 'model' && <ChatbotIcon />}
+      
       <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-        chat.role === 'user'
-          ? 'bg-[#FF6B6B] text-white rounded-br-sm'
-          : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+        chat.role === 'user' 
+          ? 'bg-blue-600 text-white rounded-br-sm' 
+          : 'bg-gray-100 text-gray-900 rounded-bl-sm'
       }`}>
-        <p className="text-sm whitespace-pre-wrap">{chat.text}</p>
+        <div className="text-sm leading-relaxed">
+          {chat.role === 'model' ? renderFormattedText(chat.text) : chat.text}
+        </div>
       </div>
+
       {chat.role === 'user' && (
-        <div className="w-8 h-8 rounded-full bg-[#4ECDC4] flex items-center justify-center text-white">
-          <FiUser className="w-4 h-4" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
+          <FiUser/>
         </div>
       )}
     </motion.div>
   );
 };
 
-const AIChatbot = ({ currentUserId }) => {
+const ChatForm = ({ onSubmit, isLoading }) => {
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const userMessage = message.trim();
+    if (!userMessage || isLoading) return;
+    
+    onSubmit(userMessage);
+    setMessage('');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  return (
+    <div className="flex gap-2 items-center w-full">
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={handleKeyPress}
+        placeholder="Type your message..."
+        className="flex-1 px-4 py-2.5 bg-none border-none rounded-full outline-none text-gray-800 placeholder-gray-500 text-base md:text-sm"
+        disabled={isLoading}
+      />
+      <button
+        onClick={handleSubmit}
+        disabled={!message.trim() || isLoading}
+        className="flex-shrink-0  w-10 h-10 my-1 bg-purple-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+      >
+        <Send className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};
+
+const AIChatbot = ({currentUserId}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState([{ hideInChat: true, role: 'model', text: companyInfo }]);
+  const [chatHistory, setChatHistory] = useState([
+    {
+      hideInChat: true,
+      role: 'model',
+      text: companyInfo
+    }
+  ]);
   const chatBodyRef = useRef();
   const navigate = useNavigate();
 
+  // Generate AI response using Gemini API
   const generateBotResponse = async (history) => {
     try {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) throw new Error("API key missing");
+      
+      if (!apiKey) {
+        throw new Error("Gemini API key is missing");
+      }
+
+      // Format history for Gemini API
+      const formattedHistory = history.map(({ role, text }) => ({
+        role: role === 'user' ? 'user' : 'model',
+        parts: [{ text }]
+      }));
 
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
-            contents: history.map(({ role, text }) => ({
-              role: role === 'user' ? 'user' : 'model',
-              parts: [{ text }]
-            })),
-            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+            contents: formattedHistory,
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
+            }
           })
         }
       );
 
-      const data = await response.json();
-      const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response. Please try again.";
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
 
-      setChatHistory(prev => [...prev.filter(msg => msg.text !== 'Thinking...'), { role: 'model', text: botResponse }]);
+      const data = await response.json();
+      const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                         "I apologize, but I couldn't generate a response. Please try again.";
+
+      setChatHistory(prev => [
+        ...prev.filter(msg => msg.text !== 'Thinking...'),
+        { role: 'model', text: botResponse }
+      ]);
     } catch (error) {
-      setChatHistory(prev => [...prev.filter(msg => msg.text !== 'Thinking...'), { role: 'model', text: "I'm having trouble responding. Please try again." }]);
+      console.error('Error generating bot response:', error);
+      setChatHistory(prev => [
+        ...prev.filter(msg => msg.text !== 'Thinking...'),
+        { role: 'model', text: "I apologize, but I'm having trouble responding right now. Please check your internet connection and try again." }
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSend = () => {
-    if (!message.trim() || isLoading) return;
-    const newMessage = { role: 'user', text: message.trim() };
+  const handleSendMessage = (userMessage) => {
+    const newMessage = { role: 'user', text: userMessage };
     setChatHistory(prev => [...prev, newMessage]);
-    setMessage('');
+    
     setIsLoading(true);
     setTimeout(() => {
       setChatHistory(prev => [...prev, { role: 'model', text: 'Thinking...' }]);
-      generateBotResponse([...chatHistory, newMessage]);
-    }, 500);
+      
+      generateBotResponse([
+        ...chatHistory,
+        newMessage,
+        { role: 'user', text: `Using the details provided above if needed, please address this query: ${userMessage}` }
+      ]);
+    }, 600);
   };
 
   useEffect(() => {
     if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: 'smooth' });
+      chatBodyRef.current.scrollTo({
+        top: chatBodyRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [chatHistory]);
 
-  const handleToggle = () => {
-    if (currentUserId) {
-      setIsOpen(!isOpen);
-      if (isOpen) setChatHistory([{ hideInChat: true, role: 'model', text: companyInfo }]);
-    } else {
-      alert("Please sign in to use the AI Chatbot.");
-      navigate('/signin');
+  const handlePopUp = () => {
+    if(currentUserId){
+      if(isOpen == true) {
+        setIsOpen(false)
+        setChatHistory([])
+      }
+      else setIsOpen(true);
     }
-  };
+    else {
+      alert("Please sign in to use the AI Chatbot.");
+      navigate('/signin')
+    };
+  }
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Chat Button */}
       <motion.button
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={handleToggle}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-4 bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] text-white rounded-full shadow-lg shadow-[#FF6B6B]/30"
+        onClick={handlePopUp}
+        className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
       >
-        <Sparkles className="w-5 h-5" />
-        <span className="hidden sm:inline font-semibold">KEasy AI</span>
+        <Sparkles className="w-5 h-5 text-white" />
+        <span className="hidden sm:inline font-medium">keasy AI</span>
       </motion.button>
 
-      {/* Chat Window */}
+      {/* Chat Popup */}
       <AnimatePresence>
         {isOpen && (
           <>
+            {/* Backdrop for mobile */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 md:hidden"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
             />
+
+            {/* Chat Container */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden md:bottom-24 md:right-6 md:w-[380px] md:h-[550px] inset-4 md:inset-auto flex flex-col"
+              initial={{ 
+                opacity: 0,
+                scale: 0.95,
+                y: 20
+              }}
+              animate={{ 
+                opacity: 0.95,
+                scale: 1,
+                y: 0
+              }}
+              exit={{ 
+                opacity: 0,
+                scale: 0.95,
+                y: 20
+              }}
+              transition={{ 
+                type: "spring",
+                damping: 25,
+                stiffness: 300
+              }}
+              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden
+                md:bottom-24 md:right-6 md:w-[400px] md:h-[600px]
+                inset-4 md:inset-auto"
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] text-white p-4 flex items-center justify-between">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <ChatbotIcon />
                   <div>
-                    <h3 className="font-semibold">KEasy AI</h3>
-                    <p className="text-xs text-white/80">Always here to help</p>
+                    <h3 className="font-semibold text-lg text-white">keasy AI</h3>
+                    <p className="text-xs text-blue-100">Always here to help</p>
                   </div>
                 </div>
-                <button onClick={handleToggle} className="p-2 hover:bg-white/20 rounded-full">
+                <button
+                  onClick={handlePopUp}
+                  className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Messages */}
-              <div ref={chatBodyRef} className="flex-1 overflow-y-auto p-4">
+              {/* Chat Body */}
+              <div
+                ref={chatBodyRef}
+                className="flex-1 overflow-y-auto p-4 bg-white"
+                style={{ height: 'calc(100% - 130px)' }}
+              >
+                {/* Welcome Message */}
                 <div className="flex gap-3 mb-4">
                   <ChatbotIcon />
-                  <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 max-w-[80%]">
-                    <p className="text-sm text-gray-800">Hey there! 👋 How can I help you today?</p>
+                  <div className="max-w-[80%] bg-gray-100 text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3">
+                    <p className="text-sm leading-relaxed">
+                      Hey there 👋<br/>
+                      How can I help you today?
+                    </p>
                   </div>
                 </div>
-                {chatHistory.map((chat, i) => <ChatMessage key={i} chat={chat} />)}
+
+                {/* Chat History */}
+                {chatHistory.map((chat, index) => (
+                  <ChatMessage key={index} chat={chat} />
+                ))}
               </div>
 
-              {/* Input */}
-              <div className="p-4 border-t border-gray-100">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder="Type your message..."
-                    className="flex-1 px-4 py-3 bg-gray-100 rounded-full outline-none text-sm"
-                    disabled={isLoading}
-                  />
-                  <motion.button
-                    onClick={handleSend}
-                    disabled={!message.trim() || isLoading}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-12 h-12 bg-[#FF6B6B] text-white rounded-full flex items-center justify-center disabled:opacity-50"
-                  >
-                    <Send className="w-5 h-5" />
-                  </motion.button>
-                </div>
+              {/* Chat Footer */}
+              <div className="py-3 pt-1 px-1 bg-white border-t border-gray-200">
+                <ChatForm onSubmit={handleSendMessage} isLoading={isLoading} />
               </div>
             </motion.div>
           </>
@@ -3136,7 +3391,7 @@ export default function Home() {
       const { data: user } = await supabase.auth.getUser();
       setCurrentUserId(user?.user?.id || null);
 
-      const { data: guidesData } = await supabase.from('guide').select('id, created_at, name, description, img_url, created_by, like').limit(9);
+      const { data: guidesData } = await supabase.from('guide').select('id, created_at, name, description, img_url, created_by, like').limit(19);
       setGuides(guidesData || []);
 
       const { data: marketData } = await supabase.from('marketplace').select('*').eq("verified", true).eq('available', true).limit(20);
@@ -3191,10 +3446,7 @@ export default function Home() {
       <HeroSection />
       <FloatingBubblesSection guides={guides} />
       <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} />
-      {/* <ServicesSection features={features} /> */}
-      {/* <GuidesSection guides={guides} currentUserId={currentUserId} onGuideLike={handleGuideLike} guidesRef={guidesRef} /> */}
       <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} />
-      {/* <MarketplaceSection items={marketplaceItems} currentUserId={currentUserId} onToggleLike={handleToggleLike} marketplaceRef={marketplaceRef} /> */}
       <LocalClassesCTA />
       <TestimonialsSection />
       <CTASection currentUserId={currentUserId} />

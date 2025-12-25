@@ -70,6 +70,7 @@ import { PaymentSuccessPage } from "./pages/toss/payment/PaymentSuccess";
 import { BrandpaySuccessPage } from "./pages/toss/brandpay/BrandpaySuccess";
 import { WidgetCheckoutPage } from "./pages/toss/widget/WidgetCheckout";
 import { WidgetSuccessPage } from "./pages/toss/widget/WidgetSuccess";
+import Jobs from './pages/features/jobs/Jobs';
 
 
 
@@ -129,6 +130,8 @@ function App() {
         <Route element={<Layout><Connect /></Layout>} path='/connect' />
         <Route element={<Layout><ProfessionalEdit /></Layout>} path='/connect/professional/edit' />
         <Route element={<Layout><ProfessionalNew /></Layout>} path='/connect/professional/new' />
+
+        <Route element={<Layout><Jobs/></Layout>} path='/jobs/'/>
 
         <Route element={<Layout><Talent /></Layout>} path='/talents' />
         <Route element={<Layout><TalentDetail /></Layout>} path='/talents/:id' />
