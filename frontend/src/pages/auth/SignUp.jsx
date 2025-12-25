@@ -44,12 +44,12 @@ const getPasswordStrength = (password) => {
     number: /[0-9]/.test(password),
     special: /[^A-Za-z0-9]/.test(password),
   };
-  
+
   const score = Object.values(checks).filter(Boolean).length;
-  
-  if (score <= 2) return { strength: 'weak', color: '#EF4444', width: '33%' };
-  if (score <= 4) return { strength: 'medium', color: '#F59E0B', width: '66%' };
-  return { strength: 'strong', color: '#10B981', width: '100%' };
+
+  if (score <= 2) return { strength: "weak", color: "#EF4444", width: "33%" };
+  if (score <= 4) return { strength: "medium", color: "#F59E0B", width: "66%" };
+  return { strength: "strong", color: "#10B981", width: "100%" };
 };
 
 const SignUp = () => {
@@ -72,7 +72,7 @@ const SignUp = () => {
   // Show/hide password toggles
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const [isLoading, setIsLoading] = useState(false);
 
   // Password strength
@@ -165,15 +165,15 @@ const SignUp = () => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    
+
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: `${window.location.origin}/`,
-        }
+        },
       });
-      
+
       if (error) {
         setError(`Google signup failed: ${error.message}`);
         setIsLoading(false);
@@ -208,8 +208,13 @@ const SignUp = () => {
                 transition={{ delay: 0.5 }}
                 className="text-white"
               >
-                <h2 className="text-white/90 text-2xl font-bold mb-2">Join KEasy Community</h2>
-                <p className="text-white/90">Connect with expats and make Korea feel like home</p>
+                {/* kept incoming changes */}
+                <h2 className="text-white/90 text-2xl font-bold mb-2">
+                  Join KEasy Community
+                </h2>
+                <p className="text-white/90">
+                  Connect with expats and make Korea feel like home
+                </p>
               </motion.div>
             </div>
           </div>
@@ -228,7 +233,7 @@ const SignUp = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{
               transformStyle: "preserve-3d",
-              perspective: "1000px"
+              perspective: "1000px",
             }}
           >
             {/* Header */}
@@ -240,13 +245,17 @@ const SignUp = () => {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-[#4ECDC4]/10 rounded-full mb-4"
               >
                 <span className="w-2 h-2 bg-[#4ECDC4] rounded-full animate-pulse" />
-                <span className="text-sm font-medium text-[#4ECDC4]">Join Us Today</span>
+                <span className="text-sm font-medium text-[#4ECDC4]">
+                  Join Us Today
+                </span>
               </motion.div>
-              
+
               <h2 className="text-3xl font-bold text-[#1A1917] mb-3">
                 Create your account
               </h2>
-              <p className="text-[#7D786F]">Start your journey with KEasy community</p>
+              <p className="text-[#7D786F]">
+                Start your journey with KEasy community
+              </p>
             </div>
 
             <AnimatePresence>
@@ -287,7 +296,9 @@ const SignUp = () => {
                 <div className="w-full border-t border-gray-200"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="px-3 bg-white text-[#7D786F] text-sm font-medium">Or create with email</span>
+                <span className="px-3 bg-white text-[#7D786F] text-sm font-medium">
+                  Or create with email
+                </span>
               </div>
             </div>
 
@@ -299,7 +310,10 @@ const SignUp = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <label htmlFor="username" className="block text-sm font-semibold text-[#3D3A35] mb-2">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-semibold text-[#3D3A35] mb-2"
+                >
                   Username
                 </label>
                 <div className="relative">
@@ -332,7 +346,9 @@ const SignUp = () => {
                 {username && isCheckingUsername && (
                   <div className="flex items-center gap-2 mt-2">
                     <div className="w-3 h-3 border-2 border-[#4ECDC4] border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs text-[#7D786F]">Checking availability...</span>
+                    <span className="text-xs text-[#7D786F]">
+                      Checking availability...
+                    </span>
                   </div>
                 )}
                 {username && !isCheckingUsername && isUsernameAvailable === true && (
@@ -340,11 +356,13 @@ const SignUp = () => {
                     <FaCheck className="w-3 h-3" /> Username is available
                   </p>
                 )}
-                {username && !isCheckingUsername && isUsernameAvailable === false && (
-                  <p className="mt-2 text-xs text-red-600 font-medium flex items-center gap-1">
-                    <FaTimes className="w-3 h-3" /> Username is already taken
-                  </p>
-                )}
+                {username &&
+                  !isCheckingUsername &&
+                  isUsernameAvailable === false && (
+                    <p className="mt-2 text-xs text-red-600 font-medium flex items-center gap-1">
+                      <FaTimes className="w-3 h-3" /> Username is already taken
+                    </p>
+                  )}
               </motion.div>
 
               {/* Email */}
@@ -353,7 +371,10 @@ const SignUp = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <label htmlFor="email" className="block text-sm font-semibold text-[#3D3A35] mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-semibold text-[#3D3A35] mb-2"
+                >
                   Email address
                 </label>
                 <div className="relative">
@@ -378,7 +399,10 @@ const SignUp = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <label htmlFor="password" className="block text-sm font-semibold text-[#3D3A35] mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-[#3D3A35] mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -399,14 +423,23 @@ const SignUp = () => {
                     onClick={() => setShowPassword((prev) => !prev)}
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7D786F] hover:text-[#4ECDC4] transition-colors"
                   >
-                    {showPassword ? <FaRegEye className="w-4 h-4" /> : <FaRegEyeSlash className="w-4 h-4" />}
+                    {showPassword ? (
+                      <FaRegEye className="w-4 h-4" />
+                    ) : (
+                      <FaRegEyeSlash className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
                 {password && passwordStrength && (
                   <div className="mt-2">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-[#7D786F]">Password strength:</span>
-                      <span className="text-xs font-medium capitalize" style={{ color: passwordStrength.color }}>
+                      <span className="text-xs text-[#7D786F]">
+                        Password strength:
+                      </span>
+                      <span
+                        className="text-xs font-medium capitalize"
+                        style={{ color: passwordStrength.color }}
+                      >
                         {passwordStrength.strength}
                       </span>
                     </div>
@@ -432,7 +465,10 @@ const SignUp = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-[#3D3A35] mb-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-semibold text-[#3D3A35] mb-2"
+                >
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -453,7 +489,11 @@ const SignUp = () => {
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7D786F] hover:text-[#4ECDC4] transition-colors"
                   >
-                    {showConfirmPassword ? <FaRegEye className="w-4 h-4" /> : <FaRegEyeSlash className="w-4 h-4" />}
+                    {showConfirmPassword ? (
+                      <FaRegEye className="w-4 h-4" />
+                    ) : (
+                      <FaRegEyeSlash className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
                 {confirmPassword && (
@@ -479,12 +519,18 @@ const SignUp = () => {
                 transition={{ delay: 0.7 }}
                 className="text-xs text-[#7D786F] text-center"
               >
-                By clicking Sign up, you agree to keasy's{" "}
-                <a href="/terms_of_service" className="text-[#4ECDC4] hover:underline font-medium">
+                By clicking Sign up, you agree to keasy&apos;s{" "}
+                <a
+                  href="/terms_of_service"
+                  className="text-[#4ECDC4] hover:underline font-medium"
+                >
                   Terms of Service
-                </a>
-                {" "}and{" "}
-                <a href="/privacy_policy" className="text-[#4ECDC4] hover:underline font-medium">
+                </a>{" "}
+                and{" "}
+                <a
+                  href="/privacy_policy"
+                  className="text-[#4ECDC4] hover:underline font-medium"
+                >
                   Privacy Policy
                 </a>
                 .
@@ -520,8 +566,8 @@ const SignUp = () => {
               className="text-center text-sm text-[#7D786F]"
             >
               Already have an account?{" "}
-              <Link 
-                to="/signin" 
+              <Link
+                to="/signin"
                 className="font-semibold text-[#FF6B6B] hover:text-[#E85555] hover:underline transition-colors"
               >
                 Sign in

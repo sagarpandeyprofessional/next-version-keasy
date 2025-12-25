@@ -1,12 +1,11 @@
 // src/pages/SignIn.jsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash, FaGoogle } from "react-icons/fa";
 import { supabase } from "../../api/supabase-client";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { FiArrowRight, FiLock, FiMail, FiUser } from "react-icons/fi";
-
+import { FiArrowRight, FiLock, FiMail } from "react-icons/fi";
 
 // Email & password validation
 const emailRules = (email) => {
@@ -66,7 +65,6 @@ const SignIn = () => {
   const y1 = useTransform(scrollY, [0, 300], [0, -50]);
   const y2 = useTransform(scrollY, [0, 300], [0, -25]);
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -91,20 +89,19 @@ const SignIn = () => {
     }
   };
 
-
   const handleGoogleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    
+
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: `${window.location.origin}/`,
-        }
+        },
       });
-      
+
       if (error) {
         setError(`Google login failed: ${error.message}`);
         setIsLoading(false);
@@ -113,8 +110,7 @@ const SignIn = () => {
       setError(`Google login error: ${err.message}`);
       setIsLoading(false);
     }
-  }
-
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#FDFBF7] via-[#FFFAF0] to-[#F0F8FF] p-4">
@@ -140,13 +136,17 @@ const SignIn = () => {
                 transition={{ delay: 0.5 }}
                 className="text-white"
               >
-                <h2 className="text-white/90 text-2xl font-bold mb-2">Welcome to keasy</h2>
-                <p className="text-white/90">Your community for making Korea feel like home</p>
+                {/* kept incoming changes */}
+                <h2 className="text-white/90 text-2xl font-bold mb-2">
+                  Welcome to keasy
+                </h2>
+                <p className="text-white/90">
+                  Your community for making Korea feel like home
+                </p>
               </motion.div>
             </div>
           </div>
         </div>
-
 
         {/* Right column - Premium Sign in form */}
         <div className="flex items-center justify-center bg-white p-8 lg:p-12 relative">
@@ -159,9 +159,10 @@ const SignIn = () => {
             initial={{ opacity: 0, x: 20, rotateY: -15 }}
             animate={{ opacity: 1, x: 0, rotateY: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
+            // kept incoming changes (no whileHover)
             style={{
               transformStyle: "preserve-3d",
-              perspective: "1000px"
+              perspective: "1000px",
             }}
           >
             {/* Header */}
@@ -173,15 +174,18 @@ const SignIn = () => {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF6B6B]/10 rounded-full mb-4"
               >
                 <span className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-pulse" />
-                <span className="text-sm font-medium text-[#FF6B6B]">Welcome Back</span>
+                <span className="text-sm font-medium text-[#FF6B6B]">
+                  Welcome Back
+                </span>
               </motion.div>
-              
+
               <h2 className="text-3xl font-bold text-[#1A1917] mb-3">
                 Sign in to your account
               </h2>
-              <p className="text-[#7D786F]">Access your KEasy community and resources</p>
+              <p className="text-[#7D786F]">
+                Access your KEasy community and resources
+              </p>
             </div>
-
 
             <AnimatePresence>
               {error && (
@@ -195,7 +199,6 @@ const SignIn = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-
 
             {/* Google OAuth Button */}
             <motion.button
@@ -216,17 +219,17 @@ const SignIn = () => {
               )}
             </motion.button>
 
-
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-200"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="px-3 bg-white text-[#7D786F] text-sm font-medium">Or continue with email</span>
+                <span className="px-3 bg-white text-[#7D786F] text-sm font-medium">
+                  Or continue with email
+                </span>
               </div>
             </div>
-
 
             {/* Email/Password Form */}
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
@@ -236,7 +239,10 @@ const SignIn = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <label htmlFor="email" className="block text-sm font-semibold text-[#3D3A35] mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-semibold text-[#3D3A35] mb-2"
+                >
                   Email address
                 </label>
                 <div className="relative">
@@ -255,7 +261,6 @@ const SignIn = () => {
                 </div>
               </motion.div>
 
-
               {/* Password */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -263,7 +268,10 @@ const SignIn = () => {
                 transition={{ delay: 0.4 }}
                 className="relative"
               >
-                <label htmlFor="password" className="block text-sm font-semibold text-[#3D3A35] mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-[#3D3A35] mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -284,11 +292,14 @@ const SignIn = () => {
                     onClick={() => setShowPassword((prev) => !prev)}
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7D786F] hover:text-[#FF6B6B] transition-colors"
                   >
-                    {showPassword ? <FaRegEye className="w-4 h-4" /> : <FaRegEyeSlash className="w-4 h-4" />}
+                    {showPassword ? (
+                      <FaRegEye className="w-4 h-4" />
+                    ) : (
+                      <FaRegEyeSlash className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </motion.div>
-
 
               {/* Terms and Privacy Policy Notice */}
               <motion.p
@@ -297,17 +308,23 @@ const SignIn = () => {
                 transition={{ delay: 0.5 }}
                 className="text-xs text-[#7D786F] text-center"
               >
-                By clicking on Sign in, you agree to keasy's{" "}
-                <a href="/terms_of_service" className="text-[#FF6B6B] hover:underline font-medium">
+                By clicking on Sign in, you agree to keasy&apos;s{" "}
+                <a
+                  href="/terms_of_service"
+                  className="text-[#FF6B6B] hover:underline font-medium"
+                >
                   Terms of Service
                 </a>
-                . To learn more about how keasy collects, uses, and protects your personal data, please see our{" "}
-                <a href="/privacy_policy" className="text-[#FF6B6B] hover:underline font-medium">
+                . To learn more about how keasy collects, uses, and protects your
+                personal data, please see our{" "}
+                <a
+                  href="/privacy_policy"
+                  className="text-[#FF6B6B] hover:underline font-medium"
+                >
                   Privacy Policy
                 </a>
                 .
               </motion.p>
-
 
               {/* Submit */}
               <motion.button
@@ -331,7 +348,6 @@ const SignIn = () => {
               </motion.button>
             </form>
 
-
             {/* Sign Up Link */}
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -339,9 +355,9 @@ const SignIn = () => {
               transition={{ delay: 0.6 }}
               className="text-center text-sm text-[#7D786F]"
             >
-              Don't have an account?{" "}
-              <Link 
-                to="/signup" 
+              Don&apos;t have an account?{" "}
+              <Link
+                to="/signup"
                 className="font-semibold text-[#4ECDC4] hover:text-[#3DBDB5] hover:underline transition-colors"
               >
                 Create account
@@ -355,8 +371,8 @@ const SignIn = () => {
               transition={{ delay: 0.7 }}
               className="text-center"
             >
-              <Link 
-                to="/forgot-password" 
+              <Link
+                to="/forgot-password"
                 className="text-sm text-[#7D786F] hover:text-[#FF6B6B] hover:underline transition-colors"
               >
                 Forgot your password?
@@ -365,9 +381,11 @@ const SignIn = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Optional background particles (component already defined) */}
+      {/* <FloatingParticles /> */}
     </div>
   );
 };
-
 
 export default SignIn;

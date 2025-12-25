@@ -43,6 +43,7 @@ export default function GuideEditor() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [hoveredBlock, setHoveredBlock] = useState(null);
   const [showConvertMenu, setShowConvertMenu] = useState(null);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [categories, setCategories] = useState([]);
@@ -337,6 +338,127 @@ export default function GuideEditor() {
       setTagInput('');
     }
   };
+
+  const SidebarMenu = () => (
+    <div className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 shadow-lg z-40 overflow-y-auto">
+      <div className="p-4 border-b border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900">Add Content</h2>
+        <p className="text-sm text-gray-600 mt-1">Choose a block to add to your guide</p>
+      </div>
+      <div className="p-4 space-y-2">
+        <button
+          onClick={() => { addBlock('text'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <Type className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Text</div>
+            <div className="text-xs text-gray-500">Add a paragraph of text</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('heading'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <Heading className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Heading</div>
+            <div className="text-xs text-gray-500">Add a section heading</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('image'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <Image className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Image</div>
+            <div className="text-xs text-gray-500">Upload or embed an image</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('list'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <List className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Bullet Points</div>
+            <div className="text-xs text-gray-500">Create a list of items</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('quote'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <Quote className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Quote</div>
+            <div className="text-xs text-gray-500">Add an inspirational quote</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('delimiter'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <Minus className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Delimiter</div>
+            <div className="text-xs text-gray-500">Add a visual separator</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('tip'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <Lightbulb className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Tip</div>
+            <div className="text-xs text-gray-500">Share helpful advice</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('links'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <MapPin className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Location Links</div>
+            <div className="text-xs text-gray-500">Add location links</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('app_links'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <Smartphone className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">App Links</div>
+            <div className="text-xs text-gray-500">Link to mobile apps</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('social_links'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <Instagram className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">Social Links</div>
+            <div className="text-xs text-gray-500">Add social media links</div>
+          </div>
+        </button>
+        <button
+          onClick={() => { addBlock('pdf_links'); setShowSidebar(false); }}
+          className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 flex items-center gap-3 rounded-lg transition-colors"
+        >
+          <FileText className="w-5 h-5 text-gray-500" />
+          <div>
+            <div className="font-medium text-gray-900">PDF Links</div>
+            <div className="text-xs text-gray-500">Link to PDF documents</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  );
 
   const BlockMenu = ({ blockIndex }) => (
     <div className="dropdown-container absolute left-0 top-0 z-10 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 max-h-80 overflow-y-auto">
@@ -919,7 +1041,18 @@ export default function GuideEditor() {
 
   // Content editor (shown after metadata)
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative">
+      {/* Sidebar Overlay for Mobile */}
+      {showSidebar && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={() => setShowSidebar(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      {showSidebar && <SidebarMenu />}
+
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3">
@@ -967,7 +1100,7 @@ export default function GuideEditor() {
       </div>
 
       {/* Editor */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12">
+      <div className={`max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12 transition-all duration-300 ${showSidebar ? 'md:ml-64' : ''}`}>
         {/* Blocks */}
         <div className="space-y-1">
           {blocks.map((block, index) => (
