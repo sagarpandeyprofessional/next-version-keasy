@@ -475,34 +475,41 @@ export default function GuideEdit() {
   const DesktopSidebar = () => (
     <div 
       className={`
-        hidden lg:flex flex-col fixed left-0 h-full bg-white border-r border-gray-200 
-        shadow-sm z-30 transition-all duration-300 ease-in-out
+        hidden lg:flex flex-col fixed left-0 bg-white border-r border-gray-200 
+        shadow-sm z-20 transition-all duration-300 ease-in-out
         ${sidebarCollapsed ? 'w-16' : 'w-64'}
       `}
-      style={{ top: showFormattingToolbar ? '105px' : '57px' }}
+      style={{ 
+        top: showFormattingToolbar ? '166px' : '118px',
+        height: showFormattingToolbar ? 'calc(100vh - 166px)' : 'calc(100vh - 118px)'
+      }}
     >
-      {/* Collapse/Expand Button */}
-      <div className="p-2 border-b border-gray-100">
-        <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="w-full p-2 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center"
-          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {sidebarCollapsed ? (
+      {/* Sidebar Header with Collapse Button - Same Row */}
+      <div className="px-3 py-3 border-b border-gray-100 flex items-center justify-between">
+        {!sidebarCollapsed ? (
+          <>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Add Content</h2>
+              <p className="text-xs text-gray-500">Click to add blocks</p>
+            </div>
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              title="Collapse sidebar"
+            >
+              <PanelLeftClose className="w-4 h-4 text-gray-400" />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="w-full p-2 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center"
+            title="Expand sidebar"
+          >
             <PanelLeft className="w-5 h-5 text-gray-500" />
-          ) : (
-            <PanelLeftClose className="w-5 h-5 text-gray-500" />
-          )}
-        </button>
+          </button>
+        )}
       </div>
-
-      {/* Sidebar Header */}
-      {!sidebarCollapsed && (
-        <div className="p-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-900">Add Content</h2>
-          <p className="text-xs text-gray-500 mt-1">Click to add blocks</p>
-        </div>
-      )}
 
       {/* Block Type Buttons */}
       <div className={`flex-1 overflow-y-auto ${sidebarCollapsed ? 'p-2' : 'p-3'}`}>
@@ -534,13 +541,6 @@ export default function GuideEdit() {
           })}
         </div>
       </div>
-
-      {/* Sidebar Footer */}
-      {!sidebarCollapsed && (
-        <div className="p-3 border-t border-gray-100 bg-gray-50">
-          <p className="text-xs text-gray-500">💡 Tip: Use + button next to blocks to insert at specific positions</p>
-        </div>
-      )}
     </div>
   );
 
@@ -862,8 +862,8 @@ export default function GuideEdit() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      {/* User Info Bar - Fixed below main header (57px) - ALWAYS visible */}
+      <div className="fixed top-[57px] left-0 right-0 z-40 bg-white border-b border-gray-200">
         <div className="px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between gap-3 max-w-7xl mx-auto">
             <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -885,8 +885,17 @@ export default function GuideEdit() {
         </div>
       </div>
 
-      {/* Formatting Toolbar */}
-      <div className={`sticky z-40 formatting-toolbar transition-all duration-300 ${showFormattingToolbar ? 'top-[57px]' : 'top-0'}`}>
+      {/* Spacer for fixed user bar */}
+      <div className="h-[57px]"></div>
+
+      {/* Formatting Toolbar - Fixed below user bar (57px header + 57px user bar = 114px) */}
+      <div 
+        className={`
+          fixed left-0 right-0 z-30 formatting-toolbar 
+          transition-all duration-300
+          ${showFormattingToolbar ? 'top-[114px]' : '-top-20 pointer-events-none'}
+        `}
+      >
         <FormattingToolbar 
           editor={activeEditor} 
           isVisible={showFormattingToolbar}
@@ -903,7 +912,7 @@ export default function GuideEdit() {
       <MobileFAB />
 
       {/* Main Content Area */}
-      <div className={`transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <div className={`transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'} ${showFormattingToolbar ? 'pt-[48px]' : ''}`}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12">
           {/* Blocks */}
           <div className="space-y-4">
