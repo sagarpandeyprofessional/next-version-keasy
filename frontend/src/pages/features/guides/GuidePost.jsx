@@ -742,16 +742,6 @@ export default function GuidePost() {
     </div>
   );
 
-  const BlockOptions = ({ block, index }) => (
-    <div className="dropdown-container absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
-      <button onClick={() => { moveBlock(index, 'up'); setActiveDropdown(null); }} disabled={index === 0} className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50"><ArrowUp className="w-4 h-4" />Move Up</button>
-      <button onClick={() => { moveBlock(index, 'down'); setActiveDropdown(null); }} disabled={index === blocks.length - 1} className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50"><ArrowDown className="w-4 h-4" />Move Down</button>
-      <button onClick={() => { duplicateBlock(index); setActiveDropdown(null); }} className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"><Copy className="w-4 h-4" />Duplicate</button>
-      <div className="border-t border-gray-100 my-1" />
-      <button onClick={() => { deleteBlock(block.id); setActiveDropdown(null); }} className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 className="w-4 h-4" />Delete</button>
-    </div>
-  );
-
   /* ==========================================================================
      RENDER: LOADING STATE
      ========================================================================== */
@@ -887,7 +877,12 @@ export default function GuidePost() {
           {/* Blocks */}
           <div className="space-y-4">
             {blocks.map((block, index) => (
-              <div key={block.id} className="group relative" onMouseEnter={() => setHoveredBlock(block.id)} onMouseLeave={() => setHoveredBlock(null)}>
+              <div 
+                key={block.id} 
+                className="group relative" 
+                onMouseEnter={() => setHoveredBlock(block.id)} 
+                onMouseLeave={() => setHoveredBlock(null)}
+              >
                 {/* Left Controls */}
                 <div className={`hidden md:flex absolute left-0 top-0 -ml-14 items-start gap-1 pt-2 transition-opacity ${hoveredBlock === block.id ? 'opacity-100' : 'opacity-0'}`}>
                   <button onClick={() => setActiveDropdown(activeDropdown === `add-${block.id}` ? null : `add-${block.id}`)} className="p-1.5 hover:bg-gray-100 rounded-md" title="Add block"><Plus className="w-4 h-4 text-gray-400" /></button>
@@ -895,13 +890,30 @@ export default function GuidePost() {
                 </div>
                 {/* Block Content */}
                 <div className="py-2">{renderBlock(block, index)}</div>
-                {/* Right Controls */}
-                <div className={`absolute right-0 top-0 -mr-2 md:-mr-12 pt-2 transition-opacity ${hoveredBlock === block.id ? 'opacity-100' : 'opacity-0'}`}>
-                  <button onClick={() => setActiveDropdown(activeDropdown === `options-${block.id}` ? null : `options-${block.id}`)} className="p-1.5 hover:bg-gray-100 rounded-md" title="Options"><MoreHorizontal className="w-4 h-4 text-gray-400" /></button>
+                {/* Right Controls - Options menu appears on hover of the button */}
+                <div className={`absolute right-0 top-2 -mr-2 md:right-auto md:left-full md:ml-4 transition-opacity ${hoveredBlock === block.id ? 'opacity-100' : 'opacity-0'}`}>
+                  <div 
+                    className="relative"
+                    onMouseEnter={() => setActiveDropdown(`options-${block.id}`)}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                  >
+                    <button className="p-1.5 hover:bg-gray-100 rounded-md">
+                      <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                    </button>
+                    {/* Options Dropdown - Shows on hover */}
+                    {activeDropdown === `options-${block.id}` && (
+                      <div className="absolute left-0 top-full mt-1 w-36 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
+                        <button onClick={() => { moveBlock(index, 'up'); setActiveDropdown(null); }} disabled={index === 0} className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"><ArrowUp className="w-4 h-4" />Move Up</button>
+                        <button onClick={() => { moveBlock(index, 'down'); setActiveDropdown(null); }} disabled={index === blocks.length - 1} className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"><ArrowDown className="w-4 h-4" />Move Down</button>
+                        <button onClick={() => { duplicateBlock(index); setActiveDropdown(null); }} className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"><Copy className="w-4 h-4" />Duplicate</button>
+                        <div className="border-t border-gray-100 my-1" />
+                        <button onClick={() => { deleteBlock(block.id); setActiveDropdown(null); }} className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 className="w-4 h-4" />Delete</button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {/* Dropdowns */}
+                {/* Add Block Dropdown */}
                 {activeDropdown === `add-${block.id}` && <BlockMenu blockIndex={index} />}
-                {activeDropdown === `options-${block.id}` && <BlockOptions block={block} index={index} />}
               </div>
             ))}
           </div>
