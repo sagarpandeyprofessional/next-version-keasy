@@ -308,9 +308,20 @@ export default function GuideEdit() {
   };
 
   const addTag = () => {
-    const tag = tagInput.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (tag && !tags.includes(tag)) {
-      setTags([...tags, tag]);
+    // Split input by commas to allow multiple tags at once
+    const inputTags = tagInput.split(',');
+    const newTags = [];
+    
+    inputTags.forEach(t => {
+      // Clean each tag: trim, lowercase, remove special characters except spaces, then remove spaces
+      const tag = t.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '');
+      if (tag && !tags.includes(tag) && !newTags.includes(tag)) {
+        newTags.push(tag);
+      }
+    });
+    
+    if (newTags.length > 0) {
+      setTags([...tags, ...newTags]);
       setTagInput('');
     }
   };
