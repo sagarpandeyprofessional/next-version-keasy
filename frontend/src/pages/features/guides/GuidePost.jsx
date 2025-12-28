@@ -430,7 +430,7 @@ export default function GuidePost() {
         ${sidebarCollapsed ? 'w-16' : 'w-64'}
       `}
       style={{ 
-        top: showFormattingToolbar ? '200px' : '118px',
+        top: showFormattingToolbar ? '166px' : '118px',
         height: showFormattingToolbar ? 'calc(100vh - 166px)' : 'calc(100vh - 118px)'
       }}
     >
@@ -578,7 +578,7 @@ export default function GuidePost() {
   const MobileFAB = () => (
     <button
       onClick={() => setShowMobileSheet(true)}
-      className="lg:hidden fixed bottom-6 right-6 z-30 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg 
+      className="lg:hidden fixed bottom-24 right-6 z-30 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg 
                  flex items-center justify-center hover:bg-blue-700 active:scale-95 transition-all mobile-fab"
     >
       <Plus className="w-6 h-6" />
