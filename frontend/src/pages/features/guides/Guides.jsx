@@ -742,6 +742,35 @@ const Guides = () => {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: #a1a1a1;
         }
+        
+        /* List styling for rendered HTML content */
+        .prose ul, .prose ol {
+          margin: 0.75rem 0 !important;
+          padding-left: 1.5rem !important;
+        }
+        .prose ul {
+          list-style-type: disc !important;
+        }
+        .prose ol {
+          list-style-type: decimal !important;
+        }
+        .prose li {
+          display: list-item !important;
+          margin: 0.375rem 0 !important;
+        }
+        .prose ul > li::marker {
+          color: #374151;
+        }
+        .prose ol > li::marker {
+          color: #374151;
+          font-weight: 500;
+        }
+        .prose ul ul {
+          list-style-type: circle !important;
+        }
+        .prose ul ul ul {
+          list-style-type: square !important;
+        }
       `}</style>
     </div>
   );
@@ -1052,6 +1081,36 @@ const GuideDetailPanel = ({
   // For non-logged-in users, show truncated description
   const truncatedDescription = truncateToPercentage(description, 30);
 
+  /**
+   * Find the first image in the guide content sections
+   * This will be used as the cover image
+   */
+  const getFirstContentImage = () => {
+    const sections = content?.sections || [];
+    const firstImageSection = sections.find(section => section.type === 'image' && section.url);
+    return firstImageSection?.url || null;
+  };
+
+  /**
+   * Get the index of the first image section (to skip it in content rendering)
+   */
+  const getFirstImageIndex = () => {
+    const sections = content?.sections || [];
+    return sections.findIndex(section => section.type === 'image' && section.url);
+  };
+
+  // Get the cover image (first image from content, fallback to img_url)
+  const coverImageUrl = getFirstContentImage() || img_url;
+  const firstImageIndex = getFirstImageIndex();
+
+  /**
+   * Helper function to check if content contains HTML tags
+   */
+  const isHTMLContent = (text) => {
+    if (!text) return false;
+    return /<[a-z][\s\S]*>/i.test(text);
+  };
+
   // Fetch author
   useEffect(() => {
     const fetchAuthor = async () => {
@@ -1204,9 +1263,16 @@ const GuideDetailPanel = ({
         <div key={index} className="mb-8">
           <div className="flex flex-col items-center gap-4">
             {section.precedingText && (
-              <p className="text-gray-700 leading-relaxed text-lg font-sans text-center max-w-3xl">
-                {section.precedingText.body}
-              </p>
+              isHTMLContent(section.precedingText.body) ? (
+                <div 
+                  className="text-gray-700 leading-relaxed text-lg font-sans text-center max-w-3xl prose prose-lg"
+                  dangerouslySetInnerHTML={{ __html: section.precedingText.body }}
+                />
+              ) : (
+                <p className="text-gray-700 leading-relaxed text-lg font-sans text-center max-w-3xl">
+                  {section.precedingText.body}
+                </p>
+              )
             )}
             
             <div className="flex flex-wrap gap-3 justify-center items-center">
@@ -1296,18 +1362,32 @@ const GuideDetailPanel = ({
       case "text":
         return (
           <div key={index} className="mb-6">
-            <p className="text-gray-700 leading-relaxed text-lg font-sans">
-              {section.body}
-            </p>
+            {isHTMLContent(section.body) ? (
+              <div 
+                className="text-gray-700 leading-relaxed text-lg font-sans prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: section.body }}
+              />
+            ) : (
+              <p className="text-gray-700 leading-relaxed text-lg font-sans">
+                {section.body}
+              </p>
+            )}
           </div>
         );
 
       case "heading":
         return (
           <div key={index} className="mb-6 mt-8">
-            <h2 className="font-bold text-gray-900 text-xl md:text-2xl font-sans leading-tight">
-              {section.body}
-            </h2>
+            {isHTMLContent(section.body) ? (
+              <div 
+                className="font-bold text-gray-900 font-sans leading-tight prose prose-lg max-w-none prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:text-xl prose-p:font-bold"
+                dangerouslySetInnerHTML={{ __html: section.body }}
+              />
+            ) : (
+              <h2 className="font-bold text-gray-900 text-xl md:text-2xl font-sans leading-tight">
+                {section.body}
+              </h2>
+            )}
           </div>
         );
         
@@ -1359,9 +1439,16 @@ const GuideDetailPanel = ({
         return (
           <div key={index} className="mb-8">
             <blockquote className="border-l-4 border-gray-300 pl-6 py-2">
-              <p className="text-xl italic text-gray-700 leading-relaxed">
-                {section.body}
-              </p>
+              {isHTMLContent(section.body) ? (
+                <div 
+                  className="text-xl italic text-gray-700 leading-relaxed prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: section.body }}
+                />
+              ) : (
+                <p className="text-xl italic text-gray-700 leading-relaxed">
+                  {section.body}
+                </p>
+              )}
             </blockquote>
           </div>
         );
@@ -1385,7 +1472,14 @@ const GuideDetailPanel = ({
                 <MdOutlineTipsAndUpdates size={28} className="text-yellow-600 flex-shrink-0 mt-0.5" />
                 <h3 className="text-lg font-bold text-gray-900">Tip</h3>
               </div>
-              <p className="text-gray-800 leading-relaxed pl-11">{section.body}</p>
+              {isHTMLContent(section.body) ? (
+                <div 
+                  className="text-gray-800 leading-relaxed pl-11 prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: section.body }}
+                />
+              ) : (
+                <p className="text-gray-800 leading-relaxed pl-11">{section.body}</p>
+              )}
             </div>
           </div>
         );
@@ -1401,11 +1495,11 @@ const GuideDetailPanel = ({
 
   return (
     <div className={`bg-white rounded-2xl shadow-lg overflow-hidden ${isMobile ? '' : 'h-full'}`}>
-      {/* Large Cover Image */}
+      {/* Large Cover Image - Uses first content image, falls back to thumbnail */}
       <div className="relative w-full h-64 sm:h-80 lg:h-72 xl:h-80 overflow-hidden bg-gray-100">
-        {img_url ? (
+        {coverImageUrl ? (
           <img
-            src={img_url}
+            src={coverImageUrl}
             alt={name || 'Guide cover image'}
             className="w-full h-full object-cover"
           />
@@ -1588,7 +1682,15 @@ const GuideDetailPanel = ({
               {/* Content Sections from JSONB */}
               {content?.sections?.length > 0 ? (
                 <div>
-                  {groupConsecutiveLinkSections(content.sections).map((section, idx) => 
+                  {groupConsecutiveLinkSections(
+                    // Filter out the first image since it's used as cover
+                    content.sections.filter((section, idx) => {
+                      if (idx === firstImageIndex && section.type === 'image') {
+                        return false;
+                      }
+                      return true;
+                    })
+                  ).map((section, idx) => 
                     renderSection(section, idx)
                   )}
                 </div>

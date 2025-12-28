@@ -1291,7 +1291,7 @@ const GrootGuideCard = ({ id, name, description, img_url, created_by, like = {},
                 <img 
                   src={img_url} 
                   alt={name} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                  className="w-full h-full object-cover group-hover:scale-100 transition-transform duration-700" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
               </>
@@ -1751,6 +1751,7 @@ const FeaturedMarketplaceCard = ({ item }) => {
   }, [item.id]);
 
   const handleToggleLike = async (e) => {
+    e.preventDefault();
     e.stopPropagation();
 
     if (!userId) {
@@ -1781,16 +1782,17 @@ const FeaturedMarketplaceCard = ({ item }) => {
     }
   };
 
-  const handleCardClick = async () => {
-    try {
-      await supabase
-        .from('marketplace')
-        .update({ views: (item.views || 0) + 1 })
-        .eq('id', item.id);
-    } catch (err) {
-      console.error('Error updating views:', err);
-    }
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    navigate(`/marketplace/${item.id}`);
+  };
 
+  const handleViewDetails = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     navigate(`/marketplace/${item.id}`);
   };
 
@@ -1809,7 +1811,7 @@ const FeaturedMarketplaceCard = ({ item }) => {
             src={imageError ? '/no-image.png' : imageUrl}
             onError={() => setImageError(true)}
             alt={item.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            className="w-full h-full object-contain bg-gray-50 group-hover:scale-105 transition-transform duration-700"
           />
           
           {/* Top Badges & Actions */}
@@ -1856,10 +1858,7 @@ const FeaturedMarketplaceCard = ({ item }) => {
               {formatCurrency(item.price)}
             </p>
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/marketplace/${item.id}`);
-              }}
+              onClick={handleViewDetails}
               className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1A1917] text-white rounded-full font-semibold hover:bg-[#4ECDC4] transition-all duration-300 text-sm group/btn"
             >
               View Details
@@ -1877,7 +1876,7 @@ const FeaturedMarketplaceCard = ({ item }) => {
             src={imageError ? '/no-image.png' : imageUrl}
             onError={() => setImageError(true)}
             alt={item.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            className="w-full h-full object-contain bg-gray-50 group-hover:scale-105 transition-transform duration-700"
           />
           {/* <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" /> */}
         </div>
@@ -1924,10 +1923,7 @@ const FeaturedMarketplaceCard = ({ item }) => {
               {formatCurrency(item.price)}
             </p>
             <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/marketplace/${item.id}`);
-                }}
+                onClick={handleViewDetails}
                 className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1A1917] text-white rounded-full font-semibold hover:bg-[#4ECDC4] transition-all duration-300 text-sm group/btn"
               >
               View Details
@@ -1971,6 +1967,7 @@ const SmallMarketplaceCard = ({ item, index }) => {
   }, [item.id]);
 
   const handleToggleLike = async (e) => {
+    e.preventDefault();
     e.stopPropagation();
 
     if (!userId) {
@@ -2001,16 +1998,10 @@ const SmallMarketplaceCard = ({ item, index }) => {
     }
   };
 
-  const handleCardClick = async () => {
-    try {
-      await supabase
-        .from('marketplace')
-        .update({ views: (item.views || 0) + 1 })
-        .eq('id', item.id);
-    } catch (err) {
-      console.error('Error updating views:', err);
-    }
-
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     navigate(`/marketplace/${item.id}`);
   };
 
@@ -2025,12 +2016,12 @@ const SmallMarketplaceCard = ({ item, index }) => {
       className="relative rounded-2xl overflow-hidden cursor-pointer group bg-white shadow-md hover:shadow-xl transition-all duration-300"
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3.5] overflow-hidden">
         <img
           src={imageError ? '/no-image.png' : imageUrl}
           onError={() => setImageError(true)}
           alt={item.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-fit group-hover:scale-110 transition-transform duration-500"
         />
 
         <span
@@ -2087,8 +2078,9 @@ const SmallMarketplaceCard = ({ item, index }) => {
 
 /* Main Marketplace Section we can change the marketplace products from here*/
 const MarketplaceSection = ({ items, currentUserId, onToggleLike, marketplaceRef }) => {
-  const featuredItem = items[6];
-  const gridItems = items.slice(9-15);
+  // Ensure we have enough items before selecting
+  const featuredItem = items[6] || items[0]; // Fallback to first item if index 6 doesn't exist
+  const gridItems = items.slice(9, 15).filter(item => item.id !== featuredItem?.id); // Get items 9-15, excluding featured
   const totalItems = items.length;
 
   if (!items || items.length === 0) {

@@ -1,22 +1,8 @@
 .
+├── file-tree generate.txt
 ├── file-tree.txt
 └── frontend
     ├── README.md
-    ├── Testimonials
-    │   ├── Abhishek.svg
-    │   ├── Bhoomika.png
-    │   ├── Bhoomika.svg
-    │   ├── Kevin.JPG
-    │   ├── Kevin.svg
-    │   ├── Khalil.png
-    │   ├── Khalil.svg
-    │   ├── Nada.svg
-    │   ├── Rupesh.svg
-    │   ├── Vedika.svg
-    │   ├── Yoon.svg
-    │   ├── Zakaria.svg
-    │   ├── hee.svg
-    │   └── photostudio.svg
     ├── eslint.config.js
     ├── file-tree.md
     ├── file-tree.txt
@@ -12090,17 +12076,66 @@
     ├── package.json
     ├── public
     │   ├── delivery.jpg
+    │   ├── guides logo
+    │   │   ├── Barbershop.svg
+    │   │   ├── Cinema.svg
+    │   │   ├── Daejeon Tashu.svg
+    │   │   ├── Dentist.svg
+    │   │   ├── Flower Shop.svg
+    │   │   ├── Hana Bank.png
+    │   │   ├── Iphone Repair Budjet.svg
+    │   │   ├── Iphone Repair Offical.svg
+    │   │   ├── Money Exchange.svg
+    │   │   ├── Night Clubs.png
+    │   │   ├── Night Clubs.svg
+    │   │   ├── Pcc Code.svg
+    │   │   ├── Phone Shop.svg
+    │   │   ├── Phone Verification.png
+    │   │   ├── Phone Verification.svg
+    │   │   ├── Samsung Repair.svg
+    │   │   ├── Train Station.svg
+    │   │   ├── Train Ticket.svg
+    │   │   ├── Unlock Blocked.png
+    │   │   ├── Unlock Blocked.svg
+    │   │   ├── asian mart.svg
+    │   │   ├── korean barbecue.svg
+    │   │   ├── pharmacy.svg
+    │   │   └── ws halal.svg
     │   ├── hero-gyeongbokgung.jpg
     │   ├── hero-jeju-coast.jpg
     │   ├── hero-korean-market.jpg
     │   ├── hero-seoul-sunset.jpg
     │   ├── logo.png
     │   ├── logo.svg
-    │   └── team
-    │       ├── firdavs_salokhiddinov.jpg
-    │       ├── insta
-    │       │   └── icon.jpg
-    │       └── sagar_pandey.jpg
+    │   ├── oasis1.svg
+    │   ├── oasis8.svg
+    │   ├── team
+    │   │   ├── firdavs_salokhiddinov (1).jpg
+    │   │   ├── firdavs_salokhiddinov.jpg
+    │   │   ├── fred.png
+    │   │   ├── insta
+    │   │   │   └── icon.jpg
+    │   │   ├── sagar.jpg
+    │   │   ├── sagar.png
+    │   │   ├── sahil.jpg
+    │   │   └── sahil.png
+    │   ├── testimonials
+    │   │   ├── Abhishek.svg
+    │   │   ├── Bhoomika.png
+    │   │   ├── Bhoomika.svg
+    │   │   ├── Kevin.JPG
+    │   │   ├── Kevin.svg
+    │   │   ├── Khalil.png
+    │   │   ├── Khalil.svg
+    │   │   ├── Nada.svg
+    │   │   ├── Rupesh.svg
+    │   │   ├── Vedika.svg
+    │   │   ├── Yoon.svg
+    │   │   ├── Zakaria.svg
+    │   │   ├── hee.svg
+    │   │   └── photostudio.svg
+    │   ├── u300.png
+    │   └── visa-rec.svg
     ├── server.js
     ├── src
     │   ├── App.jsx
@@ -12152,9 +12187,10 @@
     │       │   │   ├── GuideDetail.jsx
     │       │   │   ├── GuideEdit.jsx
     │       │   │   ├── GuidePost.jsx
-    │       │   │   ├── Guides Backup.jsx
     │       │   │   ├── Guides.jsx
     │       │   │   └── README.md
+    │       │   ├── jobs
+    │       │   │   └── Jobs.jsx
     │       │   ├── marketplace
     │       │   │   ├── Marketplace.jsx
     │       │   │   ├── MarketplaceItem.jsx
@@ -12205,4 +12241,4 @@
     ├── tailwindcss.config.js
     └── vite.config.js
 
-1000 directories, 11206 files
+1002 directories, 11240 files

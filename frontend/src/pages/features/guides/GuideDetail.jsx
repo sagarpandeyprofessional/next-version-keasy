@@ -231,6 +231,48 @@ export default function GuideDetail() {
   // Check if current user is the creator and guide is not approved
   const isCreatorAndNotApproved = user && guide?.created_by === user.id && guide?.approved === false;
 
+  /**
+   * Find the first image in the guide content sections
+   * This will be used as the cover image on the detail page
+   */
+  const getFirstContentImage = () => {
+    const sections = guide?.content?.sections || [];
+    const firstImageSection = sections.find(section => section.type === 'image' && section.url);
+    return firstImageSection?.url || null;
+  };
+
+  /**
+   * Get the index of the first image section (to skip it in content rendering)
+   */
+  const getFirstImageIndex = () => {
+    const sections = guide?.content?.sections || [];
+    return sections.findIndex(section => section.type === 'image' && section.url);
+  };
+
+  // Get the cover image (first image from content, NOT the thumbnail)
+  const coverImageUrl = getFirstContentImage();
+  const firstImageIndex = getFirstImageIndex();
+
+  /**
+   * Helper function to check if content contains HTML tags
+   * This helps us handle both old (plain text) and new (HTML) content
+   */
+  const isHTMLContent = (content) => {
+    if (!content) return false;
+    return /<[a-z][\s\S]*>/i.test(content);
+  };
+
+  /**
+   * Helper function to strip HTML tags and get plain text
+   * Used for content that shouldn't have HTML (like list items)
+   */
+  const stripHTML = (html) => {
+    if (!html) return '';
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  };
+
   const groupConsecutiveLinkSections = (sections) => {
     const grouped = [];
     let linkGroup = [];
@@ -285,11 +327,18 @@ export default function GuideDetail() {
       return (
         <div key={index} className="mb-8">
           <div className="flex flex-col items-center gap-4">
-            {/* Preceding text if exists */}
+            {/* Preceding text if exists - NOW RENDERS HTML */}
             {section.precedingText && (
-              <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans text-center max-w-3xl">
-                {section.precedingText.body}
-              </p>
+              isHTMLContent(section.precedingText.body) ? (
+                <div 
+                  className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans text-center max-w-3xl prose prose-lg"
+                  dangerouslySetInnerHTML={{ __html: section.precedingText.body }}
+                />
+              ) : (
+                <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans text-center max-w-3xl">
+                  {section.precedingText.body}
+                </p>
+              )
             )}
             
             {/* Links container */}
@@ -381,20 +430,54 @@ export default function GuideDetail() {
 
     switch (section.type) {
       case "text":
+        // Check if content is HTML (from new editor) or plain text (from old editor)
         return (
           <div key={index} className="mb-6">
-            <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans mt-6">
-              {section.body}
-            </p>
+            {isHTMLContent(section.body) ? (
+              // NEW: Render HTML content from rich text editor
+              <div 
+                className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans mt-6 prose prose-lg max-w-none
+                           prose-p:my-2 prose-p:leading-relaxed
+                           prose-strong:font-bold prose-strong:text-gray-900
+                           prose-em:italic
+                           prose-u:underline
+                           prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800
+                           prose-ul:list-disc prose-ul:pl-6 prose-ul:my-2
+                           prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-2
+                           prose-li:my-1
+                           prose-h1:text-3xl prose-h1:font-bold prose-h1:text-gray-900 prose-h1:mt-6 prose-h1:mb-4
+                           prose-h2:text-2xl prose-h2:font-bold prose-h2:text-gray-900 prose-h2:mt-5 prose-h2:mb-3
+                           prose-h3:text-xl prose-h3:font-bold prose-h3:text-gray-900 prose-h3:mt-4 prose-h3:mb-2"
+                dangerouslySetInnerHTML={{ __html: section.body }}
+              />
+            ) : (
+              // OLD: Render plain text for backward compatibility
+              <p className="text-gray-700 leading-relaxed text-lg sm:text-sm lg:text-xl md:text-xl font-sans mt-6">
+                {section.body}
+              </p>
+            )}
           </div>
         );
 
       case "heading":
         return (
           <div key={index} className="mb-6">
-            <h2 className="font-bold text-gray-900 text-1xl md:text-2xl lg:text-3xl font-sans mb-4 leading-tight">
-              {section.body}
-            </h2>
+            {isHTMLContent(section.body) ? (
+              // NEW: Render HTML heading content
+              <div 
+                className="font-bold text-gray-900 font-sans mb-4 leading-tight prose prose-lg max-w-none
+                           prose-h1:text-3xl prose-h1:font-bold prose-h1:text-gray-900 prose-h1:my-0
+                           prose-h2:text-2xl prose-h2:font-bold prose-h2:text-gray-900 prose-h2:my-0
+                           prose-h3:text-xl prose-h3:font-bold prose-h3:text-gray-900 prose-h3:my-0
+                           prose-p:text-2xl prose-p:font-bold prose-p:text-gray-900 prose-p:my-0"
+                dangerouslySetInnerHTML={{ __html: section.body }}
+              />
+            ) : (
+              // OLD: Render plain text heading
+              <h2 className="font-bold text-gray-900 text-1xl md:text-2xl lg:text-3xl font-sans mb-4 leading-tight">
+                {section.body}
+              </h2>
+            )}
           </div>
         );
         
@@ -418,6 +501,12 @@ export default function GuideDetail() {
                 </div>
               )}
             </div>
+            {/* Image caption */}
+            {section.caption && (
+              <p className="text-center text-sm text-gray-500 mt-2 italic">
+                {section.caption}
+              </p>
+            )}
           </div>
         );
 
@@ -446,9 +535,18 @@ export default function GuideDetail() {
         return (
           <div key={index} className="mb-8">
             <blockquote className="border-l-4 border-gray-300 pl-6 py-2">
-              <p className="text-xl italic text-gray-700 leading-relaxed">
-                {section.body}
-              </p>
+              {isHTMLContent(section.body) ? (
+                // NEW: Render HTML quote content
+                <div 
+                  className="text-xl italic text-gray-700 leading-relaxed prose prose-lg max-w-none prose-p:my-0"
+                  dangerouslySetInnerHTML={{ __html: section.body }}
+                />
+              ) : (
+                // OLD: Render plain text quote
+                <p className="text-xl italic text-gray-700 leading-relaxed">
+                  {section.body}
+                </p>
+              )}
             </blockquote>
           </div>
         );
@@ -472,7 +570,16 @@ export default function GuideDetail() {
                 <MdOutlineTipsAndUpdates size={28} className="text-yellow-600 flex-shrink-0 mt-0.5" />
                 <h3 className="text-lg font-bold text-gray-900">Tip</h3>
               </div>
-              <p className="text-gray-800 leading-relaxed pl-11">{section.body}</p>
+              {isHTMLContent(section.body) ? (
+                // NEW: Render HTML tip content
+                <div 
+                  className="text-gray-800 leading-relaxed pl-11 prose prose-lg max-w-none prose-p:my-0"
+                  dangerouslySetInnerHTML={{ __html: section.body }}
+                />
+              ) : (
+                // OLD: Render plain text tip
+                <p className="text-gray-800 leading-relaxed pl-11">{section.body}</p>
+              )}
             </div>
           </div>
         );
@@ -524,15 +631,15 @@ export default function GuideDetail() {
 
         {/* Main Content Card */}
         <article className="rounded-2xl overflow-hidden">
-          {/* Thumbnail */}
-          {guide.img_url && (
+          {/* Cover Image - Uses FIRST IMAGE from content sections, not the thumbnail */}
+          {coverImageUrl && (
             <div className="w-full aspect-video md:aspect-[21/9] overflow-hidden bg-gray-100">
               <img
-                src={guide.img_url}
+                src={coverImageUrl}
                 alt={guide.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  console.error('Main image failed to load:', guide.img_url);
+                  console.error('Cover image failed to load:', coverImageUrl);
                   e.target.parentNode.style.display = 'none';
                 }}
               />
@@ -619,7 +726,16 @@ export default function GuideDetail() {
           <div className="px-0 md:px-10 py-8 md:py-10">
             {guide.content?.sections?.length > 0 ? (
               <div className="prose prose-lg max-w-none">
-                {groupConsecutiveLinkSections(guide.content.sections).map((section, idx) => 
+                {groupConsecutiveLinkSections(
+                  // Filter out the first image since it's used as cover
+                  guide.content.sections.filter((section, idx) => {
+                    // Skip the first image section (it's shown as cover)
+                    if (idx === firstImageIndex && section.type === 'image') {
+                      return false;
+                    }
+                    return true;
+                  })
+                ).map((section, idx) => 
                   renderSection(section, idx)
                 )}
               </div>
@@ -661,6 +777,35 @@ export default function GuideDetail() {
         }
         .animation-delay-400 {
           animation-delay: 0.4s;
+        }
+        
+        /* List styling for rendered HTML content */
+        .prose ul, .prose ol {
+          margin: 0.75rem 0 !important;
+          padding-left: 1.5rem !important;
+        }
+        .prose ul {
+          list-style-type: disc !important;
+        }
+        .prose ol {
+          list-style-type: decimal !important;
+        }
+        .prose li {
+          display: list-item !important;
+          margin: 0.375rem 0 !important;
+        }
+        .prose ul > li::marker {
+          color: #374151;
+        }
+        .prose ol > li::marker {
+          color: #374151;
+          font-weight: 500;
+        }
+        .prose ul ul {
+          list-style-type: circle !important;
+        }
+        .prose ul ul ul {
+          list-style-type: square !important;
         }
       `}</style>
     </div>
