@@ -38,13 +38,19 @@ export default function GuideDetail() {
         // Fetch guide data with view, like, and approved status
         const { data: guideData, error: guideError } = await supabase
           .from("guide")
-          .select("id, created_at, name, description, img_url, created_by, content, view, like, approved")
+          .select("id, created_at, name, description, img_url, created_by, content, view, like, approved, hidden_at")
           .eq("id", id)
           .single();
 
         if (guideError) {
           console.error("Error fetching guide:", guideError.message);
           setError("Failed to load guide");
+          setLoading(false);
+          return;
+        }
+
+        if (guideData?.hidden_at && new Date(guideData.hidden_at) <= new Date()) {
+          setError("Guide not available");
           setLoading(false);
           return;
         }
