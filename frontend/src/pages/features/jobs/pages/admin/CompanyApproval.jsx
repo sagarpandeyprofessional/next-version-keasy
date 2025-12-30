@@ -24,6 +24,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from "../../../../../api/supabase-client";
+import { isSuperadmin } from "../../../../../utils/adminUtils";
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Globe,
@@ -127,9 +128,6 @@ const LABELS = {
   address: { en: 'Address', ko: '주소' },
   notProvided: { en: 'Not provided', ko: '미제공' }
 };
-
-// Admin emails (in production, use proper role-based access)
-const ADMIN_EMAILS = ['admin@keasy.com', 'admin@example.com'];
 
 
 /* ============================================================================
@@ -643,7 +641,7 @@ const CompanyApproval = () => {
   // ============================================================================
 
   const [user, setUser] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperadminUser, setIsSuperadminUser] = useState(false);
   const [companies, setCompanies] = useState([]);
   const [jobCounts, setJobCounts] = useState({});
   const [loading, setLoading] = useState(true);
@@ -708,17 +706,17 @@ const CompanyApproval = () => {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         
         if (!currentUser) {
-          navigate('/signin');
+          navigate('/admin/signin');
           return;
         }
 
         setUser(currentUser);
 
-        // Check if user is admin
-        const isAdminUser = ADMIN_EMAILS.includes(currentUser.email);
-        setIsAdmin(isAdminUser);
+        // Check if user is superadmin
+        const isSuperAdmin = await isSuperadmin(currentUser);
+        setIsSuperadminUser(isSuperAdmin);
 
-        if (isAdminUser) {
+        if (isSuperAdmin) {
           await fetchCompanies();
         }
 
@@ -877,7 +875,7 @@ const CompanyApproval = () => {
   // RENDER: Not Admin
   // ============================================================================
 
-  if (!isAdmin) {
+  if (!isSuperadminUser) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center">
