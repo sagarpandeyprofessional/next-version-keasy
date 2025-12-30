@@ -70,9 +70,20 @@ import { PaymentSuccessPage } from "./pages/toss/payment/PaymentSuccess";
 import { BrandpaySuccessPage } from "./pages/toss/brandpay/BrandpaySuccess";
 import { WidgetCheckoutPage } from "./pages/toss/widget/WidgetCheckout";
 import { WidgetSuccessPage } from "./pages/toss/widget/WidgetSuccess";
-import Jobs from './pages/features/jobs/Jobs';
 
-
+// Jobs Feature
+import Jobs from './pages/features/jobs/pages/Jobs';
+import JobDetail from './pages/features/jobs/pages/JobDetail';
+import JobPost from './pages/features/jobs/pages/JobPost';
+import JobEdit from './pages/features/jobs/pages/JobEdit';
+import SavedJobs from './pages/features/jobs/pages/SavedJobs';
+import AppliedJobs from './pages/features/jobs/pages/AppliedJobs';
+import CompanyRegister from './pages/features/jobs/pages/CompanyRegister';
+import CompanyProfile from './pages/features/jobs/pages/CompanyProfile';
+// import JobApproval from './pages/features/jobs/pages/admin/JobApproval';
+// import CompanyApproval from './pages/features/jobs/pages/admin/CompanyApproval';
+import JobApproval from './pages/features/jobs/pages/admin/JobApproval';
+import CompanyApproval from './pages/features/jobs/pages/admin/CompanyApproval';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -131,7 +142,18 @@ function App() {
         <Route element={<Layout><ProfessionalEdit /></Layout>} path='/connect/professional/edit' />
         <Route element={<Layout><ProfessionalNew /></Layout>} path='/connect/professional/new' />
 
-        <Route element={<Layout><Jobs/></Layout>} path='/jobs/'/>
+        
+        {/* Jobs Feature */}
+        <Route element={<Layout><Jobs/></Layout>} path='/jobs'/>
+        <Route element={<Layout><JobDetail/></Layout>} path='/jobs/job/:id'/>
+        <Route element={<Layout><JobPost/></Layout>} path='/jobs/new'/>
+        <Route element={<Layout><JobEdit/></Layout>} path='/jobs/edit/:id'/>
+        <Route element={<Layout><SavedJobs/></Layout>} path='/jobs/saved'/>
+        <Route element={<Layout><AppliedJobs/></Layout>} path='/jobs/applied'/>
+        <Route element={<Layout><CompanyRegister/></Layout>} path='/company/register'/>
+        <Route element={<Layout><CompanyProfile/></Layout>} path='/company/profile'/>
+        <Route element={<Layout><JobApproval/></Layout>} path='/admin/jobs'/>
+        <Route element={<Layout><CompanyApproval/></Layout>} path='/admin/companies'/>
 
         <Route element={<Layout><Talent /></Layout>} path='/talents' />
         <Route element={<Layout><TalentDetail /></Layout>} path='/talents/:id' />
