@@ -130,13 +130,22 @@ const StatsCard = ({ icon: Icon, label, value, color, trend, subtitle }) => {
 /**
  * Quick Action Card Component
  */
-const QuickActionCard = ({ icon: Icon, title, description, to, color, external }) => {
+const QuickActionCard = ({ icon: Icon, title, description, to, color, external, badge, badgeColor = 'blue' }) => {
   const colorClasses = {
     blue: 'bg-blue-50 text-blue-600 hover:bg-blue-100',
     green: 'bg-green-50 text-green-600 hover:bg-green-100',
     amber: 'bg-amber-50 text-amber-600 hover:bg-amber-100',
     red: 'bg-red-50 text-red-600 hover:bg-red-100',
-    purple: 'bg-purple-50 text-purple-600 hover:bg-purple-100'
+    purple: 'bg-purple-50 text-purple-600 hover:bg-purple-100',
+    gray: 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+  };
+  const badgeClasses = {
+    blue: 'bg-blue-100 text-blue-700',
+    green: 'bg-green-100 text-green-700',
+    amber: 'bg-amber-100 text-amber-700',
+    red: 'bg-red-100 text-red-700',
+    gray: 'bg-gray-100 text-gray-700',
+    purple: 'bg-purple-100 text-purple-700'
   };
 
   const CardComponent = external ? 'a' : Link;
@@ -158,7 +167,14 @@ const QuickActionCard = ({ icon: Icon, title, description, to, color, external }
             <Icon className="w-6 h-6" />
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-semibold text-gray-900">{title}</h3>
+              {badge && (
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeClasses[badgeColor] || badgeClasses.gray}`}>
+                  {badge}
+                </span>
+              )}
+            </div>
             <p className="text-sm text-gray-600">{description}</p>
           </div>
           <ArrowRight className="w-5 h-5 text-gray-400" />
@@ -211,6 +227,7 @@ const AdminDashboard = () => {
   const [user, setUser] = useState(null);
   const [isSuperadminUser, setIsSuperadminUser] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     users: 0,
     jobs: 0,
@@ -223,6 +240,7 @@ const AdminDashboard = () => {
     events: 0
   });
   const [recentActivity, setRecentActivity] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [lang, setLang] = useState('en');
 
   // ============================================================================
@@ -233,12 +251,15 @@ const AdminDashboard = () => {
     return LABELS[key]?.[lang] || LABELS[key]?.en || key;
   }, [lang]);
 
+  const pendingTotal = stats.pendingJobs + stats.pendingCompanies + stats.pendingGuides;
+
   // ============================================================================
   // DATA FETCHING
   // ============================================================================
 
   const fetchStats = useCallback(async () => {
     try {
+      setError(null);
       // Fetch users count
       const { count: usersCount } = await supabase
         .from('profiles')
@@ -318,9 +339,11 @@ const AdminDashboard = () => {
         }
       ];
       setRecentActivity(activities);
+      setLastUpdated(new Date());
 
     } catch (err) {
       console.error('Error fetching stats:', err);
+      setError(err.message || 'Failed to load admin stats');
     }
   }, [lang]);
 
@@ -439,6 +462,118 @@ const AdminDashboard = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <div className="bg-gradient-to-r from-sky-50 via-white to-emerald-50 border border-sky-100 rounded-2xl p-6 mb-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-sky-700">
+                {t('pageSubtitle')}
+              </p>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <Shield className="w-6 h-6 text-blue-600" />
+                {t('pageTitle')}
+              </h1>
+              <p className="text-sm text-gray-700">
+                {lang === 'ko'
+                  ? '?? ???? ? ?? ??? ??? ?? ????.'
+                  : 'Quick snapshot of what needs your attention across the platform.'}
+              </p>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white text-sky-800 border border-sky-100 text-xs font-semibold">
+                  <Clock className="w-3.5 h-3.5" />
+                  {lastUpdated ? lastUpdated.toLocaleString() : t('loading')}
+                </span>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  {lang === 'ko' ? '??? ???' : 'Admin access verified'}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={fetchStats}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-sky-200 text-sky-800 rounded-lg font-semibold hover:bg-sky-50 transition-colors shadow-sm"
+              >
+                <RefreshCw className="w-4 h-4" />
+                {t('refresh')}
+              </button>
+              <Link
+                to="/admin/jobs"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <Briefcase className="w-4 h-4" />
+                {lang === 'ko' ? '?? ??' : 'Review queue'}
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
+            <div className="p-4 bg-white/80 rounded-xl border border-sky-100">
+              <p className="text-xs text-gray-500">{t('pendingApprovals')}</p>
+              <p className="text-3xl font-bold text-sky-900 mt-1">{pendingTotal}</p>
+              <p className="text-sm text-gray-600">
+                {lang === 'ko' ? '?? ?? ??? ???' : 'Awaiting review across jobs, companies, and guides.'}
+              </p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {[
+                  { label: t('pendingJobs'), value: stats.pendingJobs, Icon: Briefcase, color: 'bg-blue-50 text-blue-700 border-blue-100' },
+                  { label: t('pendingCompanies'), value: stats.pendingCompanies, Icon: Building2, color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+                  { label: t('pendingGuides'), value: stats.pendingGuides, Icon: BookOpen, color: 'bg-amber-50 text-amber-700 border-amber-100' }
+                ].map((item) => (
+                  <span
+                    key={item.label}
+                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-xs font-semibold ${item.color}`}
+                  >
+                    <item.Icon className="w-3.5 h-3.5" />
+                    {item.value} {item.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-4 bg-white/80 rounded-xl border border-emerald-100">
+              <p className="text-xs text-gray-500">{lang === 'ko' ? '?? ??' : 'User overview'}</p>
+              <p className="text-3xl font-bold text-emerald-900 mt-1">{stats.users}</p>
+              <p className="text-sm text-gray-600 flex items-center gap-1">
+                <Activity className="w-4 h-4 text-emerald-600" />
+                {lang === 'ko' ? '?? ??? ?? ??' : 'Estimated active users today'}
+              </p>
+              <p className="text-lg font-semibold text-emerald-700 mt-1">{Math.floor(stats.users * 0.3)}</p>
+            </div>
+
+            <div className="p-4 bg-white/80 rounded-xl border border-gray-200">
+              <p className="text-xs text-gray-500">{lang === 'ko' ? '??' : 'Marketplace & Events'}</p>
+              <div className="flex items-center gap-4 mt-2">
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{stats.marketplace}</p>
+                  <p className="text-sm text-gray-600">{lang === 'ko' ? '??????' : 'Listings'}</p>
+                </div>
+                <div className="h-10 w-px bg-gray-200" aria-hidden="true" />
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{stats.events}</p>
+                  <p className="text-sm text-gray-600">{lang === 'ko' ? '???' : 'Events'}</p>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">{lang === 'ko' ? '???? ? ???' : 'Keep an eye on time-sensitive updates.'}</p>
+            </div>
+          </div>
+        </div>
+
+        {error && (
+          <div className="mb-6 flex items-start gap-3 text-sm text-red-700 bg-red-50 border border-red-100 px-4 py-3 rounded-xl">
+            <AlertTriangle className="w-5 h-5 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold">{lang === 'ko' ? '?? ??? ??' : 'Trouble loading stats'}</p>
+              <p>{error}</p>
+            </div>
+            <button
+              onClick={fetchStats}
+              className="text-sm font-semibold text-red-700 underline-offset-4 hover:underline"
+            >
+              {lang === 'ko' ? '?? ??' : 'Try again'}
+            </button>
+          </div>
+        )}
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatsCard
@@ -505,6 +640,8 @@ const AdminDashboard = () => {
                 description={lang === 'ko' ? '???? ?? ? ??' : 'Review and approve job postings'}
                 to="/admin/jobs"
                 color="blue"
+                badge={stats.pendingJobs > 0 ? `${stats.pendingJobs} ${t('pending')}` : (lang === 'ko' ? '??' : 'Clear')}
+                badgeColor={stats.pendingJobs > 0 ? 'red' : 'green'}
               />
               <QuickActionCard
                 icon={Building2}
@@ -512,6 +649,8 @@ const AdminDashboard = () => {
                 description={lang === 'ko' ? '?? ?? ?? ? ??' : 'Review and verify company registrations'}
                 to="/admin/companies"
                 color="green"
+                badge={stats.pendingCompanies > 0 ? `${stats.pendingCompanies} ${t('pending')}` : (lang === 'ko' ? '??' : 'Clear')}
+                badgeColor={stats.pendingCompanies > 0 ? 'red' : 'green'}
               />
               <QuickActionCard
                 icon={BookOpen}
@@ -519,13 +658,26 @@ const AdminDashboard = () => {
                 description={lang === 'ko' ? '가이드 승인 및 관리를 처리합니다' : 'Review and approve guide submissions'}
                 to="/admin/guides"
                 color="amber"
+                badge={stats.pendingGuides > 0 ? `${stats.pendingGuides} ${t('pending')}` : (lang === 'ko' ? '??' : 'Clear')}
+                badgeColor={stats.pendingGuides > 0 ? 'red' : 'green'}
+              />
+              <QuickActionCard
+                icon={ShoppingCart}
+                title={t('marketplaceModeration')}
+                description={lang === 'ko' ? '마켓플레이스 상품의 판매 상태와 프로모션을 관리합니다' : 'Mark items as sold and manage marketplace promotions'}
+                to="/admin/marketplace"
+                color="blue"
+                badge={`${stats.marketplace} ${lang === 'ko' ? '개 상품' : 'listings'}`}
+                badgeColor="blue"
               />
               <QuickActionCard
                 icon={BarChart3}
                 title={t('viewAnalytics')}
                 description={lang === 'ko' ? '??? ?? ? ??' : 'Platform analytics and statistics'}
-                to="#"
+                to="/admin/analytics"
                 color="purple"
+                badge={lang === 'ko' ? '???' : 'Live'}
+                badgeColor="purple"
               />
               <QuickActionCard
                 icon={Settings}
@@ -533,6 +685,8 @@ const AdminDashboard = () => {
                 description={lang === 'ko' ? '??? ?? ? ??' : 'System settings and configuration'}
                 to="#"
                 color="gray"
+                badge={lang === 'ko' ? '준비' : 'Soon'}
+                badgeColor="gray"
               />
               <QuickActionCard
                 icon={MessageSquare}
@@ -592,6 +746,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
 
 

@@ -49,6 +49,7 @@ import MarketplaceItem from './pages/features/marketplace/MarketplaceItem'
 import MarketplaceEditPage from './pages/features/marketplace/MarketplaceItemEdit'
 import MarketplacePostPage from './pages/features/marketplace/MarketplacePost'
 import MyListingsPage from './pages/features/marketplace/MyListings'
+import MarketplaceAdmin from './pages/features/marketplace/pages/admin/MarketplaceAdmin'
 import SettingsPage from './pages/Settings'
 
 import GuideDetail from './pages/features/guides/GuideDetail'
@@ -86,6 +87,7 @@ import CompanyProfile from './pages/features/jobs/pages/CompanyProfile';
 import JobApproval from './pages/features/jobs/pages/admin/JobApproval';
 import CompanyApproval from './pages/features/jobs/pages/admin/CompanyApproval';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminSignIn from './pages/admin/AdminSignIn';
 
 const ScrollToTop = () => {
@@ -157,9 +159,11 @@ function App() {
         <Route element={<Layout><CompanyProfile/></Layout>} path='/company/profile'/>
         <Route element={<AdminSignIn/>} path='/admin/signin'/>
         <Route element={<Layout><AdminDashboard/></Layout>} path='/admin'/>
+        <Route element={<Layout><AdminAnalytics/></Layout>} path='/admin/analytics'/>
         <Route element={<Layout><JobApproval/></Layout>} path='/admin/jobs'/>
         <Route element={<Layout><CompanyApproval/></Layout>} path='/admin/companies'/>
         <Route element={<Layout><GuideApproval/></Layout>} path='/admin/guides'/>
+        <Route element={<Layout><MarketplaceAdmin/></Layout>} path='/admin/marketplace'/>
 
         <Route element={<Layout><Talent /></Layout>} path='/talents' />
         <Route element={<Layout><TalentDetail /></Layout>} path='/talents/:id' />

@@ -28,7 +28,8 @@ import {
   CheckSquare,
   Square,
   RefreshCw,
-  Heart
+  Heart,
+  Trash2
 } from 'lucide-react';
 
 import {
@@ -60,7 +61,10 @@ const LABELS = {
   confirmApprove: { en: 'Are you sure you want to approve this guide?', ko: '이 가이드를 승인하시겠습니까?' },
   confirmReject: { en: 'Are you sure you want to reject this guide?', ko: '이 가이드를 거절하시겠습니까?' },
   guideApproved: { en: 'Guide approved successfully', ko: '가이드가 승인되었습니다' },
-  guideRejected: { en: 'Guide rejected successfully', ko: '가이드가 거절되었습니다' }
+  guideRejected: { en: 'Guide rejected successfully', ko: '가이드가 거절되었습니다' },
+  delete: { en: 'Delete', ko: '삭제' },
+  confirmDelete: { en: 'Delete this guide permanently?', ko: '이 가이드를 영구적으로 삭제하시겠습니까?' },
+  deleteOnlyRejected: { en: 'Only rejected guides can be deleted', ko: '거절된 가이드만 삭제할 수 있습니다' }
 };
 
 const StatsCard = ({ icon: Icon, label, value, color, isActive, onClick }) => {
@@ -134,6 +138,7 @@ const GuideRow = ({
   onSelect,
   onApprove,
   onReject,
+  onDelete,
   onView,
   lang,
   isProcessing
@@ -231,6 +236,17 @@ const GuideRow = ({
               </>
             )}
 
+            {status === 'rejected' && (
+              <button
+                onClick={() => onDelete(guide.id)}
+                disabled={isProcessing}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                {lang === 'ko' ? LABELS.delete.ko : LABELS.delete.en}
+              </button>
+            )}
+
             <Link
               to={`/guides/guide/${guide.id}`}
               target="_blank"
@@ -245,7 +261,7 @@ const GuideRow = ({
   );
 };
 
-const GuideDetailModal = ({ guide, author, onClose, onApprove, onReject, lang, isProcessing }) => {
+const GuideDetailModal = ({ guide, author, onClose, onApprove, onReject, onDelete, lang, isProcessing }) => {
   if (!guide) return null;
 
   const status = guide.approved === true ? 'approved' : guide.approved === false ? 'rejected' : 'pending';
@@ -359,6 +375,19 @@ const GuideDetailModal = ({ guide, author, onClose, onApprove, onReject, lang, i
             >
               {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
               {lang === 'ko' ? '승인' : 'Approve'}
+            </button>
+          </div>
+        )}
+
+        {status === 'rejected' && (
+          <div className="flex justify-end p-4 border-t border-gray-200 bg-gray-50">
+            <button
+              onClick={() => onDelete(guide.id)}
+              disabled={isProcessing}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 disabled:opacity-50 transition-colors"
+            >
+              {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              {lang === 'ko' ? LABELS.delete.ko : LABELS.delete.en}
             </button>
           </div>
         )}
@@ -538,6 +567,41 @@ const GuideApproval = () => {
       setProcessingIds(prev => prev.filter(id => id !== guideId));
     }
   }, [viewingGuide, lang]);
+
+  const handleDelete = useCallback(async (guideId) => {
+    const guideToDelete = guides.find(g => g.id === guideId);
+
+    if (guideToDelete && guideToDelete.approved !== false) {
+      alert(lang === 'ko' ? LABELS.deleteOnlyRejected.ko : LABELS.deleteOnlyRejected.en);
+      return;
+    }
+
+    const confirmed = window.confirm(lang === 'ko' ? LABELS.confirmDelete.ko : LABELS.confirmDelete.en);
+    if (!confirmed) return;
+
+    setProcessingIds(prev => [...prev, guideId]);
+
+    try {
+      const { error } = await supabase
+        .from('guide')
+        .delete()
+        .eq('id', guideId);
+
+      if (error) throw error;
+
+      setGuides(prev => prev.filter(g => g.id !== guideId));
+      setSelectedIds(prev => prev.filter(id => id !== guideId));
+
+      if (viewingGuide?.id === guideId) {
+        setViewingGuide(null);
+      }
+    } catch (err) {
+      console.error('Error deleting guide:', err);
+      alert(lang === 'ko' ? '오류가 발생했습니다' : 'An error occurred');
+    } finally {
+      setProcessingIds(prev => prev.filter(id => id !== guideId));
+    }
+  }, [guides, lang, viewingGuide]);
 
   const handleBulkApprove = useCallback(async () => {
     for (const id of selectedIds) {
@@ -734,6 +798,7 @@ const GuideApproval = () => {
                 onSelect={handleSelect}
                 onApprove={handleApprove}
                 onReject={handleReject}
+                onDelete={handleDelete}
                 onView={setViewingGuide}
                 lang={lang}
                 isProcessing={processingIds.includes(guide.id)}
@@ -751,6 +816,7 @@ const GuideApproval = () => {
             onClose={() => setViewingGuide(null)}
             onApprove={handleApprove}
             onReject={handleReject}
+            onDelete={handleDelete}
             lang={lang}
             isProcessing={processingIds.includes(viewingGuide.id)}
           />

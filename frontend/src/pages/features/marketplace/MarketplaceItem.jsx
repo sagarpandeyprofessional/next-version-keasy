@@ -164,6 +164,16 @@ export default function MarketplaceItemPage() {
   if (error) return <p className="text-center py-20 text-red-500">{error}</p>;
   if (!item) return <p className="text-center py-20 text-gray-800">No item found.</p>;
 
+  const discountPercent = Number(item.discount_percent) || 0;
+  const hasDiscount = discountPercent > 0;
+  const basePrice = Number(item.price) || 0;
+  const discountedPrice = hasDiscount
+    ? Math.max(Math.round(basePrice * (1 - discountPercent / 100)), 0)
+    : basePrice;
+  const offerLabel = item.special_offer_label;
+  const offerEnds = item.special_offer_expires_at;
+  const isUnavailable = item.available === false;
+
   const handlePrev = () => {
     if (!item?.images?.images) return;
     setCurrentImageIndex((prev) =>
@@ -433,11 +443,31 @@ export default function MarketplaceItemPage() {
             </div>
           )}
 
+          {isUnavailable && (
+            <div className="mb-4 p-3 rounded-lg bg-gray-100 border border-gray-200 text-sm text-gray-700">
+              This listing has been marked as sold or unavailable by an admin.
+            </div>
+          )}
+
           <div className="flex items-center gap-3 mb-4">
-            <p className="text-2xl font-semibold text-gray-800">{formatCurrency(item.price)}</p>
+            {hasDiscount ? (
+              <div className="flex items-baseline gap-3">
+                <p className="text-2xl font-semibold text-gray-900">{formatCurrency(discountedPrice)}</p>
+                <span className="text-sm text-gray-400 line-through">{formatCurrency(basePrice)}</span>
+                <span className="text-sm font-semibold text-red-600">-{discountPercent}%</span>
+              </div>
+            ) : (
+              <p className="text-2xl font-semibold text-gray-800">{formatCurrency(basePrice)}</p>
+            )}
             {item.is_negotiable && (
               <span className="text-sm bg-green-100 text-green-700 px-2 py-1 rounded">
                 Negotiable
+              </span>
+            )}
+            {offerLabel && (
+              <span className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded border border-amber-200">
+                {offerLabel}
+                {offerEnds ? ` · Ends ${offerEnds.substring(0, 10)}` : ''}
               </span>
             )}
           </div>
