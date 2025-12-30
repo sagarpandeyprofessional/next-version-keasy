@@ -76,6 +76,13 @@ const ContactMethodButton = ({ method, value, onClick, lang, applied }) => {
       console.error('Failed to copy:', err);
     }
   };
+
+  // Handle open link
+  const handleOpen = (e) => {
+    e.stopPropagation();
+    const url = config.getUrl(value);
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
   
   // Get display value (truncate if too long)
   const displayValue = value.length > 30 ? value.substring(0, 30) + '...' : value;
@@ -87,7 +94,7 @@ const ContactMethodButton = ({ method, value, onClick, lang, applied }) => {
         className={`
           w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200
           ${applied
-            ? 'bg-green-50 border-green-300 hover:bg-green-100'
+            ? 'bg-green-50 border-green-300'
             : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50'
           }
         `}
@@ -110,7 +117,7 @@ const ContactMethodButton = ({ method, value, onClick, lang, applied }) => {
           </p>
         </div>
         
-        {/* Applied Badge or Arrow */}
+        {/* Right side: Applied badge OR Copy/Open buttons */}
         {applied ? (
           <div className="flex items-center gap-1 text-green-600">
             <CheckCircle2 className="w-5 h-5" />
@@ -119,20 +126,29 @@ const ContactMethodButton = ({ method, value, onClick, lang, applied }) => {
             </span>
           </div>
         ) : (
-          <ExternalLink className="w-5 h-5 text-gray-400" />
-        )}
-      </button>
-      
-      {/* Copy Button */}
-      <button
-        onClick={handleCopy}
-        className="absolute right-14 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-        title={lang === 'ko' ? '복사' : 'Copy'}
-      >
-        {copied ? (
-          <CheckCircle2 className="w-4 h-4 text-green-500" />
-        ) : (
-          <MdContentCopy className="w-4 h-4" />
+          <div className="flex items-center gap-1">
+            {/* Copy Button */}
+            <button
+              onClick={handleCopy}
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              title={lang === 'ko' ? '복사' : 'Copy'}
+            >
+              {copied ? (
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+              ) : (
+                <MdContentCopy className="w-4 h-4" />
+              )}
+            </button>
+            
+            {/* Open Link Button */}
+            <button
+              onClick={handleOpen}
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              title={lang === 'ko' ? '열기' : 'Open'}
+            >
+              <ExternalLink className="w-4 h-4" />
+            </button>
+          </div>
         )}
       </button>
     </div>

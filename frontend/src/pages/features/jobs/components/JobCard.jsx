@@ -3,7 +3,7 @@
  * @description Individual job card component for the jobs list view.
  * 
  * Displays a compact card with:
- * - Company logo or job image
+ * - Company logo
  * - Job title and company name
  * - Location, job type, and salary info
  * - Deadline/expiry badge
@@ -16,7 +16,7 @@
  * @requires react-icons
  * 
  * @author Keasy
- * @version 1.0.0
+ * @version 1.0.1
  */
 
 import React from 'react';
@@ -88,8 +88,8 @@ const JobCard = ({
   // Get deadline status for badge display
   const deadlineStatus = getDeadlineStatus(job.deadline);
   
-  // Determine the image to display (job cover or company logo)
-  const displayImage = job.img_url || company?.logo_url;
+  // Display the company logo (NOT the job cover image)
+  const displayImage = company?.logo_url;
   
   // Handle save button click without triggering card selection
   const handleSaveClick = (e) => {
@@ -117,13 +117,13 @@ const JobCard = ({
       `}
     >
       {/* ----------------------------------------------------------------
-          LEFT: Image/Logo Section
+          LEFT: Company Logo Section
           ---------------------------------------------------------------- */}
       <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
         {displayImage ? (
           <img
             src={displayImage}
-            alt={job.title}
+            alt={company?.name_en || job.title}
             className="w-full h-full object-cover rounded-lg bg-gray-100"
             onError={(e) => {
               // Fallback to placeholder on error
