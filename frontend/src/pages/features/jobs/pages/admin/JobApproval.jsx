@@ -25,6 +25,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from "../../../../../api/supabase-client";
 import { isSuperadmin } from "../../../../../utils/adminUtils";
+import AdminSignIn from '../../../../admin/AdminSignIn';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Globe,
@@ -487,6 +488,7 @@ const JobApproval = () => {
 
   const fetchJobs = useCallback(async () => {
     try {
+      setError(null);
       // Fetch all jobs
       const { data: jobsData, error: jobsError } = await supabase
         .from('job')
@@ -751,6 +753,12 @@ const JobApproval = () => {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+        {error && (
+          <div className="mb-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 px-3 py-2 rounded-lg">
+            <AlertCircle className="w-4 h-4" />
+            {error}
+          </div>
+        )}
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <StatsCard

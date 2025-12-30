@@ -21,6 +21,13 @@ const MarketplaceItem = ({ item, userId, onToggleLike, isMobile, user_favourites
   const navigate = useNavigate();
   const imageUrl = item?.images?.images?.[0] || "/no-image.png";
   const isLiked = user_favourites.includes(item.id);
+  const discountPercent = Number(item.discount_percent) || 0;
+  const hasDiscount = discountPercent > 0;
+  const basePrice = Number(item.price) || 0;
+  const discountedPrice = hasDiscount
+    ? Math.max(Math.round(basePrice * (1 - discountPercent / 100)), 0)
+    : basePrice;
+  const offerLabel = item.special_offer_label;
 
   const handleCardClick = async () => {
     try {
@@ -76,14 +83,31 @@ const MarketplaceItem = ({ item, userId, onToggleLike, isMobile, user_favourites
               >
                 {conditionStyles[item.condition]?.label || "Unknown"}
               </span>
+              {offerLabel && (
+                <span className="inline-block rounded px-2 py-0.5 text-[11px] font-semibold text-amber-700 bg-amber-100 border border-amber-200">
+                  {offerLabel}
+                </span>
+              )}
             </div>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <p className="text-base font-bold text-black">
-                {formatCurrency(item.price)}
-              </p>
+              {hasDiscount ? (
+                <div className="flex items-baseline gap-2">
+                  <p className="text-base font-bold text-black">
+                    {formatCurrency(discountedPrice)}
+                  </p>
+                  <span className="text-xs text-gray-400 line-through">
+                    {formatCurrency(basePrice)}
+                  </span>
+                  <span className="text-xs font-semibold text-red-600">-{discountPercent}%</span>
+                </div>
+              ) : (
+                <p className="text-base font-bold text-black">
+                  {formatCurrency(basePrice)}
+                </p>
+              )}
             </div>
             <button
               onClick={(e) => {
@@ -156,8 +180,24 @@ const MarketplaceItem = ({ item, userId, onToggleLike, isMobile, user_favourites
           <span>{item.views || 0}</span>
         </div> */}
 
+        {offerLabel && (
+          <div className="mb-2">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold text-amber-700 bg-amber-100 border border-amber-200">
+              {offerLabel}
+            </span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between">
-          <p className="font-bold text-black">{formatCurrency(item.price)}</p>
+          {hasDiscount ? (
+            <div className="flex items-baseline gap-2">
+              <p className="font-bold text-black">{formatCurrency(discountedPrice)}</p>
+              <span className="text-xs text-gray-400 line-through">{formatCurrency(basePrice)}</span>
+              <span className="text-xs font-semibold text-red-600">-{discountPercent}%</span>
+            </div>
+          ) : (
+            <p className="font-bold text-black">{formatCurrency(basePrice)}</p>
+          )}
           <Link
             to={`/marketplace/${item.id}`}
             onClick={async (e) => {
