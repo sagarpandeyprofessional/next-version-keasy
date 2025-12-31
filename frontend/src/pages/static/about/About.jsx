@@ -51,8 +51,8 @@ const TeamSection = () => {
       name: 'Gevariya Sahil Nandlalbhai', 
       title: 'AI & Software Engineer', 
       image: '/team/sahil.png', 
-      website: 'https://github.com/Yoosahil06', 
-      linkedin: 'https://github.com/Yoosahil06', 
+      website: 'https://yoosahil06.github.io/Resume/', 
+      linkedin: 'https://www.linkedin.com/in/sahil-nandlalbhai-gevariya-98a3163a2?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app', 
       email: 'sahil.gevariya06@gmail.com ' 
     }
   ];
