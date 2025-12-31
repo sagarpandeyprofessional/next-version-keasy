@@ -67,6 +67,33 @@ const LABELS = {
   deleteOnlyRejected: { en: 'Only rejected guides can be deleted', ko: '거절된 가이드만 삭제할 수 있습니다' }
 };
 
+const STORAGE_PUBLIC_PREFIX = '/storage/v1/object/public/guides/';
+
+const extractStoragePath = (url) => {
+  if (!url) return null;
+  const idx = url.indexOf(STORAGE_PUBLIC_PREFIX);
+  if (idx === -1) return null;
+  return url.slice(idx + STORAGE_PUBLIC_PREFIX.length).split('?')[0];
+};
+
+const collectGuideStoragePaths = (guide) => {
+  if (!guide) return [];
+
+  const paths = [];
+  const coverPath = extractStoragePath(guide.img_url);
+  if (coverPath) paths.push(coverPath);
+
+  const sections = guide.content?.sections || [];
+  sections.forEach(section => {
+    if (section?.type === 'image') {
+      const imagePath = extractStoragePath(section.url);
+      if (imagePath) paths.push(imagePath);
+    }
+  });
+
+  return [...new Set(paths)];
+};
+
 const StatsCard = ({ icon: Icon, label, value, color, isActive, onClick }) => {
   const colorClasses = {
     gray: 'bg-gray-100 text-gray-600 border-gray-200',
@@ -571,6 +598,11 @@ const GuideApproval = () => {
   const handleDelete = useCallback(async (guideId) => {
     const guideToDelete = guides.find(g => g.id === guideId);
 
+    if (!guideToDelete) {
+      console.error('Guide not found for deletion');
+      return;
+    }
+
     if (guideToDelete && guideToDelete.approved !== false) {
       alert(lang === 'ko' ? LABELS.deleteOnlyRejected.ko : LABELS.deleteOnlyRejected.en);
       return;
@@ -582,26 +614,43 @@ const GuideApproval = () => {
     setProcessingIds(prev => [...prev, guideId]);
 
     try {
-      const { error } = await supabase
+      const assetPaths = collectGuideStoragePaths(guideToDelete);
+
+      if (assetPaths.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from('guides')
+          .remove(assetPaths);
+
+        if (storageError) {
+          console.error('Error deleting guide assets from storage:', storageError);
+        }
+      }
+
+      const { data, error } = await supabase
         .from('guide')
         .delete()
-        .eq('id', guideId);
+        .eq('id', guideId)
+        .select('id');
 
       if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error('Delete succeeded but no rows were removed. Check RLS policies.');
+      }
 
       setGuides(prev => prev.filter(g => g.id !== guideId));
       setSelectedIds(prev => prev.filter(id => id !== guideId));
+      await fetchGuides(); // Ensure Supabase state is the source of truth
 
       if (viewingGuide?.id === guideId) {
         setViewingGuide(null);
       }
     } catch (err) {
       console.error('Error deleting guide:', err);
-      alert(lang === 'ko' ? '오류가 발생했습니다' : 'An error occurred');
+      alert((lang === 'ko' ? '삭제 실패: ' : 'Delete failed: ') + (err?.message || 'Unknown error'));
     } finally {
       setProcessingIds(prev => prev.filter(id => id !== guideId));
     }
-  }, [guides, lang, viewingGuide]);
+  }, [guides, lang, viewingGuide, fetchGuides]);
 
   const handleBulkApprove = useCallback(async () => {
     for (const id of selectedIds) {
