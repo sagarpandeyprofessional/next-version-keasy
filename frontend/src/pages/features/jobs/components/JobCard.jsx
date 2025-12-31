@@ -7,7 +7,8 @@
  * - Job title and company name
  * - Location, job type, and salary info
  * - Deadline/expiry badge
- * - Save/bookmark button
+ * - Save/bookmark button (for non-owners)
+ * - Edit button (for job owners)
  * - View count
  * 
  * @requires react
@@ -16,16 +17,18 @@
  * @requires react-icons
  * 
  * @author Keasy
- * @version 1.0.1
+ * @version 1.0.2
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   MapPin, 
   Clock, 
   Building2,
-  AlertCircle
+  AlertCircle,
+  Edit3
 } from 'lucide-react';
 import { IoEyeOutline } from 'react-icons/io5';
 import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
@@ -53,11 +56,13 @@ import {
  * @param {Object} props.company - The company data object
  * @param {boolean} props.isSelected - Whether this card is currently selected
  * @param {boolean} props.isSaved - Whether user has saved this job
+ * @param {boolean} props.isOwner - Whether current user owns this job
  * @param {Function} props.onSelect - Callback when card is clicked
  * @param {Function} props.onSave - Callback when save button is clicked
  * @param {number} props.index - Index for staggered animation
  * @param {string} props.categoryName - Display name of the category
  * @param {Object} props.user - Current user object (null if not logged in)
+ * @param {string} props.lang - Current language ('en' or 'ko')
  * 
  * @returns {JSX.Element} The job card component
  * 
@@ -67,11 +72,13 @@ import {
  *   company={companyData}
  *   isSelected={selectedJob?.id === jobData.id}
  *   isSaved={savedJobs.includes(jobData.id)}
+ *   isOwner={job.created_by === user?.id}
  *   onSelect={() => handleSelectJob(jobData)}
  *   onSave={() => handleSaveJob(jobData.id)}
  *   index={0}
  *   categoryName="Technology / IT"
  *   user={currentUser}
+ *   lang="en"
  * />
  */
 const JobCard = ({
@@ -79,6 +86,7 @@ const JobCard = ({
   company,
   isSelected,
   isSaved,
+  isOwner = false,
   onSelect,
   onSave,
   index,
@@ -96,6 +104,12 @@ const JobCard = ({
   const handleSaveClick = (e) => {
     e.stopPropagation();
     onSave();
+  };
+
+  // Handle edit button click without triggering card selection
+  const handleEditClick = (e) => {
+    e.stopPropagation();
+    // Navigation is handled by Link component
   };
 
   return (
@@ -144,7 +158,7 @@ const JobCard = ({
         {deadlineStatus.isExpired && (
           <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
             <span className="text-white text-xs font-semibold px-2 py-1 bg-red-500 rounded">
-              Expired
+              {lang === 'ko' ? '마감' : 'Expired'}
             </span>
           </div>
         )}
@@ -154,7 +168,7 @@ const JobCard = ({
           RIGHT: Content Section
           ---------------------------------------------------------------- */}
       <div className="flex-1 min-w-0 flex flex-col">
-        {/* Top Row: Title and Save Button */}
+        {/* Top Row: Title and Action Button */}
         <div className="flex items-start justify-between gap-2">
           <h3 className={`
             font-semibold text-gray-900 line-clamp-2 text-sm sm:text-base
@@ -163,27 +177,46 @@ const JobCard = ({
             {job.title}
           </h3>
           
-          {/* Save/Bookmark Button */}
-          <button
-            onClick={handleSaveClick}
-            disabled={!user}
-            className={`
-              flex-shrink-0 p-1.5 rounded-full transition-all duration-200
-              ${isSaved 
-                ? 'text-blue-600 bg-blue-100 hover:bg-blue-200' 
-                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+          {/* Action Button: Edit (for owner) or Save (for others) */}
+          {isOwner ? (
+            /* Edit Button for Job Owner - Goes to Company Profile */
+            <Link
+              to="/company/profile"
+              onClick={handleEditClick}
+              className="flex-shrink-0 p-1.5 rounded-full transition-all duration-200 text-gray-500 hover:text-blue-600 hover:bg-blue-100"
+              title={lang === 'ko' ? '회사 프로필' : 'Company Profile'}
+              aria-label={lang === 'ko' ? '회사 프로필로 이동' : 'Go to Company Profile'}
+            >
+              <Edit3 className="w-4 h-4" />
+            </Link>
+          ) : (
+            /* Save/Bookmark Button for Non-Owners */
+            <button
+              onClick={handleSaveClick}
+              disabled={!user}
+              className={`
+                flex-shrink-0 p-1.5 rounded-full transition-all duration-200
+                ${isSaved 
+                  ? 'text-blue-600 bg-blue-100 hover:bg-blue-200' 
+                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                }
+                ${!user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+              `}
+              title={!user 
+                ? (lang === 'ko' ? '로그인하여 저장하세요' : 'Login to save jobs')
+                : isSaved 
+                  ? (lang === 'ko' ? '저장 취소' : 'Unsave') 
+                  : (lang === 'ko' ? '저장' : 'Save job')
               }
-              ${!user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-            `}
-            title={!user ? 'Login to save jobs' : isSaved ? 'Unsave' : 'Save job'}
-            aria-label={isSaved ? 'Remove from saved' : 'Save job'}
-          >
-            {isSaved ? (
-              <BsBookmarkFill className="w-4 h-4" />
-            ) : (
-              <BsBookmark className="w-4 h-4" />
-            )}
-          </button>
+              aria-label={isSaved ? 'Remove from saved' : 'Save job'}
+            >
+              {isSaved ? (
+                <BsBookmarkFill className="w-4 h-4" />
+              ) : (
+                <BsBookmark className="w-4 h-4" />
+              )}
+            </button>
+          )}
         </div>
 
         {/* Company Name */}
@@ -200,7 +233,7 @@ const JobCard = ({
           <span className="text-xs text-gray-500 truncate">
             {job.location}
             {job.location_type && (
-              <span className="text-gray-400"> · {getLocationTypeLabel(job.location_type)}</span>
+              <span className="text-gray-400"> · {getLocationTypeLabel(job.location_type, lang)}</span>
             )}
           </span>
         </div>
@@ -219,10 +252,10 @@ const JobCard = ({
                 'bg-gray-100 text-gray-700'
               }
             `}>
-              {getJobTypeLabel(job.job_type)}
+              {getJobTypeLabel(job.job_type, lang)}
             </span>
             
-            {/* Salary (if provided) - NOW WITH LANG PARAMETER */}
+            {/* Salary (if provided) - WITH LANG PARAMETER */}
             {(job.salary_min || job.salary_max || job.salary_type === 'negotiable') && (
               <span className="text-xs text-gray-500 hidden sm:inline">
                 {job.salary_type === 'negotiable' 

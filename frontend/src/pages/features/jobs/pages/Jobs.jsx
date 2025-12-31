@@ -828,11 +828,13 @@ const Jobs = () => {
                       company={getCompanyForJob(job.company_id)}
                       isSelected={selectedJob?.id === job.id}
                       isSaved={isJobSaved(job.id)}
+                      isOwner={isJobOwner(job)}
                       onSelect={() => handleSelectJob(job)}
                       onSave={() => handleSaveJob(job.id)}
                       index={index}
                       categoryName={getCategoryById(job.category)?.name_en}
                       user={user}
+                      lang={lang}
                     />
                   ))}
                 </AnimatePresence>
