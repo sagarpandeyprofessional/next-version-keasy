@@ -1,71 +1,29 @@
 /**
- * @file Jobs.jsx - Section 1: Utilities & Constants
- * @description Utility functions, constants, and animation variants for the Jobs page.
+ * @file jobsUtils.js
+ * @description Utility functions, constants, and animation variants for the Jobs section.
  * 
- * This section contains:
- * - File header and imports
+ * This file contains:
  * - Utility functions (formatting, truncation, etc.)
  * - Animation variants for Framer Motion
  * - Constants for job types, experience levels, etc.
  * 
  * @requires react
- * @requires react-router-dom
- * @requires framer-motion
  * @requires react-icons
- * @requires lucide-react
- * @requires supabase-client
  * 
  * @author Keasy
- * @version 1.0.0
+ * @version 1.0.1
  */
 
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { supabase } from "../../../../api/supabase-client";
-import { Link } from 'react-router-dom';
-import { 
-  IoSearchOutline, 
-  IoCloseCircle, 
-  IoArrowBack,
-  IoLocationOutline,
-  IoTimeOutline,
-  IoCalendarOutline,
-  IoEyeOutline
-} from "react-icons/io5";
-import { 
-  IoIosHeart, 
-  IoIosHeartEmpty,
-  IoMdBriefcase
-} from "react-icons/io";
-import { 
-  MdOutlineWorkOutline,
+import {
   MdOutlineEmail,
   MdOutlinePhone,
   MdWhatsapp
 } from "react-icons/md";
-import { 
-  FaInstagram, 
+import {
+  FaInstagram,
   FaFacebook,
-  FaGlobe,
-  FaBuilding,
-  FaMapMarkerAlt
+  FaGlobe
 } from "react-icons/fa";
-import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Briefcase, 
-  MapPin, 
-  Clock, 
-  DollarSign,
-  Building2,
-  Languages,
-  Filter,
-  ChevronRight,
-  ChevronDown,
-  X,
-  ExternalLink,
-  AlertCircle,
-  CheckCircle2
-} from "lucide-react";
 
 
 /* ============================================================================
@@ -226,65 +184,98 @@ export const formatCount = (count) => {
 
 /**
  * Formats salary amount in Korean Won with appropriate suffix.
+ * Now supports bilingual output.
  * 
  * @param {number} amount - The salary amount
  * @param {string} type - The salary type (hourly, monthly, yearly)
+ * @param {string} lang - Language code ('en' or 'ko')
  * @returns {string} Formatted salary string
  * 
  * @example
- * formatSalary(50000, 'hourly');     // Returns: "₩50,000/시간"
- * formatSalary(3000000, 'monthly');  // Returns: "₩3,000,000/월"
+ * formatSalary(50000, 'hourly', 'en');     // Returns: "₩50,000/hr"
+ * formatSalary(3000000, 'monthly', 'ko');  // Returns: "₩3,000,000/월"
  */
-export const formatSalary = (amount, type) => {
+export const formatSalary = (amount, type, lang = 'en') => {
   if (!amount) return null;
   
   const formatted = new Intl.NumberFormat('ko-KR').format(amount);
-  const suffix = {
-    hourly: '/시간',
-    monthly: '/월',
-    yearly: '/년',
-    negotiable: ''
-  };
+  
+  const suffix = lang === 'ko' 
+    ? {
+        hourly: '/시간',
+        monthly: '/월',
+        yearly: '/년',
+        negotiable: ''
+      }
+    : {
+        hourly: '/hr',
+        monthly: '/month',
+        yearly: '/year',
+        negotiable: ''
+      };
   
   return `₩${formatted}${suffix[type] || ''}`;
 };
 
 /**
  * Formats a salary range for display.
+ * Now supports bilingual output.
  * 
  * @param {number} min - Minimum salary
  * @param {number} max - Maximum salary
  * @param {string} type - Salary type
+ * @param {string} lang - Language code ('en' or 'ko')
  * @returns {string} Formatted salary range
  * 
  * @example
- * formatSalaryRange(50000, 70000, 'hourly');
- * // Returns: "₩50,000 - ₩70,000/시간"
+ * formatSalaryRange(50000, 70000, 'hourly', 'en');
+ * // Returns: "₩50,000 - ₩70,000/hr"
+ * 
+ * formatSalaryRange(300000, null, 'monthly', 'en');
+ * // Returns: "₩300,000/month+"
  */
-export const formatSalaryRange = (min, max, type) => {
+export const formatSalaryRange = (min, max, type, lang = 'en') => {
   if (!min && !max) return null;
-  if (type === 'negotiable') return '협의 (Negotiable)';
   
-  const suffix = {
-    hourly: '/시간',
-    monthly: '/월',
-    yearly: '/년'
-  };
+  // Handle negotiable type
+  if (type === 'negotiable') {
+    return lang === 'ko' ? '협의' : 'Negotiable';
+  }
   
+  // Suffixes for different languages
+  const suffix = lang === 'ko' 
+    ? {
+        hourly: '/시간',
+        monthly: '/월',
+        yearly: '/년'
+      }
+    : {
+        hourly: '/hr',
+        monthly: '/month',
+        yearly: '/year'
+      };
+  
+  // "or more" / "or less" text
+  const orMore = lang === 'ko' ? ' 이상' : '+';
+  const orLess = lang === 'ko' ? ' 이하' : ' max';
+  
+  // Both min and max provided
   if (min && max) {
     const minFormatted = new Intl.NumberFormat('ko-KR').format(min);
     const maxFormatted = new Intl.NumberFormat('ko-KR').format(max);
     return `₩${minFormatted} - ₩${maxFormatted}${suffix[type] || ''}`;
   }
   
+  // Only min provided (e.g., "₩300,000/month+")
   if (min) {
     const formatted = new Intl.NumberFormat('ko-KR').format(min);
-    return `₩${formatted}${suffix[type] || ''} 이상`;
+    return `₩${formatted}${suffix[type] || ''}${orMore}`;
   }
   
+  // Only max provided (e.g., "₩500,000/month max")
   if (max) {
     const formatted = new Intl.NumberFormat('ko-KR').format(max);
-    return `₩${formatted}${suffix[type] || ''} 이하`;
+    return `₩${formatted}${suffix[type] || ''}${orLess}`;
   }
   
   return null;
@@ -585,19 +576,3 @@ export const badgeVariants = {
     transition: { duration: 0.15 }
   }
 };
-
-
-/* ============================================================================
-   EXPORT NOTE
-   ============================================================================
-   These utilities and constants will be imported into the main Jobs.jsx
-   component and its sub-components. 
-   
-   Usage example:
-   import { 
-     formatSalaryRange, 
-     getJobTypeLabel, 
-     JOB_TYPES,
-     detailPanelVariants 
-   } from './jobsUtils';
-   ============================================================================ */

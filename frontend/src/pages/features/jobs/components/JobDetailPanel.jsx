@@ -20,7 +20,7 @@
  * @requires react-icons
  * 
  * @author Keasy
- * @version 1.0.0
+ * @version 1.0.2
  */
 
 import React from 'react';
@@ -158,9 +158,14 @@ const JobDetailPanel = ({
   // Get deadline status
   const deadlineStatus = getDeadlineStatus(job.deadline);
   
-  // Get display image
+  // Get display image - cover image is the job's main image
   const coverImage = job.img_url;
+  
+  // Get company logo - MUST be from company.logo_url, NOT job.img_url
   const companyLogo = company?.logo_url;
+  
+  // Generate fallback logo URL if no logo exists
+  const fallbackLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(company?.name_en || 'C')}&background=6366f1&color=fff&size=80`;
   
   // Parse required languages from JSONB
   const requiredLanguages = job.required_languages || [];
@@ -212,21 +217,28 @@ const JobDetailPanel = ({
           <div className="w-full h-32 sm:h-40 bg-gradient-to-br from-blue-500 to-indigo-600" />
         )}
 
-        {/* Company Logo Overlay */}
-        {companyLogo && (
-          <div className="absolute -bottom-8 left-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-white shadow-lg p-1 border border-gray-100">
+        {/* Company Logo Overlay - ALWAYS show (with fallback) */}
+        <div className="absolute -bottom-8 left-6">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-white shadow-lg p-1 border border-gray-100">
+            {companyLogo ? (
               <img
                 src={companyLogo}
                 alt={company?.name_en}
                 className="w-full h-full object-cover rounded-lg"
                 onError={(e) => {
-                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(company?.name_en || 'C')}&background=6366f1&color=fff&size=80`;
+                  e.target.src = fallbackLogo;
                 }}
               />
-            </div>
+            ) : (
+              // Fallback: Show initial letter when no logo
+              <div className="w-full h-full rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                <span className="text-white text-2xl font-bold">
+                  {(company?.name_en || 'C').charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Expired Badge */}
         {deadlineStatus.isExpired && (
@@ -349,7 +361,7 @@ const JobDetailPanel = ({
             </div>
           </div>
 
-          {/* Salary */}
+          {/* Salary - FIXED: Now passing lang parameter */}
           <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
             <div className="p-2 bg-white rounded-lg shadow-sm">
               <DollarSign className="w-5 h-5 text-yellow-500" />
@@ -361,7 +373,7 @@ const JobDetailPanel = ({
               <p className="text-sm font-medium text-gray-900">
                 {job.salary_type === 'negotiable' 
                   ? (lang === 'ko' ? '협의' : 'Negotiable')
-                  : formatSalaryRange(job.salary_min, job.salary_max, job.salary_type) || (lang === 'ko' ? '미정' : 'Not specified')
+                  : formatSalaryRange(job.salary_min, job.salary_max, job.salary_type, lang) || (lang === 'ko' ? '미정' : 'Not specified')
                 }
               </p>
             </div>
