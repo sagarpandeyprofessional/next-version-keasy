@@ -640,14 +640,21 @@ const JobDetailPanel = ({
           {/* Share Button */}
           <button
             onClick={() => {
+              const jobUrl = `${window.location.origin}/jobs/job/${job.id}`;
               if (navigator.share) {
                 navigator.share({
                   title: job.title,
-                  text: `${job.title} at ${company?.name_en}`,
-                  url: window.location.href
+                  text: `Check out this job: ${job.title} at ${company?.name_en || 'Company'}`,
+                  url: jobUrl
+                }).catch((err) => {
+                  // User cancelled or error - fallback to copy
+                  if (err.name !== 'AbortError') {
+                    navigator.clipboard.writeText(jobUrl);
+                    alert(lang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!');
+                  }
                 });
               } else {
-                navigator.clipboard.writeText(window.location.href);
+                navigator.clipboard.writeText(jobUrl);
                 alert(lang === 'ko' ? '링크가 복사되었습니다!' : 'Link copied!');
               }
             }}
