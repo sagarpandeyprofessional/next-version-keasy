@@ -83,7 +83,8 @@ const JobCard = ({
   onSave,
   index,
   categoryName,
-  user
+  user,
+  lang = 'en'
 }) => {
   // Get deadline status for badge display
   const deadlineStatus = getDeadlineStatus(job.deadline);
@@ -221,12 +222,12 @@ const JobCard = ({
               {getJobTypeLabel(job.job_type)}
             </span>
             
-            {/* Salary (if provided) */}
+            {/* Salary (if provided) - NOW WITH LANG PARAMETER */}
             {(job.salary_min || job.salary_max || job.salary_type === 'negotiable') && (
               <span className="text-xs text-gray-500 hidden sm:inline">
                 {job.salary_type === 'negotiable' 
-                  ? '협의' 
-                  : formatSalaryRange(job.salary_min, job.salary_max, job.salary_type)
+                  ? (lang === 'ko' ? '협의' : 'Negotiable')
+                  : formatSalaryRange(job.salary_min, job.salary_max, job.salary_type, lang)
                 }
               </span>
             )}
