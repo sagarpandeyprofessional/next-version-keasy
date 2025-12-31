@@ -2,4 +2,4 @@ brew install tree
 
 tree > file-tree.txt
 
-tree src -L 3
+tree src -L 5

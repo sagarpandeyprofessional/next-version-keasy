@@ -317,37 +317,44 @@ const JobDetailPanel = ({
             ---------------------------------------------------------------- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           {/* Location */}
-          <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+          <div className="flex items-start gap-3 p-4 bg-gray-100 rounded-xl">
             <div className="p-2 bg-white rounded-lg shadow-sm">
               <MapPin className="w-5 h-5 text-blue-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-500 mb-0.5">
-                {lang === 'ko' ? '위치' : 'Location'}
-              </p>
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {job.location}
-              </p>
-              <p className="text-xs text-gray-500">
-                {getLocationTypeLabel(job.location_type, lang)}
-              </p>
+              <div className="flex items-center justify-between mb-0.5">
+                <p className="text-xs text-gray-500">
+                  {lang === 'ko' ? '위치' : 'Location'}
+                </p>
+                {/* View Location Link */}
+                {job.location_map_link && (
+                  <a
+                    href={job.location_map_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-500 hover:text-blue-600 hover:underline flex items-center gap-1 transition-colors"
+                  >
+                    {lang === 'ko' ? '지도 보기' : 'View Location'}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-gray-900">
+                  {job.location}
+                </p>
+                {job.location_type && (
+                  <p className="text-sm">
+                    <span className="text-gray-500">{lang === 'ko' ? '근무형태: ' : 'Work Type: '}</span>
+                    <span className="font-medium text-gray-900">{getLocationTypeLabel(job.location_type, lang)}</span>
+                  </p>
+                )}
+              </div>
             </div>
-            {/* Map Link Button */}
-            {job.location_map_link && (
-              <a
-                href={job.location_map_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title={lang === 'ko' ? '지도 보기' : 'View on map'}
-              >
-                <MapPinned className="w-5 h-5" />
-              </a>
-            )}
           </div>
 
           {/* Job Type */}
-          <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+          <div className="flex items-start gap-3 p-4 bg-gray-100 rounded-xl">
             <div className="p-2 bg-white rounded-lg shadow-sm">
               <Briefcase className="w-5 h-5 text-green-500" />
             </div>
@@ -361,8 +368,8 @@ const JobDetailPanel = ({
             </div>
           </div>
 
-          {/* Salary - FIXED: Now passing lang parameter */}
-          <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+          {/* Salary */}
+          <div className="flex items-start gap-3 p-4 bg-gray-100 rounded-xl">
             <div className="p-2 bg-white rounded-lg shadow-sm">
               <DollarSign className="w-5 h-5 text-yellow-500" />
             </div>
@@ -380,7 +387,7 @@ const JobDetailPanel = ({
           </div>
 
           {/* Experience Level */}
-          <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+          <div className="flex items-start gap-3 p-4 bg-gray-100 rounded-xl">
             <div className="p-2 bg-white rounded-lg shadow-sm">
               <GraduationCap className="w-5 h-5 text-purple-500" />
             </div>
