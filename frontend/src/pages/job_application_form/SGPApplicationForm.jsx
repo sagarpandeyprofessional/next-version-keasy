@@ -11,6 +11,10 @@ import {
 } from './utils/sgpApi';
 import { supabase } from '../../api/supabase-client';
 
+// ⭐ PASTE YOUR INTERVIEW PREP LINK HERE ⭐
+const SGP_INTERVIEW_PREP_LINK = 'https://koreaeasy.org/guides/guide/95';
+// ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
+
 const SGPApplicationForm = () => {
   const [formData, setFormData] = useState({
     photo: null,
@@ -1105,6 +1109,75 @@ ${formData.major || '[Major]'}, Woosong University
             display: none;
           }
         }
+        
+        /* STICKY INTERVIEW PREP BOX - RIGHT SIDE */
+        .interview-prep-box {
+          position: fixed;
+          right: 20px;
+          top: 150px;
+          width: 300px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 12px;
+          padding: 20px;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+          z-index: 999;
+          color: white;
+        }
+        
+        .interview-prep-box h3 {
+          margin: 0 0 12px 0;
+          font-size: 16px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .interview-prep-box ul {
+          margin: 12px 0 16px 0;
+          padding-left: 20px;
+          font-size: 13px;
+          line-height: 1.8;
+        }
+        
+        .interview-prep-box ul li {
+          margin-bottom: 6px;
+        }
+        
+        .interview-prep-button {
+          display: block;
+          width: 100%;
+          padding: 12px 16px;
+          background: white;
+          color: #667eea;
+          border: none;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          text-align: center;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .interview-prep-button:hover {
+          background: #f0f0f0;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        @media print {
+          .interview-prep-box {
+            display: none !important;
+          }
+        }
+        
+        @media (max-width: 1400px) {
+          .interview-prep-box {
+            display: none;
+          }
+        }
       `}</style>
 
       {/* LEFT-SIDE TOOLTIP GUIDE BOX */}
@@ -1141,6 +1214,28 @@ ${formData.major || '[Major]'}, Woosong University
           })()}
         </div>
       )}
+
+      {/* STICKY INTERVIEW PREP BOX - RIGHT SIDE */}
+      <div className="interview-prep-box no-print">
+        <h3>
+          <span style={{ fontSize: '20px' }}>📚</span>
+          Interview Preparation Guide
+        </h3>
+        <ul>
+          <li>✓ Common interview questions</li>
+          <li>✓ How to answer effectively</li>
+          <li>✓ What recruiters look for</li>
+          <li>✓ Tips for success</li>
+        </ul>
+        <a 
+          href={SGP_INTERVIEW_PREP_LINK} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="interview-prep-button"
+        >
+          Prepare Now →
+        </a>
+      </div>
 
       {/* Control Buttons */}
       <div className="no-print" style={{ maxWidth: '210mm', margin: '0 auto 20px auto', display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
