@@ -49,12 +49,14 @@ import MarketplaceItem from './pages/features/marketplace/MarketplaceItem'
 import MarketplaceEditPage from './pages/features/marketplace/MarketplaceItemEdit'
 import MarketplacePostPage from './pages/features/marketplace/MarketplacePost'
 import MyListingsPage from './pages/features/marketplace/MyListings'
+import MarketplaceAdmin from './pages/features/marketplace/pages/admin/MarketplaceAdmin'
 import SettingsPage from './pages/Settings'
 
 import GuideDetail from './pages/features/guides/GuideDetail'
 import Guides from './pages/features/guides/Guides'
 import GuideEdit from './pages/features/guides/GuideEdit'
 import GuideEditor from './pages/features/guides/GuidePost';
+import GuideApproval from './pages/features/guides/pages/admin/GuideApproval';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Connect from './pages/features/connect/Connect';
@@ -86,6 +88,9 @@ import CompanyProfile from './pages/features/jobs/pages/CompanyProfile';
 // import CompanyApproval from './pages/features/jobs/pages/admin/CompanyApproval';
 import JobApproval from './pages/features/jobs/pages/admin/JobApproval';
 import CompanyApproval from './pages/features/jobs/pages/admin/CompanyApproval';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
+import AdminSignIn from './pages/admin/AdminSignIn';
 
 // SGP Application Form
 import SGPApplicationForm from './pages/job_application_form';
@@ -157,8 +162,13 @@ function App() {
         <Route element={<Layout><AppliedJobs/></Layout>} path='/jobs/applied'/>
         <Route element={<Layout><CompanyRegister/></Layout>} path='/company/register'/>
         <Route element={<Layout><CompanyProfile/></Layout>} path='/company/profile'/>
+        <Route element={<AdminSignIn/>} path='/admin/signin'/>
+        <Route element={<Layout><AdminDashboard/></Layout>} path='/admin'/>
+        <Route element={<Layout><AdminAnalytics/></Layout>} path='/admin/analytics'/>
         <Route element={<Layout><JobApproval/></Layout>} path='/admin/jobs'/>
         <Route element={<Layout><CompanyApproval/></Layout>} path='/admin/companies'/>
+        <Route element={<Layout><GuideApproval/></Layout>} path='/admin/guides'/>
+        <Route element={<Layout><MarketplaceAdmin/></Layout>} path='/admin/marketplace'/>
 
         {/* SGP Application Form */}
         <Route element={<Layout><SGPApplicationForm/></Layout>} path='/sgp-application'/>

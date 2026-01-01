@@ -1,24 +1,6 @@
 /**
- * @file JobApproval.jsx
- * @description Admin page for reviewing and approving/rejecting job postings.
- * 
- * Features:
- * - List of all jobs with filtering by status
- * - Quick approve/reject buttons
- * - View full job details in modal
- * - Search functionality
- * - Bulk approve/reject actions
- * - Stats overview (pending, approved, rejected)
- * - Admin-only access
- * - Bilingual support (EN/KO)
- * 
- * @requires react
- * @requires react-router-dom
- * @requires supabase-client
- * @requires lucide-react
- * 
- * @author Keasy
- * @version 1.0.0
+ * @file GuideApproval.jsx
+ * @description Admin page for reviewing and approving/rejecting guide postings.
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -36,78 +18,82 @@ import {
   Clock,
   Eye,
   Search,
-  Filter,
-  ChevronDown,
   Loader2,
   AlertCircle,
-  Briefcase,
-  MapPin,
-  Building2,
+  BookOpen,
+  User,
   Calendar,
   ExternalLink,
   X,
   CheckSquare,
   Square,
-  MoreHorizontal,
-  RefreshCw
+  RefreshCw,
+  Heart,
+  Trash2
 } from 'lucide-react';
-import { IoEyeOutline } from 'react-icons/io5';
 
 import {
   formatCount,
   formatDate,
-  getRelativeTime,
-  getJobTypeLabel,
-  getLocationTypeLabel,
-  formatSalaryRange
-} from '../../components/jobsUtils';
-
-/* ============================================================================
-   CONSTANTS
-   ============================================================================ */
-
-const STATUS_OPTIONS = [
-  { id: 'all', label_en: 'All Jobs', label_ko: '전체', color: 'gray' },
-  { id: 'pending', label_en: 'Pending', label_ko: '대기 중', color: 'amber' },
-  { id: 'approved', label_en: 'Approved', label_ko: '승인됨', color: 'green' },
-  { id: 'rejected', label_en: 'Rejected', label_ko: '거부됨', color: 'red' }
-];
+  getRelativeTime
+} from '../../../jobs/components/jobsUtils';
 
 const LABELS = {
-  pageTitle: { en: 'Job Approval', ko: '채용공고 관리' },
-  pageSubtitle: { en: 'Review and approve job postings', ko: '채용공고 검토 및 승인' },
-  pending: { en: 'Pending', ko: '대기 중' },
+  pageTitle: { en: 'Guide Approval', ko: '가이드 승인' },
+  pageSubtitle: { en: 'Review and approve guide postings', ko: '가이드 게시물 검토 및 승인' },
+  pending: { en: 'Pending', ko: '대기중' },
   approved: { en: 'Approved', ko: '승인됨' },
-  rejected: { en: 'Rejected', ko: '거부됨' },
+  rejected: { en: 'Rejected', ko: '거절됨' },
   approve: { en: 'Approve', ko: '승인' },
-  reject: { en: 'Reject', ko: '거부' },
-  viewDetails: { en: 'View Details', ko: '상세 보기' },
-  searchPlaceholder: { en: 'Search jobs or companies...', ko: '채용공고 또는 회사 검색...' },
-  noJobs: { en: 'No jobs found', ko: '채용공고가 없습니다' },
+  reject: { en: 'Reject', ko: '거절' },
+  viewDetails: { en: 'View Details', ko: '자세히 보기' },
+  searchPlaceholder: { en: 'Search guides or authors...', ko: '가이드 또는 작성자 검색...' },
+  noGuides: { en: 'No guides found', ko: '가이드를 찾을 수 없습니다' },
   selectAll: { en: 'Select All', ko: '전체 선택' },
   selected: { en: 'selected', ko: '개 선택됨' },
-  bulkApprove: { en: 'Approve Selected', ko: '선택 항목 승인' },
-  bulkReject: { en: 'Reject Selected', ko: '선택 항목 거부' },
-  clearSelection: { en: 'Clear', ko: '취소' },
-  postedBy: { en: 'Posted by', ko: '게시자' },
-  company: { en: 'Company', ko: '회사' },
+  bulkApprove: { en: 'Approve Selected', ko: '선택 승인' },
+  bulkReject: { en: 'Reject Selected', ko: '선택 거절' },
+  clearSelection: { en: 'Clear', ko: '초기화' },
+  postedBy: { en: 'Posted by', ko: '작성자' },
   refresh: { en: 'Refresh', ko: '새로고침' },
-  adminOnly: { en: 'Admin access required', ko: '관리자 권한이 필요합니다' },
-  goBack: { en: 'Go Back', ko: '돌아가기' },
-  confirmApprove: { en: 'Are you sure you want to approve this job?', ko: '이 채용공고를 승인하시겠습니까?' },
-  confirmReject: { en: 'Are you sure you want to reject this job?', ko: '이 채용공고를 거부하시겠습니까?' },
-  jobApproved: { en: 'Job approved successfully', ko: '채용공고가 승인되었습니다' },
-  jobRejected: { en: 'Job rejected successfully', ko: '채용공고가 거부되었습니다' }
+  adminOnly: { en: 'Admin access required', ko: '관리자 권한 필요' },
+  goBack: { en: 'Go Back', ko: '뒤로가기' },
+  confirmApprove: { en: 'Are you sure you want to approve this guide?', ko: '이 가이드를 승인하시겠습니까?' },
+  confirmReject: { en: 'Are you sure you want to reject this guide?', ko: '이 가이드를 거절하시겠습니까?' },
+  guideApproved: { en: 'Guide approved successfully', ko: '가이드가 승인되었습니다' },
+  guideRejected: { en: 'Guide rejected successfully', ko: '가이드가 거절되었습니다' },
+  delete: { en: 'Delete', ko: '삭제' },
+  confirmDelete: { en: 'Delete this guide permanently?', ko: '이 가이드를 영구적으로 삭제하시겠습니까?' },
+  deleteOnlyRejected: { en: 'Only rejected guides can be deleted', ko: '거절된 가이드만 삭제할 수 있습니다' }
 };
 
+const STORAGE_PUBLIC_PREFIX = '/storage/v1/object/public/guides/';
 
-/* ============================================================================
-   HELPER COMPONENTS
-   ============================================================================ */
+const extractStoragePath = (url) => {
+  if (!url) return null;
+  const idx = url.indexOf(STORAGE_PUBLIC_PREFIX);
+  if (idx === -1) return null;
+  return url.slice(idx + STORAGE_PUBLIC_PREFIX.length).split('?')[0];
+};
 
-/**
- * Stats Card
- */
+const collectGuideStoragePaths = (guide) => {
+  if (!guide) return [];
+
+  const paths = [];
+  const coverPath = extractStoragePath(guide.img_url);
+  if (coverPath) paths.push(coverPath);
+
+  const sections = guide.content?.sections || [];
+  sections.forEach(section => {
+    if (section?.type === 'image') {
+      const imagePath = extractStoragePath(section.url);
+      if (imagePath) paths.push(imagePath);
+    }
+  });
+
+  return [...new Set(paths)];
+};
+
 const StatsCard = ({ icon: Icon, label, value, color, isActive, onClick }) => {
   const colorClasses = {
     gray: 'bg-gray-100 text-gray-600 border-gray-200',
@@ -143,14 +129,11 @@ const StatsCard = ({ icon: Icon, label, value, color, isActive, onClick }) => {
   );
 };
 
-/**
- * Status Badge
- */
 const StatusBadge = ({ status, lang }) => {
   const config = {
     pending: {
       icon: Clock,
-      label: lang === 'ko' ? '대기 중' : 'Pending',
+      label: lang === 'ko' ? '대기중' : 'Pending',
       className: 'bg-amber-100 text-amber-700'
     },
     approved: {
@@ -160,7 +143,7 @@ const StatusBadge = ({ status, lang }) => {
     },
     rejected: {
       icon: XCircle,
-      label: lang === 'ko' ? '거부됨' : 'Rejected',
+      label: lang === 'ko' ? '거절됨' : 'Rejected',
       className: 'bg-red-100 text-red-700'
     }
   };
@@ -175,21 +158,20 @@ const StatusBadge = ({ status, lang }) => {
   );
 };
 
-/**
- * Job Row Component
- */
-const JobRow = ({
-  job,
-  company,
+const GuideRow = ({
+  guide,
+  author,
   isSelected,
   onSelect,
   onApprove,
   onReject,
+  onDelete,
   onView,
   lang,
   isProcessing
 }) => {
-  const status = job.approved === true ? 'approved' : job.approved === false ? 'rejected' : 'pending';
+  const status = guide.approved === true ? 'approved' : guide.approved === false ? 'rejected' : 'pending';
+  const likesCount = guide.like ? Object.keys(guide.like || {}).length : 0;
 
   return (
     <motion.div
@@ -198,11 +180,7 @@ const JobRow = ({
       className="bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 transition-all"
     >
       <div className="flex items-start gap-4">
-        {/* Checkbox */}
-        <button
-          onClick={() => onSelect(job.id)}
-          className="mt-1 flex-shrink-0"
-        >
+        <button onClick={() => onSelect(guide.id)} className="mt-1 flex-shrink-0">
           {isSelected ? (
             <CheckSquare className="w-5 h-5 text-blue-600" />
           ) : (
@@ -210,89 +188,94 @@ const JobRow = ({
           )}
         </button>
 
-        {/* Job Image */}
-        {job.img_url ? (
+        {guide.img_url ? (
           <img
-            src={job.img_url}
-            alt={job.title}
+            src={guide.img_url}
+            alt={guide.name}
             className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
           />
         ) : (
           <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <Briefcase className="w-6 h-6 text-gray-400" />
+            <BookOpen className="w-6 h-6 text-gray-400" />
           </div>
         )}
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h3 className="font-semibold text-gray-900 line-clamp-1">{job.title}</h3>
+              <h3 className="font-semibold text-gray-900 line-clamp-1">{guide.name || 'Untitled Guide'}</h3>
               <p className="text-sm text-gray-500 flex items-center gap-1">
-                <Building2 className="w-3.5 h-3.5" />
-                {company?.name_en || 'Unknown Company'}
+                <User className="w-3.5 h-3.5" />
+                {author?.username || 'Unknown author'}
               </p>
             </div>
             <StatusBadge status={status} lang={lang} />
           </div>
 
-          {/* Meta */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-sm text-gray-500">
             <span className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              {job.location || 'N/A'}
-            </span>
-            <span className="flex items-center gap-1">
-              <Briefcase className="w-3.5 h-3.5" />
-              {getJobTypeLabel(job.job_type, lang)}
-            </span>
-            <span className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" />
-              {getRelativeTime(job.created_at)}
+              {getRelativeTime(guide.created_at)}
+            </span>
+            {guide.category && (
+              <span className="flex items-center gap-1">
+                <BookOpen className="w-3.5 h-3.5" />
+                {guide.category}
+              </span>
+            )}
+            <span className="flex items-center gap-1">
+              <Eye className="w-3.5 h-3.5" />
+              {formatCount(guide.view || 0)}
+            </span>
+            <span className="flex items-center gap-1">
+              <Heart className="w-3.5 h-3.5" />
+              {formatCount(likesCount)}
             </span>
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-2 mt-3">
             <button
-              onClick={() => onView(job)}
+              onClick={() => onView(guide)}
               className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Eye className="w-4 h-4" />
-              {lang === 'ko' ? '상세' : 'View'}
+              {lang === 'ko' ? '보기' : 'View'}
             </button>
 
             {status === 'pending' && (
               <>
                 <button
-                  onClick={() => onApprove(job.id)}
+                  onClick={() => onApprove(guide.id)}
                   disabled={isProcessing}
                   className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {isProcessing ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <CheckCircle className="w-4 h-4" />
-                  )}
+                  {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                   {lang === 'ko' ? '승인' : 'Approve'}
                 </button>
                 <button
-                  onClick={() => onReject(job.id)}
+                  onClick={() => onReject(guide.id)}
                   disabled={isProcessing}
                   className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {isProcessing ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <XCircle className="w-4 h-4" />
-                  )}
-                  {lang === 'ko' ? '거부' : 'Reject'}
+                  {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
+                  {lang === 'ko' ? '거절' : 'Reject'}
                 </button>
               </>
             )}
 
+            {status === 'rejected' && (
+              <button
+                onClick={() => onDelete(guide.id)}
+                disabled={isProcessing}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                {lang === 'ko' ? LABELS.delete.ko : LABELS.delete.en}
+              </button>
+            )}
+
             <Link
-              to={`/jobs/job/${job.id}`}
+              to={`/guides/guide/${guide.id}`}
               target="_blank"
               className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors ml-auto"
             >
@@ -305,13 +288,12 @@ const JobRow = ({
   );
 };
 
-/**
- * Job Detail Modal
- */
-const JobDetailModal = ({ job, company, onClose, onApprove, onReject, lang, isProcessing }) => {
-  if (!job) return null;
+const GuideDetailModal = ({ guide, author, onClose, onApprove, onReject, onDelete, lang, isProcessing }) => {
+  if (!guide) return null;
 
-  const status = job.approved === true ? 'approved' : job.approved === false ? 'rejected' : 'pending';
+  const status = guide.approved === true ? 'approved' : guide.approved === false ? 'rejected' : 'pending';
+  const likesCount = guide.like ? Object.keys(guide.like || {}).length : 0;
+  const sections = guide.content?.sections || [];
 
   return (
     <motion.div
@@ -328,11 +310,8 @@ const JobDetailModal = ({ job, company, onClose, onApprove, onReject, lang, isPr
         className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {lang === 'ko' ? '채용공고 상세' : 'Job Details'}
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900">{lang === 'ko' ? '가이드 상세' : 'Guide Details'}</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -341,98 +320,83 @@ const JobDetailModal = ({ job, company, onClose, onApprove, onReject, lang, isPr
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
-          {/* Cover Image */}
-          {job.img_url && (
-            <img
-              src={job.img_url}
-              alt={job.title}
-              className="w-full h-48 object-cover rounded-xl mb-6"
-            />
+          {guide.img_url && (
+            <img src={guide.img_url} alt={guide.name} className="w-full h-48 object-cover rounded-xl mb-6" />
           )}
 
-          {/* Title & Company */}
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
-              <h3 className="text-xl font-bold text-gray-900">{job.title}</h3>
-              <p className="text-gray-600">{company?.name_en}</p>
+              <h3 className="text-xl font-bold text-gray-900">{guide.name}</h3>
+              <p className="text-gray-600">{author?.username}</p>
             </div>
             <StatusBadge status={status} lang={lang} />
           </div>
 
-          {/* Info Grid */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-1">{lang === 'ko' ? '위치' : 'Location'}</p>
-              <p className="font-medium text-gray-900">{job.location}</p>
+              <p className="text-xs text-gray-500 mb-1">{lang === 'ko' ? '카테고리' : 'Category'}</p>
+              <p className="font-medium text-gray-900">{guide.category || 'N/A'}</p>
             </div>
             <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-1">{lang === 'ko' ? '고용 형태' : 'Job Type'}</p>
-              <p className="font-medium text-gray-900">{getJobTypeLabel(job.job_type, lang)}</p>
+              <p className="text-xs text-gray-500 mb-1">{lang === 'ko' ? '게시일' : 'Posted on'}</p>
+              <p className="font-medium text-gray-900">{formatDate(guide.created_at)}</p>
             </div>
             <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-1">{lang === 'ko' ? '근무 형태' : 'Work Type'}</p>
-              <p className="font-medium text-gray-900">{getLocationTypeLabel(job.location_type, lang)}</p>
+              <p className="text-xs text-gray-500 mb-1">{lang === 'ko' ? '조회수' : 'Views'}</p>
+              <p className="font-medium text-gray-900">{formatCount(guide.view || 0)}</p>
             </div>
             <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 mb-1">{lang === 'ko' ? '급여' : 'Salary'}</p>
-              <p className="font-medium text-gray-900">
-                {job.salary_type === 'negotiable' 
-                  ? (lang === 'ko' ? '협의' : 'Negotiable')
-                  : formatSalaryRange(job.salary_min, job.salary_max, job.salary_type) || 'N/A'
-                }
-              </p>
+              <p className="text-xs text-gray-500 mb-1">{lang === 'ko' ? '좋아요' : 'Likes'}</p>
+              <p className="font-medium text-gray-900">{formatCount(likesCount)}</p>
             </div>
           </div>
 
-          {/* Description */}
-          <div className="mb-6">
-            <h4 className="font-semibold text-gray-900 mb-2">
-              {lang === 'ko' ? '상세 내용' : 'Description'}
-            </h4>
-            <div className="prose prose-sm max-w-none text-gray-600">
-              {job.description?.split('\n').map((p, i) => (
-                <p key={i}>{p || <br />}</p>
+          {guide.description && (
+            <div className="mb-6">
+              <h4 className="font-semibold text-gray-900 mb-2">{lang === 'ko' ? '설명' : 'Description'}</h4>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{guide.description}</p>
+            </div>
+          )}
+
+          {sections.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-gray-900">{lang === 'ko' ? '콘텐츠 섹션' : 'Content Sections'}</h4>
+              {sections.map((section, index) => (
+                <div key={index} className="p-3 border border-gray-100 rounded-lg bg-gray-50">
+                  <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">{section.type}</p>
+                  {section.body && <p className="text-sm text-gray-700 whitespace-pre-line">{section.body}</p>}
+                  {section.caption && <p className="text-sm text-gray-700 whitespace-pre-line">{section.caption}</p>}
+                  {section.items && Array.isArray(section.items) && (
+                    <ul className="text-sm text-gray-700 list-disc list-inside space-y-0.5">
+                      {section.items.slice(0, 5).map((item, i) => (
+                        <li key={i}>{item.name || item.label || item}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {section.url && (
+                    <a href={section.url} target="_blank" rel="noreferrer" className="text-blue-600 text-sm">
+                      {section.url}
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
-          </div>
-
-          {/* Contact Info */}
-          <div className="mb-6">
-            <h4 className="font-semibold text-gray-900 mb-2">
-              {lang === 'ko' ? '연락처' : 'Contact Info'}
-            </h4>
-            <div className="space-y-1 text-sm text-gray-600">
-              {job.contact_email && <p>Email: {job.contact_email}</p>}
-              {job.contact_phone && <p>Phone: {job.contact_phone}</p>}
-              {job.contact_whatsapp && <p>WhatsApp: {job.contact_whatsapp}</p>}
-              {job.contact_instagram && <p>Instagram: {job.contact_instagram}</p>}
-              {job.contact_facebook && <p>Facebook: {job.contact_facebook}</p>}
-              {job.contact_website && <p>Website: {job.contact_website}</p>}
-            </div>
-          </div>
-
-          {/* Meta Info */}
-          <div className="text-sm text-gray-500 space-y-1">
-            <p>{lang === 'ko' ? '게시일' : 'Posted'}: {formatDate(job.created_at)}</p>
-            {job.deadline && <p>{lang === 'ko' ? '마감일' : 'Deadline'}: {formatDate(job.deadline)}</p>}
-          </div>
+          )}
         </div>
 
-        {/* Footer Actions */}
         {status === 'pending' && (
           <div className="flex gap-3 p-4 border-t border-gray-200 bg-gray-50">
             <button
-              onClick={() => onReject(job.id)}
+              onClick={() => onReject(guide.id)}
               disabled={isProcessing}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 disabled:opacity-50 transition-colors"
             >
               {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
-              {lang === 'ko' ? '거부' : 'Reject'}
+              {lang === 'ko' ? '거절' : 'Reject'}
             </button>
             <button
-              onClick={() => onApprove(job.id)}
+              onClick={() => onApprove(guide.id)}
               disabled={isProcessing}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
             >
@@ -441,27 +405,31 @@ const JobDetailModal = ({ job, company, onClose, onApprove, onReject, lang, isPr
             </button>
           </div>
         )}
+
+        {status === 'rejected' && (
+          <div className="flex justify-end p-4 border-t border-gray-200 bg-gray-50">
+            <button
+              onClick={() => onDelete(guide.id)}
+              disabled={isProcessing}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 disabled:opacity-50 transition-colors"
+            >
+              {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              {lang === 'ko' ? LABELS.delete.ko : LABELS.delete.en}
+            </button>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
 };
 
-
-/* ============================================================================
-   MAIN COMPONENT
-   ============================================================================ */
-
-const JobApproval = () => {
+const GuideApproval = () => {
   const navigate = useNavigate();
-
-  // ============================================================================
-  // STATE
-  // ============================================================================
 
   const [user, setUser] = useState(null);
   const [isSuperadminUser, setIsSuperadminUser] = useState(false);
-  const [jobs, setJobs] = useState([]);
-  const [companies, setCompanies] = useState({});
+  const [guides, setGuides] = useState([]);
+  const [authors, setAuthors] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -470,52 +438,43 @@ const JobApproval = () => {
   const [statusFilter, setStatusFilter] = useState('pending');
   const [selectedIds, setSelectedIds] = useState([]);
   const [processingIds, setProcessingIds] = useState([]);
-  const [viewingJob, setViewingJob] = useState(null);
-
-
-  // ============================================================================
-  // LABELS HELPER
-  // ============================================================================
+  const [viewingGuide, setViewingGuide] = useState(null);
 
   const t = useCallback((key) => {
     return LABELS[key]?.[lang] || LABELS[key]?.en || key;
   }, [lang]);
 
-
-  // ============================================================================
-  // DATA FETCHING
-  // ============================================================================
-
-  const fetchJobs = useCallback(async () => {
+  const fetchGuides = useCallback(async () => {
     try {
-      setError(null);
-      // Fetch all jobs
-      const { data: jobsData, error: jobsError } = await supabase
-        .from('job')
+      const { data: guidesData, error: guidesError } = await supabase
+        .from('guide')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (jobsError) throw jobsError;
+      if (guidesError) throw guidesError;
 
-      setJobs(jobsData || []);
+      setGuides(guidesData || []);
 
-      // Fetch companies
-      if (jobsData && jobsData.length > 0) {
-        const companyIds = [...new Set(jobsData.map(j => j.company_id))];
-        
-        const { data: companiesData } = await supabase
-          .from('companies')
-          .select('*')
-          .in('id', companyIds);
+      if (guidesData && guidesData.length > 0) {
+        const authorIds = [...new Set(guidesData.map(g => g.created_by).filter(Boolean))];
 
-        const companiesMap = {};
-        companiesData?.forEach(c => {
-          companiesMap[c.id] = c;
-        });
-        setCompanies(companiesMap);
+        if (authorIds.length > 0) {
+          const { data: profilesData, error: profilesError } = await supabase
+            .from('profiles')
+            .select('user_id, username')
+            .in('user_id', authorIds);
+
+          if (!profilesError) {
+            const authorsMap = {};
+            profilesData?.forEach(p => {
+              authorsMap[p.user_id] = p;
+            });
+            setAuthors(authorsMap);
+          }
+        }
       }
     } catch (err) {
-      console.error('Error fetching jobs:', err);
+      console.error('Error fetching guides:', err);
       setError(err.message);
     }
   }, []);
@@ -526,7 +485,7 @@ const JobApproval = () => {
 
       try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
-        
+
         if (!currentUser) {
           navigate('/admin/signin');
           return;
@@ -534,12 +493,11 @@ const JobApproval = () => {
 
         setUser(currentUser);
 
-        // Check if user is superadmin
         const isSuperAdmin = await isSuperadmin(currentUser);
         setIsSuperadminUser(isSuperAdmin);
 
         if (isSuperAdmin) {
-          await fetchJobs();
+          await fetchGuides();
         }
 
         setLoading(false);
@@ -551,109 +509,148 @@ const JobApproval = () => {
     };
 
     checkAuth();
-  }, [navigate, fetchJobs]);
-
-
-  // ============================================================================
-  // COMPUTED VALUES
-  // ============================================================================
+  }, [navigate, fetchGuides]);
 
   const stats = useMemo(() => {
-    const pending = jobs.filter(j => j.approved === null || j.approved === undefined).length;
-    const approved = jobs.filter(j => j.approved === true).length;
-    const rejected = jobs.filter(j => j.approved === false).length;
-    return { total: jobs.length, pending, approved, rejected };
-  }, [jobs]);
+    const pending = guides.filter(g => g.approved === null || g.approved === undefined).length;
+    const approved = guides.filter(g => g.approved === true).length;
+    const rejected = guides.filter(g => g.approved === false).length;
+    return { total: guides.length, pending, approved, rejected };
+  }, [guides]);
 
-  const filteredJobs = useMemo(() => {
-    let result = [...jobs];
+  const filteredGuides = useMemo(() => {
+    let result = [...guides];
 
-    // Filter by status
     if (statusFilter === 'pending') {
-      result = result.filter(j => j.approved === null || j.approved === undefined);
+      result = result.filter(g => g.approved === null || g.approved === undefined);
     } else if (statusFilter === 'approved') {
-      result = result.filter(j => j.approved === true);
+      result = result.filter(g => g.approved === true);
     } else if (statusFilter === 'rejected') {
-      result = result.filter(j => j.approved === false);
+      result = result.filter(g => g.approved === false);
     }
 
-    // Filter by search
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(j => {
-        const company = companies[j.company_id];
+      result = result.filter(g => {
+        const author = authors[g.created_by];
         return (
-          j.title?.toLowerCase().includes(query) ||
-          j.location?.toLowerCase().includes(query) ||
-          company?.name_en?.toLowerCase().includes(query) ||
-          company?.name_ko?.toLowerCase().includes(query)
+          g.name?.toLowerCase().includes(query) ||
+          g.description?.toLowerCase().includes(query) ||
+          author?.username?.toLowerCase().includes(query) ||
+          g.category?.toLowerCase().includes(query)
         );
       });
     }
 
     return result;
-  }, [jobs, companies, statusFilter, searchQuery]);
+  }, [guides, authors, statusFilter, searchQuery]);
 
-
-  // ============================================================================
-  // HANDLERS
-  // ============================================================================
-
-  const handleApprove = useCallback(async (jobId) => {
-    setProcessingIds(prev => [...prev, jobId]);
+  const handleApprove = useCallback(async (guideId) => {
+    setProcessingIds(prev => [...prev, guideId]);
 
     try {
       const { error } = await supabase
-        .from('job')
+        .from('guide')
         .update({ approved: true })
-        .eq('id', jobId);
+        .eq('id', guideId);
 
       if (error) throw error;
 
-      setJobs(prev => prev.map(j => 
-        j.id === jobId ? { ...j, approved: true } : j
-      ));
+      setGuides(prev => prev.map(g => g.id === guideId ? { ...g, approved: true } : g));
+      setSelectedIds(prev => prev.filter(id => id !== guideId));
 
-      setSelectedIds(prev => prev.filter(id => id !== jobId));
-      
-      if (viewingJob?.id === jobId) {
-        setViewingJob(null);
+      if (viewingGuide?.id === guideId) {
+        setViewingGuide(null);
       }
     } catch (err) {
-      console.error('Error approving job:', err);
+      console.error('Error approving guide:', err);
       alert(lang === 'ko' ? '오류가 발생했습니다' : 'An error occurred');
     } finally {
-      setProcessingIds(prev => prev.filter(id => id !== jobId));
+      setProcessingIds(prev => prev.filter(id => id !== guideId));
     }
-  }, [viewingJob, lang]);
+  }, [viewingGuide, lang]);
 
-  const handleReject = useCallback(async (jobId) => {
-    setProcessingIds(prev => [...prev, jobId]);
+  const handleReject = useCallback(async (guideId) => {
+    setProcessingIds(prev => [...prev, guideId]);
 
     try {
       const { error } = await supabase
-        .from('job')
+        .from('guide')
         .update({ approved: false })
-        .eq('id', jobId);
+        .eq('id', guideId);
 
       if (error) throw error;
 
-      setJobs(prev => prev.map(j => 
-        j.id === jobId ? { ...j, approved: false } : j
-      ));
+      setGuides(prev => prev.map(g => g.id === guideId ? { ...g, approved: false } : g));
+      setSelectedIds(prev => prev.filter(id => id !== guideId));
 
-      setSelectedIds(prev => prev.filter(id => id !== jobId));
-      
-      if (viewingJob?.id === jobId) {
-        setViewingJob(null);
+      if (viewingGuide?.id === guideId) {
+        setViewingGuide(null);
       }
     } catch (err) {
-      console.error('Error rejecting job:', err);
+      console.error('Error rejecting guide:', err);
       alert(lang === 'ko' ? '오류가 발생했습니다' : 'An error occurred');
     } finally {
-      setProcessingIds(prev => prev.filter(id => id !== jobId));
+      setProcessingIds(prev => prev.filter(id => id !== guideId));
     }
-  }, [viewingJob, lang]);
+  }, [viewingGuide, lang]);
+
+  const handleDelete = useCallback(async (guideId) => {
+    const guideToDelete = guides.find(g => g.id === guideId);
+
+    if (!guideToDelete) {
+      console.error('Guide not found for deletion');
+      return;
+    }
+
+    if (guideToDelete && guideToDelete.approved !== false) {
+      alert(lang === 'ko' ? LABELS.deleteOnlyRejected.ko : LABELS.deleteOnlyRejected.en);
+      return;
+    }
+
+    const confirmed = window.confirm(lang === 'ko' ? LABELS.confirmDelete.ko : LABELS.confirmDelete.en);
+    if (!confirmed) return;
+
+    setProcessingIds(prev => [...prev, guideId]);
+
+    try {
+      const assetPaths = collectGuideStoragePaths(guideToDelete);
+
+      if (assetPaths.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from('guides')
+          .remove(assetPaths);
+
+        if (storageError) {
+          console.error('Error deleting guide assets from storage:', storageError);
+        }
+      }
+
+      const { data, error } = await supabase
+        .from('guide')
+        .delete()
+        .eq('id', guideId)
+        .select('id');
+
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error('Delete succeeded but no rows were removed. Check RLS policies.');
+      }
+
+      setGuides(prev => prev.filter(g => g.id !== guideId));
+      setSelectedIds(prev => prev.filter(id => id !== guideId));
+      await fetchGuides(); // Ensure Supabase state is the source of truth
+
+      if (viewingGuide?.id === guideId) {
+        setViewingGuide(null);
+      }
+    } catch (err) {
+      console.error('Error deleting guide:', err);
+      alert((lang === 'ko' ? '삭제 실패: ' : 'Delete failed: ') + (err?.message || 'Unknown error'));
+    } finally {
+      setProcessingIds(prev => prev.filter(id => id !== guideId));
+    }
+  }, [guides, lang, viewingGuide, fetchGuides]);
 
   const handleBulkApprove = useCallback(async () => {
     for (const id of selectedIds) {
@@ -668,25 +665,20 @@ const JobApproval = () => {
   }, [selectedIds, handleReject]);
 
   const handleSelectAll = useCallback(() => {
-    if (selectedIds.length === filteredJobs.length) {
+    if (selectedIds.length === filteredGuides.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(filteredJobs.map(j => j.id));
+      setSelectedIds(filteredGuides.map(g => g.id));
     }
-  }, [filteredJobs, selectedIds]);
+  }, [filteredGuides, selectedIds]);
 
-  const handleSelect = useCallback((jobId) => {
-    setSelectedIds(prev => 
-      prev.includes(jobId) 
-        ? prev.filter(id => id !== jobId)
-        : [...prev, jobId]
+  const handleSelect = useCallback((guideId) => {
+    setSelectedIds(prev =>
+      prev.includes(guideId)
+        ? prev.filter(id => id !== guideId)
+        : [...prev, guideId]
     );
   }, []);
-
-
-  // ============================================================================
-  // RENDER: Loading
-  // ============================================================================
 
   if (loading) {
     return (
@@ -696,29 +688,18 @@ const JobApproval = () => {
     );
   }
 
-
-  // ============================================================================
-  // RENDER: Not Superuser
-  // ============================================================================
-
   if (!isSuperadminUser) {
     return <AdminSignIn />;
   }
 
-
-  // ============================================================================
-  // RENDER: Main
-  // ============================================================================
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link
-                to="/jobs"
+                to="/guides"
                 className="p-2 -ml-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
               >
                 <ArrowLeft className="w-5 h-5" />
@@ -734,7 +715,7 @@ const JobApproval = () => {
 
             <div className="flex items-center gap-2">
               <button
-                onClick={fetchJobs}
+                onClick={fetchGuides}
                 className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
                 title={t('refresh')}
               >
@@ -745,7 +726,7 @@ const JobApproval = () => {
                 className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg"
               >
                 <Globe className="w-4 h-4" />
-                {lang === 'ko' ? 'EN' : '한국어'}
+                {lang === 'ko' ? 'EN' : '한글'}
               </button>
             </div>
           </div>
@@ -759,10 +740,10 @@ const JobApproval = () => {
             {error}
           </div>
         )}
-        {/* Stats */}
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <StatsCard
-            icon={Briefcase}
+            icon={BookOpen}
             label={lang === 'ko' ? '전체' : 'Total'}
             value={stats.total}
             color="gray"
@@ -795,9 +776,7 @@ const JobApproval = () => {
           />
         </div>
 
-        {/* Search & Bulk Actions */}
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
-          {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -809,7 +788,6 @@ const JobApproval = () => {
             />
           </div>
 
-          {/* Bulk Actions */}
           {selectedIds.length > 0 && (
             <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
               <span className="text-sm font-medium text-blue-700">
@@ -837,60 +815,59 @@ const JobApproval = () => {
           )}
         </div>
 
-        {/* Select All */}
-        {filteredJobs.length > 0 && (
+        {filteredGuides.length > 0 && (
           <div className="flex items-center gap-2 mb-4">
             <button
               onClick={handleSelectAll}
               className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
             >
-              {selectedIds.length === filteredJobs.length ? (
+              {selectedIds.length === filteredGuides.length ? (
                 <CheckSquare className="w-4 h-4 text-blue-600" />
               ) : (
                 <Square className="w-4 h-4" />
               )}
-              {t('selectAll')} ({filteredJobs.length})
+              {t('selectAll')} ({filteredGuides.length})
             </button>
           </div>
         )}
 
-        {/* Jobs List */}
-        {filteredJobs.length === 0 ? (
+        {filteredGuides.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-            <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">{t('noJobs')}</p>
+            <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">{t('noGuides')}</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredJobs.map(job => (
-              <JobRow
-                key={job.id}
-                job={job}
-                company={companies[job.company_id]}
-                isSelected={selectedIds.includes(job.id)}
+            {filteredGuides.map(guide => (
+              <GuideRow
+                key={guide.id}
+                guide={guide}
+                author={authors[guide.created_by]}
+                isSelected={selectedIds.includes(guide.id)}
                 onSelect={handleSelect}
                 onApprove={handleApprove}
                 onReject={handleReject}
-                onView={setViewingJob}
+                onDelete={handleDelete}
+                onView={setViewingGuide}
                 lang={lang}
-                isProcessing={processingIds.includes(job.id)}
+                isProcessing={processingIds.includes(guide.id)}
               />
             ))}
           </div>
         )}
       </main>
 
-      {/* Job Detail Modal */}
       <AnimatePresence>
-        {viewingJob && (
-          <JobDetailModal
-            job={viewingJob}
-            company={companies[viewingJob.company_id]}
-            onClose={() => setViewingJob(null)}
+        {viewingGuide && (
+          <GuideDetailModal
+            guide={viewingGuide}
+            author={authors[viewingGuide.created_by]}
+            onClose={() => setViewingGuide(null)}
             onApprove={handleApprove}
             onReject={handleReject}
+            onDelete={handleDelete}
             lang={lang}
-            isProcessing={processingIds.includes(viewingJob.id)}
+            isProcessing={processingIds.includes(viewingGuide.id)}
           />
         )}
       </AnimatePresence>
@@ -898,4 +875,4 @@ const JobApproval = () => {
   );
 };
 
-export default JobApproval;
+export default GuideApproval;

@@ -274,6 +274,7 @@ const Guides = () => {
       
       try {
         // Build query for approved guides with all necessary fields including content JSONB
+        const now = new Date().toISOString();
         let query = supabase
           .from('guide')
           .select(`
@@ -288,7 +289,8 @@ const Guides = () => {
             like,
             content
           `)
-          .eq('approved', true);
+          .eq('approved', true)
+          .or(`hidden_at.is.null,hidden_at.gt.${now}`);
 
         // Apply category filter if not showing all
         if (activeCategory !== 'All') {
