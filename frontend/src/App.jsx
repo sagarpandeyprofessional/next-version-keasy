@@ -71,6 +71,8 @@ import { BrandpaySuccessPage } from "./pages/toss/brandpay/BrandpaySuccess";
 import { WidgetCheckoutPage } from "./pages/toss/widget/WidgetCheckout";
 import { WidgetSuccessPage } from "./pages/toss/widget/WidgetSuccess";
 
+
+
 // Jobs Feature
 import Jobs from './pages/features/jobs/pages/Jobs';
 import JobDetail from './pages/features/jobs/pages/JobDetail';
@@ -84,6 +86,9 @@ import CompanyProfile from './pages/features/jobs/pages/CompanyProfile';
 // import CompanyApproval from './pages/features/jobs/pages/admin/CompanyApproval';
 import JobApproval from './pages/features/jobs/pages/admin/JobApproval';
 import CompanyApproval from './pages/features/jobs/pages/admin/CompanyApproval';
+
+// SGP Application Form
+import SGPApplicationForm from './pages/job_application_form';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -154,6 +159,11 @@ function App() {
         <Route element={<Layout><CompanyProfile/></Layout>} path='/company/profile'/>
         <Route element={<Layout><JobApproval/></Layout>} path='/admin/jobs'/>
         <Route element={<Layout><CompanyApproval/></Layout>} path='/admin/companies'/>
+
+        {/* SGP Application Form */}
+        <Route element={<Layout><SGPApplicationForm/></Layout>} path='/sgp-application'/>
+
+
 
         <Route element={<Layout><Talent /></Layout>} path='/talents' />
         <Route element={<Layout><TalentDetail /></Layout>} path='/talents/:id' />
