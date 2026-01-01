@@ -225,7 +225,7 @@ const CategoryFilter = ({
       )}
 
       {/* Hide scrollbar CSS */}
-      <style jsx>{`
+      <style>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }

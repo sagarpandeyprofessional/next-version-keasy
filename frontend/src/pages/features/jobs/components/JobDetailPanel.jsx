@@ -193,7 +193,7 @@ const JobDetailPanel = ({
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="bg-white rounded-2xl shadow-lg overflow-hidden h-full flex flex-col"
+      className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col"
     >
       {/* ================================================================
           COVER IMAGE SECTION
@@ -275,7 +275,7 @@ const JobDetailPanel = ({
       {/* ================================================================
           CONTENT SECTION (Scrollable)
           ================================================================ */}
-      <div className="flex-1 overflow-y-auto p-6 pt-12 sm:pt-14">
+      <div className="flex-1 p-6 pt-12 sm:pt-14">
         {/* ----------------------------------------------------------------
             HEADER: Title, Company, Meta
             ---------------------------------------------------------------- */}
@@ -573,9 +573,9 @@ const JobDetailPanel = ({
       </div>
 
       {/* ================================================================
-          FOOTER: Action Buttons (Sticky)
+          FOOTER: Action Buttons
           ================================================================ */}
-      <div className="sticky bottom-0 p-4 bg-white border-t border-gray-100 shadow-lg">
+      <div className="p-4 bg-white border-t border-gray-100 shadow-lg">
         <div className="flex items-center gap-3">
           {/* Save Button */}
           <button

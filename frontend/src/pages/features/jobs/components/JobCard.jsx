@@ -81,7 +81,7 @@ import {
  *   lang="en"
  * />
  */
-const JobCard = ({
+const JobCard = React.forwardRef(({
   job,
   company,
   isSelected,
@@ -93,7 +93,7 @@ const JobCard = ({
   categoryName,
   user,
   lang = 'en'
-}) => {
+}, ref) => {
   // Get deadline status for badge display
   const deadlineStatus = getDeadlineStatus(job.deadline);
   
@@ -114,6 +114,7 @@ const JobCard = ({
 
   return (
     <motion.div
+      ref={ref}
       custom={index}
       variants={listItemVariants}
       initial="hidden"
@@ -298,6 +299,8 @@ const JobCard = ({
       )}
     </motion.div>
   );
-};
+});
+
+JobCard.displayName = 'JobCard';
 
 export default JobCard;

@@ -47,7 +47,8 @@ import {
   CheckCircle2,
   Upload,
   Loader2,
-  Info
+  Info,
+  ExternalLink
 } from 'lucide-react';
 import {
   MdOutlineEmail,
@@ -144,6 +145,8 @@ const LABELS = {
   instagram: { en: 'Instagram', ko: '인스타그램' },
   facebook: { en: 'Facebook', ko: '페이스북' },
   website: { en: 'Website', ko: '웹사이트' },
+  applyLink: { en: 'Application Link', ko: '지원 링크' },
+  applyLinkDesc: { en: 'Direct link to your application form or external job posting', ko: '지원서 양식 또는 외부 채용 페이지로 연결되는 링크' },
   deadline: { en: 'Application Deadline (Optional)', ko: '마감일 (선택사항)' },
   coverImage: { en: 'Cover Image (Optional)', ko: '커버 이미지 (선택사항)' },
   coverImageDesc: { en: 'Upload an image or poster for your job listing', ko: '채용공고에 사용할 이미지나 포스터를 업로드하세요' },
@@ -248,6 +251,7 @@ const JobPost = () => {
     contactInstagram: '',
     contactFacebook: '',
     contactWebsite: '',
+    contactApplyLink: '',
     deadline: ''
   });
 
@@ -562,7 +566,8 @@ const JobPost = () => {
     // Validate at least one contact method
     const hasContact = formData.contactEmail || formData.contactPhone || 
                        formData.contactWhatsapp || formData.contactInstagram || 
-                       formData.contactFacebook || formData.contactWebsite;
+                       formData.contactFacebook || formData.contactWebsite ||
+                       formData.contactApplyLink;
     if (!hasContact) {
       newErrors.contact = lang === 'ko' ? '최소 하나의 연락 방법을 입력해주세요' : 'At least one contact method is required';
     }
@@ -659,6 +664,7 @@ const JobPost = () => {
         contact_instagram: formData.contactInstagram.trim() || null,
         contact_facebook: formData.contactFacebook.trim() || null,
         contact_website: formData.contactWebsite.trim() || null,
+        contact_apply_link: formData.contactApplyLink.trim() || null,
         deadline: formData.deadline || null,
         img_url: coverImageUrl,
         files: fileUrls.length > 0 ? fileUrls : null,
@@ -1087,6 +1093,23 @@ const JobPost = () => {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Application Link - Featured at top */}
+              <div className="sm:col-span-2">
+                <FormField label={t('applyLink')} optional>
+                  <div className="relative">
+                    <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="url"
+                      value={formData.contactApplyLink}
+                      onChange={(e) => handleChange('contactApplyLink', e.target.value)}
+                      placeholder="https://example.com/apply"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{t('applyLinkDesc')}</p>
+                </FormField>
+              </div>
+
               {/* Email */}
               <FormField label={t('email')} optional>
                 <div className="relative">

@@ -979,7 +979,7 @@ const Jobs = () => {
       {/* ====================================================================
           CUSTOM SCROLLBAR STYLES
           ==================================================================== */}
-      <style jsx global>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }
