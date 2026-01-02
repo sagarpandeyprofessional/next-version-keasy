@@ -18,6 +18,9 @@ import UsernameRegistration from './pages/auth/UsernameRegister'
 import Profile from './pages/profile/Profile'
 import EditProfile from './pages/profile/EditProfile'
 
+// Add this with your other imports (around line 90-95)
+import { PricingPage } from './pages/pricing';
+
 // static pages
 import AboutUs from './pages/static/about/About'
 import Contact from './pages/static/contact/Contact'
@@ -191,6 +194,7 @@ function App() {
         <Route element={<Layout><MyListingsPage /></Layout>} path='/marketplace/my' />
         <Route element={<Layout><SettingsPage/></Layout>} path='/settings'/>
         <Route element={<LoadingComp />} path='/loading' />
+        <Route element={<Layout><PricingPage/></Layout>} path="/pricing" />
 
         {/* Toss Payment Routes */}
         <Route
