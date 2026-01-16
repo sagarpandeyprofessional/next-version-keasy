@@ -25,7 +25,7 @@ const MembershipTermsOfService = () => {
           {/* Agreement Notice */}
           <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
             <p className="text-sm text-gray-700">
-              By purchasing or using any Member Service, you agree to these Membership Terms of Service, and Keasy's <strong>Terms of Service</strong>, <strong>Privacy Policy</strong>, and any other applicable policies (collectively, the <strong>"Terms"</strong>).
+              By purchasing or using any Member Service, you agree to these Membership Terms of Service, Keasy's <strong>Terms of Service</strong>, <strong>Privacy Policy</strong>, and any other applicable policies (collectively, the <strong>"Terms"</strong>).
             </p>
           </div>
 
@@ -34,6 +34,38 @@ const MembershipTermsOfService = () => {
               If you do not agree to these Terms, you must not use the Member Services.
             </p>
           </div>
+
+          {/* Service Description Summary */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Service Description Summary</h2>
+            <div className="bg-gray-100 p-6 rounded">
+              <p className="text-gray-700 mb-3">
+                <strong>Keasy</strong> is a subscription-based digital platform that provides users with access to online services including community participation, event creation and management, marketplace listings, professional and business profiles, booking tools, and AI-assisted features.
+              </p>
+              <p className="text-gray-700 mb-3">
+                Subscriptions are billed on a recurring basis via credit card. Upon successful payment, users receive immediate access to the features included in their selected membership plan for the duration of the billing cycle.
+              </p>
+              <p className="text-gray-700">
+                Detailed plan features and pricing are displayed on the <a href="/pricing" className="text-blue-600 hover:underline font-medium">Keasy Pricing page</a> prior to payment.
+              </p>
+            </div>
+          </section>
+
+          {/* Billing & Service Period Summary */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Billing & Service Period Summary</h2>
+            <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded">
+              <p className="text-gray-700 mb-3">
+                Keasy memberships are provided through <strong>automatic recurring credit card billing (정기결제 / billing payment)</strong>.
+              </p>
+              <p className="text-gray-700 mb-3">
+                Each successful payment grants access to the selected membership plan for <strong>one (1) month</strong>. Subscriptions renew automatically on a monthly basis unless canceled by the user.
+              </p>
+              <p className="text-gray-700">
+                The maximum service provision period per payment does not exceed <strong>twelve (12) months</strong>.
+              </p>
+            </div>
+          </section>
 
           {/* Table of Contents */}
           <nav className="bg-gray-100 p-4 rounded mb-8">
@@ -51,6 +83,7 @@ const MembershipTermsOfService = () => {
               <li>Changes to These Terms</li>
               <li>Communications</li>
               <li>Disclaimer & Limitation of Liability</li>
+              <li>Dispute Resolution</li>
               <li>Governing Law</li>
               <li>Contact Information</li>
             </ol>
@@ -60,14 +93,23 @@ const MembershipTermsOfService = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Membership Plans & Fees</h2>
             <p className="text-gray-700 mb-3">
-              Keasy offers free and paid membership plans. Paid memberships may be offered on a monthly, annual, or one-time basis, as described at the time of purchase.
+              Keasy offers free and paid membership plans. Paid memberships are offered on a <strong>monthly recurring subscription basis</strong>. Annual plans, if offered, are billed as monthly installments or as a single payment covering a service period not exceeding twelve (12) months.
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4 mb-4">
               <li>Subscriptions begin upon successful payment.</li>
               <li>Recurring subscriptions renew automatically unless canceled.</li>
               <li>Billing occurs on the same calendar day each billing cycle.</li>
               <li>If a billing date does not exist in a given month, billing will occur on the last day of that month.</li>
             </ul>
+            <p className="text-gray-700 mb-4">
+              Membership services are digital services provided online, and access to paid features may begin immediately upon successful payment.
+            </p>
+
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
+              <p className="text-sm text-gray-700">
+                <strong>Maximum Service Period:</strong> Each payment provides access to the selected membership for one (1) month per billing cycle. The total service provision period per payment does not exceed twelve (12) months.
+              </p>
+            </div>
           </section>
 
           {/* Section 2: Payment & Billing */}
@@ -85,6 +127,10 @@ const MembershipTermsOfService = () => {
             </ul>
             <p className="text-gray-700 mb-4">
               You agree to maintain valid and up-to-date payment information.
+            </p>
+
+            <p className="text-gray-700 mb-4">
+              Recurring subscriptions are billed automatically via <strong>credit card billing</strong> using authorized payment processors.
             </p>
 
             <div className="bg-gray-100 p-4 rounded">
@@ -116,19 +162,28 @@ const MembershipTermsOfService = () => {
               You may cancel your membership at any time through your account settings.
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Cancellation stops future billing</li>
-              <li>You will retain access until the end of the current billing period</li>
-              <li>Cancellation does not automatically result in a refund for the current period</li>
+              <li>Cancellation stops future billing.</li>
+              <li>You will retain access until the end of the current billing period.</li>
+              <li>Cancellation does not automatically result in a refund for the current period.</li>
             </ul>
           </section>
 
           {/* Section 5: Refund Policy */}
-          <section className="mb-8">
+          <section id="refund-policy" className="mb-8 scroll-mt-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Refund Policy</h2>
             
+            <div className="bg-gray-100 p-3 rounded mb-4">
+              <p className="text-sm text-gray-600 italic">
+                This section constitutes Keasy's official refund policy for membership services.
+              </p>
+            </div>
+
             <h3 className="text-lg font-semibold text-gray-900 mb-2">General Rule</h3>
-            <p className="text-gray-700 mb-4">
+            <p className="text-gray-700 mb-3">
               Membership fees are <strong>non-refundable</strong>, except where required by applicable law or explicitly stated otherwise.
+            </p>
+            <p className="text-gray-700 mb-4">
+              Once access to digital membership services has begun, refunds may be limited or unavailable, except where required by applicable consumer protection laws.
             </p>
 
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Exceptions</h3>
@@ -137,15 +192,28 @@ const MembershipTermsOfService = () => {
               <li>Duplicate or erroneous charges</li>
               <li>Unauthorized payments</li>
               <li>Technical failures that prevent reasonable access to paid services</li>
-              <li>Where consumer protection laws require refunds (e.g., cooling-off periods)</li>
+              <li>Where consumer protection laws require refunds (e.g., statutory cooling-off periods)</li>
             </ul>
             <p className="text-gray-700 mb-4">
-              Refund requests are reviewed case by case and are not guaranteed.
+              Refund requests are reviewed on a case-by-case basis and are not guaranteed. <strong>Refund requests must be submitted within 7 days of payment via customer support.</strong>
             </p>
 
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
+            {/* Cooling-Off Rights */}
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+              <p className="text-sm text-gray-700 mb-2">
+                <strong>Cooling-Off Rights (Statutory Right to Withdrawal)</strong>
+              </p>
+              <p className="text-sm text-gray-700 mb-2">
+                In accordance with the Act on Consumer Protection in Electronic Commerce, users may request cancellation (cooling-off) within <strong>seven (7) days</strong> from the date of payment.
+              </p>
               <p className="text-sm text-gray-700">
-                <strong>App Store Subscriptions:</strong> If you subscribed via Apple App Store or Google Play, refunds must be requested directly through the respective platform, and their policies apply.
+                However, if the provision of digital content or membership benefits has already begun, or if access to paid services has been provided, the right to cooling-off may be restricted as permitted by applicable law.
+              </p>
+            </div>
+
+            <div className="bg-gray-100 p-4 rounded">
+              <p className="text-sm text-gray-700">
+                <strong>App Store Subscriptions:</strong> If you subscribed via Apple App Store or Google Play, refund requests must be made directly through the respective platform, and their policies apply.
               </p>
             </div>
           </section>
@@ -157,8 +225,8 @@ const MembershipTermsOfService = () => {
               Keasy may offer free trials to eligible users.
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Free trials automatically convert to paid subscriptions unless canceled before the trial ends</li>
-              <li>No refunds are issued for charges resulting from failure to cancel a free trial</li>
+              <li>Free trials automatically convert to paid subscriptions unless canceled before the trial ends.</li>
+              <li>No refunds are issued for charges resulting from failure to cancel a free trial.</li>
             </ul>
           </section>
 
@@ -239,22 +307,33 @@ const MembershipTermsOfService = () => {
             </ul>
           </section>
 
-          {/* Section 13: Governing Law */}
+          {/* Section 13: Dispute Resolution */}
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">13. Governing Law</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">13. Dispute Resolution</h2>
+            <p className="text-gray-700 mb-3">
+              In the event of a dispute related to Member Services, users agree to first attempt to resolve the issue through good-faith communication with Keasy's support team.
+            </p>
+            <p className="text-gray-700">
+              If the dispute cannot be resolved amicably, it shall be handled in accordance with the governing law specified below.
+            </p>
+          </section>
+
+          {/* Section 14: Governing Law */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">14. Governing Law</h2>
             <p className="text-gray-700">
               These Membership Terms are governed by the laws of the <strong>Republic of Korea</strong>, without regard to conflict-of-law principles.
             </p>
           </section>
 
-          {/* Section 14: Contact Information */}
+          {/* Section 15: Contact Information */}
           <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">14. Contact Information</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">15. Contact Information</h2>
             <div className="bg-gray-100 p-6 rounded">
               <p className="text-gray-700 mb-2"><strong>Montem Flumen Inc.</strong></p>
               <p className="text-gray-700 mb-4">Republic of Korea</p>
               <p className="text-gray-700 mb-2">
-                📧 Support: <a href="mailto:support@keasy.io" className="text-blue-600 hover:underline">support@keasy.io</a>
+                📧 Support: <a href="mailto:keasy.contact@gmail.com" className="text-blue-600 hover:underline">keasy.contact@gmail.com</a>
               </p>
               <p className="text-gray-700">
                 🌐 Website: <a href="https://koreaeasy.org" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">https://koreaeasy.org</a>
