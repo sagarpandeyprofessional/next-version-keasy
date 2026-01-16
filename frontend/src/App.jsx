@@ -29,6 +29,7 @@ import Error404Page from './pages/static/notFound/NotFound';
 import PrivacyPolicy from './pages/static/policies/PrivacyPolicy'
 import TermsOfService from './pages/static/policies/TermsOfService'
 import MarketplacePolicy from './pages/static/policies/MarketplacePolicy'
+import MembershipTermsOfService from './pages/static/policies/MembershipTermsOfService'
 
 //features pages
 import Nearby from './pages/features/nearby/Nearby'
@@ -137,6 +138,7 @@ function App() {
         <Route element={<Layout><PrivacyPolicy /></Layout>} path='/privacy_policy' />
         <Route element={<Layout><TermsOfService /></Layout>} path='/terms_of_service' />
         <Route element={<Layout><MarketplacePolicy /></Layout>} path='/marketplace_policy' />
+        <Route element={<Layout><MembershipTermsOfService /></Layout>} path='/membership-terms' />
         
         {/* Features Pages */}
         <Route element={<Layout><Blog/></Layout>} path="/blog" />

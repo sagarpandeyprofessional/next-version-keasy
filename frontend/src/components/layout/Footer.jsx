@@ -69,6 +69,11 @@ const Footer = () => {
                   Marketplace Policy
                 </Link>
               </li>
+              <li>
+                <Link to="/membership-terms" className="text-sm text-gray-300 hover:text-white hover:underline">
+                  Membership Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
 
