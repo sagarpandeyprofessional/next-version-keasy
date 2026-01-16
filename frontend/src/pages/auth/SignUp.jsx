@@ -526,12 +526,19 @@ const SignUp = () => {
                 >
                   Terms of Service
                 </a>{" "}
-                and{" "}
+                ,{" "}
                 <a
                   href="/privacy_policy"
                   className="text-[#4ECDC4] hover:underline font-medium"
                 >
                   Privacy Policy
+                </a>
+                {" "}and{" "}
+                <a
+                  href="/membership-terms"
+                  className="text-[#4ECDC4] hover:underline font-medium"
+                >
+                  Membership Terms of Service
                 </a>
                 .
               </motion.p>

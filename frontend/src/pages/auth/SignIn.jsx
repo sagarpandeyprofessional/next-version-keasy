@@ -314,14 +314,21 @@ const SignIn = () => {
                   className="text-[#FF6B6B] hover:underline font-medium"
                 >
                   Terms of Service
-                </a>
+                </a> 
                 . To learn more about how keasy collects, uses, and protects your
                 personal data, please see our{" "}
                 <a
                   href="/privacy_policy"
                   className="text-[#FF6B6B] hover:underline font-medium"
                 >
-                  Privacy Policy
+                  Privacy Policy 
+                </a> 
+                {" "}and{" "}
+                <a
+                  href="/membership-terms"
+                  className="text-[#FF6B6B] hover:underline font-medium"
+                >
+                  Membership Terms of Service
                 </a>
                 .
               </motion.p>
