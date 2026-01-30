@@ -35,7 +35,7 @@ import { LuMessageCircleMore, LuSparkles, LuUsers, LuCalendar, LuMapPin, LuShopp
 import { RiShoppingBag3Line } from "react-icons/ri";
 import { BiParty } from "react-icons/bi";
 import { HiOutlineSparkles } from "react-icons/hi2";
-import { X, Send, Sparkles, ArrowRight, Star, ChevronRight, Play, Quote } from 'lucide-react';
+import { X, Send, Sparkles, ArrowRight, Star, ChevronRight, Play, Quote, Download, MapPin, ExternalLink, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
 
@@ -2966,7 +2966,7 @@ At Keasy, we believe in more than just technology — we believe in community. T
 `;
 
 const ChatbotIcon = () => (
-  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1F3A5F] flex items-center justify-center shadow-sm ring-1 ring-[#0EA5A4]/20">
     <Sparkles className="w-5 h-5 text-white" />
   </div>
 );
@@ -2975,11 +2975,48 @@ const ChatMessage = ({ chat }) => {
   const renderFormattedText = (text) => {
     // Split text into lines
     const lines = text.split('\n');
+
+    const getActionIcon = (url, label) => {
+      const lowerUrl = url.toLowerCase();
+      const lowerLabel = label.toLowerCase();
+      if (lowerUrl.includes("play.google.com/store") || lowerUrl.includes("apps.apple.com")) {
+        return <Download className="w-3.5 h-3.5" />;
+      }
+      if (lowerUrl.includes("google.com/maps") || lowerUrl.includes("maps.google") || lowerUrl.includes("naver.me") || lowerUrl.includes("kakao")) {
+        return <MapPin className="w-3.5 h-3.5" />;
+      }
+      if (lowerLabel.includes("download")) {
+        return <Smartphone className="w-3.5 h-3.5" />;
+      }
+      return <ExternalLink className="w-3.5 h-3.5" />;
+    };
     
     return lines.map((line, lineIndex) => {
       // Skip empty lines but preserve spacing
       if (line.trim() === '') {
         return <br key={lineIndex} />;
+      }
+
+      // Render action links as buttons
+      const actionMatch = line.match(/^\s*-?\s*(Click to[^:]+):\s*(\S+)/i);
+      if (actionMatch) {
+        const [, label, url] = actionMatch;
+        const href = url.startsWith('/')
+          ? `${window.location.origin}${url}`
+          : url;
+        return (
+          <div key={lineIndex} className="my-2">
+            <a
+              href={href}
+              target={href.startsWith('http') ? "_blank" : undefined}
+              rel={href.startsWith('http') ? "noopener noreferrer" : undefined}
+              className="inline-flex items-center gap-2 rounded-full bg-[#1F3A5F] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#162a44] transition-colors"
+            >
+              {getActionIcon(href, label)}
+              {label}
+            </a>
+          </div>
+        );
       }
 
       // Handle bullet points (•, -, *, numbered lists)
@@ -3012,10 +3049,10 @@ const ChatMessage = ({ chat }) => {
     });
   };
 
- // Format inline text (bold, italic, links, inline code only)
+  // Format inline text (bold, italic, links, inline code only)
   const formatInlineText = (text) => {
     // Split by inline code, bold, italic, and URLs (NO multiline code blocks here)
-    const parts = text.split(/(`[^`\n]+`|\*\*\*[^*\n]+\*\*\*|\*\*[^*\n]+\*\*|\*[^*\n]+\*|https?:\/\/[^\s]+)/g);
+    const parts = text.split(/(`[^`\n]+`|\*\*\*[^*\n]+\*\*\*|\*\*[^*\n]+\*\*|\*[^*\n]+\*|https?:\/\/[^\s]+|\/[^\s]+)/g);
     
     return parts.map((part, index) => {
       if (!part) return null;
@@ -3023,10 +3060,10 @@ const ChatMessage = ({ chat }) => {
       // Inline code (`code`) - single line only
       if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
         return (
-          <code key={index} className="bg-gray-200 text-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
-            {part.slice(1, -1)}
-          </code>
-        );
+            <code key={index} className="bg-slate-200 text-slate-800 px-1.5 py-0.5 rounded text-xs font-mono">
+              {part.slice(1, -1)}
+            </code>
+          );
       }
 
       // Bold + Italic (***text***)
@@ -3056,7 +3093,7 @@ const ChatMessage = ({ chat }) => {
         );
       }
 
-      // URLs
+      // URLs (absolute)
       if (part.match(/^https?:\/\/[^\s]+$/)) {
         return (
           <a
@@ -3064,7 +3101,21 @@ const ChatMessage = ({ chat }) => {
             href={part}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 underline break-all"
+            className="text-[#0EA5A4] hover:text-[#0B827E] underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+
+      // Relative paths (make them clickable)
+      if (part.match(/^\/[^\s]+$/)) {
+        const href = `${window.location.origin}${part}`;
+        return (
+          <a
+            key={index}
+            href={href}
+            className="text-[#0EA5A4] hover:text-[#0B827E] underline break-all"
           >
             {part}
           </a>
@@ -3088,8 +3139,8 @@ const ChatMessage = ({ chat }) => {
       
       <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
         chat.role === 'user' 
-          ? 'bg-blue-600 text-white rounded-br-sm' 
-          : 'bg-gray-100 text-gray-900 rounded-bl-sm'
+          ? 'bg-[#1F3A5F] text-white rounded-br-sm' 
+          : 'bg-[#F1F5F9] text-slate-900 rounded-bl-sm'
       }`}>
         <div className="text-sm leading-relaxed">
           {chat.role === 'model' ? renderFormattedText(chat.text) : chat.text}
@@ -3097,7 +3148,7 @@ const ChatMessage = ({ chat }) => {
       </div>
 
       {chat.role === 'user' && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1F3A5F] flex items-center justify-center text-white text-sm font-medium">
           <FiUser/>
         </div>
       )}
@@ -3132,13 +3183,13 @@ const ChatForm = ({ onSubmit, isLoading }) => {
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={handleKeyPress}
         placeholder="Type your message..."
-        className="flex-1 px-4 py-2.5 bg-none border-none rounded-full outline-none text-gray-800 placeholder-gray-500 text-base md:text-sm"
+        className="flex-1 px-4 py-2.5 bg-[#F8FAFC] border border-slate-200 rounded-full outline-none text-slate-800 placeholder-slate-500 text-base md:text-sm focus:ring-2 focus:ring-[#1F3A5F]/20 focus:border-[#1F3A5F]"
         disabled={isLoading}
       />
       <button
         onClick={handleSubmit}
         disabled={!message.trim() || isLoading}
-        className="flex-shrink-0  w-10 h-10 my-1 bg-purple-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+        className="flex-shrink-0 w-10 h-10 my-1 bg-[#1F3A5F] text-white rounded-full flex items-center justify-center hover:bg-[#162a44] transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed"
       >
         <Send className="w-5 h-5" />
       </button>
@@ -3158,48 +3209,52 @@ const AIChatbot = ({currentUserId}) => {
   ]);
   const chatBodyRef = useRef();
   const navigate = useNavigate();
+  const [lastKbDocId, setLastKbDocId] = useState(null);
+  const sessionIdRef = useRef(
+    globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
+  );
 
-  // Generate AI response using Gemini API
-  const generateBotResponse = async (history) => {
+  const isFollowupYes = (message) => {
+    if (!message) return false;
+    const normalized = message.trim().toLowerCase();
+    if (!normalized) return false;
+    const cleaned = normalized.replace(/[!?.]+$/g, "");
+    const yesWords = new Set(["yes", "y", "yeah", "yep", "yup", "sure", "ok", "okay", "alright", "all right"]);
+    if (yesWords.has(cleaned)) return true;
+    const phrases = new Set(["go ahead", "please do", "do it", "sounds good", "sure thing", "lets do it", "let's do it"]);
+    return phrases.has(cleaned);
+  };
+
+  // Generate AI response via backend router
+  const generateBotResponse = async (userMessage) => {
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      
-      if (!apiKey) {
-        throw new Error("Gemini API key is missing");
+      const payload = {
+        message: userMessage,
+        session_id: sessionIdRef.current,
+        user_id: currentUserId || undefined,
+      };
+      if (isFollowupYes(userMessage) && lastKbDocId) {
+        payload.followup_for = lastKbDocId;
       }
 
-      // Format history for Gemini API
-      const formattedHistory = history.map(({ role, text }) => ({
-        role: role === 'user' ? 'user' : 'model',
-        parts: [{ text }]
-      }));
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: formattedHistory,
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 1024,
-            }
-          })
-        }
-      );
+      const response = await fetch("/api/keasy/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);
       }
 
       const data = await response.json();
-      const botResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+      const botResponse = data?.answer ||
                          "I apologize, but I couldn't generate a response. Please try again.";
+      if (data?.kb_doc_id) {
+        setLastKbDocId(data.kb_doc_id);
+      }
 
       setChatHistory(prev => [
         ...prev.filter(msg => msg.text !== 'Thinking...'),
@@ -3223,12 +3278,8 @@ const AIChatbot = ({currentUserId}) => {
     setIsLoading(true);
     setTimeout(() => {
       setChatHistory(prev => [...prev, { role: 'model', text: 'Thinking...' }]);
-      
-      generateBotResponse([
-        ...chatHistory,
-        newMessage,
-        { role: 'user', text: `Using the details provided above if needed, please address this query: ${userMessage}` }
-      ]);
+
+      generateBotResponse(userMessage);
     }, 600);
   };
 
@@ -3264,7 +3315,7 @@ const AIChatbot = ({currentUserId}) => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handlePopUp}
-        className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
+        className="fixed bottom-20 lg:bottom-6 right-6 z-40 flex items-center gap-3 px-5 py-4 bg-[#1F3A5F] text-white rounded-full shadow-xl hover:shadow-[#1F3A5F]/30 transition-all duration-300 ring-1 ring-[#0EA5A4]/30"
       >
         <Sparkles className="w-5 h-5 text-white" />
         <span className="hidden sm:inline font-medium">keasy AI</span>
@@ -3305,22 +3356,22 @@ const AIChatbot = ({currentUserId}) => {
                 damping: 25,
                 stiffness: 300
               }}
-              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden
+              className="fixed z-50 bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200/80
                 md:bottom-24 md:right-6 md:w-[400px] md:h-[600px]
                 inset-4 md:inset-auto"
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
+              <div className="bg-[#1F3A5F] text-white p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <ChatbotIcon />
                   <div>
                     <h3 className="font-semibold text-lg text-white">keasy AI</h3>
-                    <p className="text-xs text-blue-100">Always here to help</p>
+                    <p className="text-xs text-white/80">Always here to help</p>
                   </div>
                 </div>
                 <button
                   onClick={handlePopUp}
-                  className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+                  className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -3329,13 +3380,13 @@ const AIChatbot = ({currentUserId}) => {
               {/* Chat Body */}
               <div
                 ref={chatBodyRef}
-                className="flex-1 overflow-y-auto p-4 bg-white"
+                className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-white to-slate-50"
                 style={{ height: 'calc(100% - 130px)' }}
               >
                 {/* Welcome Message */}
                 <div className="flex gap-3 mb-4">
                   <ChatbotIcon />
-                  <div className="max-w-[80%] bg-gray-100 text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3">
+                  <div className="max-w-[80%] bg-[#F1F5F9] text-slate-900 rounded-2xl rounded-bl-sm px-4 py-3">
                     <p className="text-sm leading-relaxed">
                       Hey there 👋<br/>
                       How can I help you today?
@@ -3350,7 +3401,7 @@ const AIChatbot = ({currentUserId}) => {
               </div>
 
               {/* Chat Footer */}
-              <div className="py-3 pt-1 px-1 bg-white border-t border-gray-200">
+              <div className="py-3 pt-1 px-1 bg-white border-t border-slate-200">
                 <ChatForm onSubmit={handleSendMessage} isLoading={isLoading} />
               </div>
             </motion.div>

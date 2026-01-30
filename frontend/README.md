@@ -1,12 +1,42 @@
-# React + Vite
+# Keasy (Vite + Express)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project runs a Vite frontend and an Express backend together. The frontend **only** calls the Keasy AI backend at `POST /api/keasy/chat`.
 
-Currently, two official plugins are available:
+## Environment variables
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Frontend (Vite):
+- `VITE_KEASY_SUPABASE_URL`
+- `VITE_KEASY_SUPABASE_ANON_KEY`
 
-## Expanding the ESLint configuration
+Backend (server-only):
+- `DEEPSEEK_API_KEY`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Important:
+- Do **not** use `VITE_DEEPSEEK_API_KEY` or any client-side DeepSeek keys.
+- Only `VITE_` variables are exposed to the client bundle.
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+- Vite runs on `http://localhost:3000`
+- Express runs on `http://localhost:4000`
+- `/api/*` requests are proxied to the backend
+
+## Keasy AI endpoint
+
+- `POST /api/keasy/chat`
+- Request: `{ "message": "...", "session_id": "optional", "user_id": "optional", "locale": "optional" }`
+- Response: `{ "answer": "...", "mode": "kb|general|refuse", "sources": [], "redactions_applied": true }`
+
+Notes:
+- Web fallback is disabled. If KB is insufficient, the answer comes from general knowledge (no sources).
+
+## Supabase KB schema
+
+See `supabase/keasy_kb.sql` for the KB tables and indexes.
