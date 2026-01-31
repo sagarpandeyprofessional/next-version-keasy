@@ -39,6 +39,19 @@ npm run dev
 Notes:
 - Web fallback is disabled. If KB is insufficient, the answer comes from general knowledge (no sources).
 
+## Amplify Hosting + Function (production)
+
+This repo deploys the API as an Amplify Function and exposes it through API Gateway at
+`/api/keasy/chat` (see `amplify/backend.ts`).
+
+After deploy:
+- Find the API endpoint in `amplify_outputs.json` (`keasyApiEndpoint`).
+- In Amplify Hosting → Rewrites and redirects, add a **200 rewrite**:
+  - Source: `/api/<*>`
+  - Target: `https://<api-id>.execute-api.<region>.amazonaws.com/api/<*>`
+
+This keeps the frontend calling `/api/keasy/chat` without code changes.
+
 ## Supabase KB schema
 
 See `supabase/keasy_kb.sql` for the KB tables and indexes.
