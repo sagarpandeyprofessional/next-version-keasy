@@ -4,6 +4,8 @@ This project runs a Vite frontend and an Express backend together. The frontend 
 
 ## Environment variables
 
+Create a single `.env` at the repo root (`../.env`) so both Vite and the Express server read the same file.
+
 Frontend (Vite):
 - `VITE_KEASY_SUPABASE_URL`
 - `VITE_KEASY_SUPABASE_ANON_KEY`
