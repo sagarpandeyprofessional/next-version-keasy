@@ -3237,7 +3237,9 @@ const AIChatbot = ({currentUserId}) => {
         payload.followup_for = lastKbDocId;
       }
 
-      const response = await fetch("/api/keasy/chat", {
+      const apiBase = (import.meta.env.VITE_KEASY_API_URL || "").replace(/\/$/, "");
+      const apiUrl = `${apiBase}/api/keasy/chat`;
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

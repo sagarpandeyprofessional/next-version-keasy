@@ -9,6 +9,7 @@ Create a single `.env` at the repo root (`../.env`) so both Vite and the Express
 Frontend (Vite):
 - `VITE_KEASY_SUPABASE_URL`
 - `VITE_KEASY_SUPABASE_ANON_KEY`
+- `VITE_KEASY_API_URL` (optional; set to full API base URL in production)
 
 Backend (server-only):
 - `DEEPSEEK_API_KEY`
