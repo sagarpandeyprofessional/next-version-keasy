@@ -7,6 +7,7 @@ applications:
           commands:
             - cd ..
             - npm install
+            - npm ci --prefix frontend
         build:
           commands:
             - npx --yes @aws-amplify/backend-cli@latest pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
