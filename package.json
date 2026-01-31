@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
+    "@types/node": "^22.10.2",
     "@aws-amplify/backend": "^1.0.0",
     "aws-cdk-lib": "^2.0.0",
     "constructs": "^10.0.0"
