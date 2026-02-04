@@ -1,58 +1,36 @@
-# Keasy (Vite + Express)
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This project runs a Vite frontend and an Express backend together. The frontend **only** calls the Keasy AI backend at `POST /api/keasy/chat`.
+## Getting Started
 
-## Environment variables
-
-Create a single `.env` at the repo root (`../.env`) so both Vite and the Express server read the same file.
-
-Frontend (Vite):
-- `VITE_KEASY_SUPABASE_URL`
-- `VITE_KEASY_SUPABASE_ANON_KEY`
-- `VITE_KEASY_API_URL` (optional; set to full API base URL in production)
-
-Backend (server-only):
-- `DEEPSEEK_API_KEY`
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-
-Important:
-- Do **not** use `VITE_DEEPSEEK_API_KEY` or any client-side DeepSeek keys.
-- Only `VITE_` variables are exposed to the client bundle.
-
-## Development
+First, run the development server:
 
 ```bash
-npm install
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-- Vite runs on `http://localhost:3000`
-- Express runs on `http://localhost:4000`
-- `/api/*` requests are proxied to the backend
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Keasy AI endpoint
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- `POST /api/keasy/chat`
-- Request: `{ "message": "...", "session_id": "optional", "user_id": "optional", "locale": "optional" }`
-- Response: `{ "answer": "...", "mode": "kb|general|refuse", "sources": [], "redactions_applied": true }`
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Notes:
-- Web fallback is disabled. If KB is insufficient, the answer comes from general knowledge (no sources).
+## Learn More
 
-## Amplify Hosting + Function (production)
+To learn more about Next.js, take a look at the following resources:
 
-This repo deploys the API as an Amplify Function and exposes it through API Gateway at
-`/api/keasy/chat` (see `amplify/backend.ts`).
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-After deploy:
-- Find the API endpoint in `amplify_outputs.json` (`keasyApiEndpoint`).
-- In Amplify Hosting → Rewrites and redirects, add a **200 rewrite**:
-  - Source: `/api/<*>`
-  - Target: `https://<api-id>.execute-api.<region>.amazonaws.com/api/<*>`
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-This keeps the frontend calling `/api/keasy/chat` without code changes.
+## Deploy on Vercel
 
-## Supabase KB schema
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-See `supabase/keasy_kb.sql` for the KB tables and indexes.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+@import "../components/pages/toss/toss.css";
+
+.leaflet-container {
+  width: 100%;
+  height: 500px;
+}
+
+:root {
+  /* Enterprise Color System */
+  --color-primary: #0066FF;
+  --color-primary-dark: #0052CC;
+  --color-black: #0A0A0B;
+  --color-gray-900: #18181B;
+  --color-gray-700: #3F3F46;
+  --color-gray-500: #71717A;
+  --color-gray-400: #A1A1AA;
+  --color-gray-200: #E4E4E7;
+  --color-gray-100: #F4F4F5;
+  --color-gray-50: #FAFAFA;
+  --color-white: #FFFFFF;
+}
+
+.keasy-ai-theme {
+  --kai-ink: #0A0A0B;
+  --kai-muted: #71717A;
+  --kai-surface: #F4F4F5;
+  --kai-surface-strong: #FFFFFF;
+  --kai-border: #E4E4E7;
+  --kai-accent: #0066FF;
+  --kai-accent-soft: #EBF5FF;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.keasy-ai-theme .kai-title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.keasy-home-font {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+body {
+  background-color: #FFFFFF;
+  color: #18181B;
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #0A0A0B;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  max-width: 1200px;
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
+
+/* Scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
