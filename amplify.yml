@@ -1,29 +1,26 @@
 version: 1
-applications:
-  - appRoot: frontend
-    backend:
-      phases:
-        preBuild:
-          commands:
-            - cd ..
-            - npm install
-            - npm ci --prefix frontend
-        build:
-          commands:
-            - npx --yes @aws-amplify/backend-cli@latest pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - npm ci --prefix frontend
-        build:
-          commands:
-            - npm run build --prefix frontend
-      artifacts:
-        baseDirectory: .next
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - .next/cache/**/*
-          - node_modules/**/*
+backend:
+  phases:
+    preBuild:
+      commands:
+        - npm install
+        - npm ci --prefix frontend
+    build:
+      commands:
+        - npx --yes @aws-amplify/backend-cli@latest pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci --prefix frontend
+    build:
+      commands:
+        - npm run build --prefix frontend
+  artifacts:
+    baseDirectory: frontend/.next/standalone
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - frontend/.next/cache/**/*
+      - frontend/node_modules/**/*
