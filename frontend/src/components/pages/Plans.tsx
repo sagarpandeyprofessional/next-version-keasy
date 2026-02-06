@@ -208,7 +208,6 @@ const Plans = () => {
           </div>
 
           {/* FAQ */}
-          {/*
           <div className="max-w-3xl mx-auto mt-12">
             <h2 className="text-2xl font-semibold text-[#0A0A0B] mb-8 text-center">
               Frequently Asked Questions
@@ -247,7 +246,6 @@ const Plans = () => {
               ))}
             </div>
           </div>
-          */}
         </div>
       </section>
     </div>

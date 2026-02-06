@@ -1,5 +1,5 @@
-import Talent from '@/components/pages/talent/Talent';
+import Connect from '@/components/pages/connect/Connect';
 
 export default function TalentPage() {
-  return <Talent />;
+  return <Connect initialTab="talents" />;
 }

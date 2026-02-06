@@ -3,10 +3,11 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from '@/lib/supabase/client';
-import { X, MapPin, Briefcase, Calendar, Globe, Instagram, Facebook, Video as VideoIcon, FileText, ExternalLink, BadgeCheck } from "lucide-react";
+import { X, MapPin, Globe, Instagram, Facebook, FileText, ExternalLink, BadgeCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { RiTiktokLine } from "react-icons/ri";
+import Talent from "@/components/pages/talent/Talent";
 
 // Mock data
 
@@ -102,9 +103,17 @@ const talents = [
   }
 ];
 
-export default function Connect() {
+type ConnectTab = 'professionals' | 'talents' | 'freelancers' | 'projects';
+
+type ConnectProps = {
+  initialTab?: ConnectTab;
+};
+
+export default function Connect({ initialTab = 'professionals' }: ConnectProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const [activeTab, setActiveTab] = useState('professionals');
+  const [activeTab, setActiveTab] = useState<ConnectTab>(initialTab);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -116,53 +125,111 @@ export default function Connect() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    const tab = searchParams?.get('tab') as ConnectTab | null;
+    if (tab && ['professionals', 'talents', 'freelancers', 'projects'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header Section */}
-      <section className="pt-16 pb-8 bg-[#FAFAFA] border-b border-[#E4E4E7]">
+    <div className="connect-shell min-h-screen">
+      {/* Hero Section */}
+      <section className="relative pt-16 pb-12 lg:pt-20">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-8">
-            <p className="text-[#0066FF] text-sm font-semibold tracking-wide uppercase mb-4">
-              Connect
-            </p>
-            <h1 className="text-3xl md:text-4xl font-semibold text-[#0A0A0B] mb-4">
-              Find the right professional
-            </h1>
-            <p className="text-[#71717A] text-lg max-w-2xl mx-auto">
-              Connect with verified professionals, freelancers, and projects in our community.
-            </p>
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] items-center">
+            <div className="space-y-6 connect-reveal" style={{ "--delay": "40ms" }}>
+              <span className="connect-pill">Connect</span>
+              <h1 className="connect-display text-4xl md:text-5xl lg:text-6xl leading-[1.05]">
+                Find the right partner for your next move.
+              </h1>
+              <p className="text-base md:text-lg connect-muted max-w-xl">
+                A curated network of verified professionals, talents, freelancers, and project teams—ready to collaborate.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('professionals')}
+                  className="connect-action"
+                >
+                  Browse professionals
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('talents')}
+                  className="connect-action connect-action--ghost"
+                >
+                  Meet talents
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="connect-chip">Verified profiles</span>
+                <span className="connect-chip">Portfolio-first</span>
+                <span className="connect-chip">Fast response</span>
+              </div>
+            </div>
+            <div className="connect-card p-6 md:p-8 connect-reveal" style={{ "--delay": "120ms" }}>
+              <div className="space-y-5">
+                <div className="connect-outline rounded-2xl bg-white/70 p-4">
+                  <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Professionals</p>
+                  <h3 className="connect-display text-xl md:text-2xl font-semibold">
+                    Advisors and experts
+                  </h3>
+                  <p className="text-sm connect-muted">Legal, finance, growth, product.</p>
+                </div>
+                <div className="connect-outline rounded-2xl bg-white/70 p-4">
+                  <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Talents</p>
+                  <h3 className="connect-display text-xl md:text-2xl font-semibold">
+                    Creators and makers
+                  </h3>
+                  <p className="text-sm connect-muted">Design, media, engineering, community.</p>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="connect-outline rounded-xl bg-white/75 p-3 text-center">
+                    <p className="text-sm font-semibold">Verified</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] connect-muted">Profiles</p>
+                  </div>
+                  <div className="connect-outline rounded-xl bg-white/75 p-3 text-center">
+                    <p className="text-sm font-semibold">Direct</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] connect-muted">Contact</p>
+                  </div>
+                  <div className="connect-outline rounded-xl bg-white/75 p-3 text-center">
+                    <p className="text-sm font-semibold">Fast</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] connect-muted">Matching</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex justify-center">
-            <div className="inline-flex bg-white border border-[#E4E4E7] rounded-lg p-1">
+          <div className="flex justify-center mt-10 connect-reveal" style={{ "--delay": "180ms" }}>
+            <div className="connect-tabs">
               <button
                 onClick={() => setActiveTab('professionals')}
-                className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
-                  activeTab === 'professionals'
-                    ? 'bg-[#0066FF] text-white'
-                    : 'text-[#71717A] hover:text-[#0A0A0B]'
-                }`}
+                data-active={activeTab === 'professionals'}
+                className="connect-tab"
               >
                 Professionals
               </button>
               <button
+                onClick={() => setActiveTab('talents')}
+                data-active={activeTab === 'talents'}
+                className="connect-tab"
+              >
+                Talents
+              </button>
+              <button
                 onClick={() => setActiveTab('freelancers')}
-                className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
-                  activeTab === 'freelancers'
-                    ? 'bg-[#0066FF] text-white'
-                    : 'text-[#71717A] hover:text-[#0A0A0B]'
-                }`}
+                data-active={activeTab === 'freelancers'}
+                className="connect-tab"
               >
                 Freelancers
               </button>
               <button
                 onClick={() => setActiveTab('projects')}
-                className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
-                  activeTab === 'projects'
-                    ? 'bg-[#0066FF] text-white'
-                    : 'text-[#71717A] hover:text-[#0A0A0B]'
-                }`}
+                data-active={activeTab === 'projects'}
+                className="connect-tab"
               >
                 Projects
               </button>
@@ -172,10 +239,23 @@ export default function Connect() {
       </section>
 
       {/* Content Section */}
-      <section className="py-12">
+      <section className="pb-16 pt-10 lg:pb-20">
         <div className="container mx-auto px-6">
           {activeTab === 'professionals' && <Professionals isMobile={isMobile} />}
           {activeTab === 'freelancers' && <Freelancers isMobile={isMobile} />}
+          {activeTab === 'talents' && (
+            <div className="w-full">
+              <div className="flex justify-end mb-4">
+                <button
+                  onClick={() => router.push('/talents/new')}
+                  className="connect-action"
+                >
+                  Become Talent
+                </button>
+              </div>
+              <Talent embedded />
+            </div>
+          )}
           {activeTab === 'projects' && <Projects isMobile={isMobile} />}
         </div>
       </section>
@@ -188,6 +268,8 @@ export default function Connect() {
 const Professionals = ({isMobile}) => {
   const [selectedProfessional, setSelectedProfessional] = useState(null);
   const [professionals, setProfessionals] = useState([]);
+  const [loadingProfessionals, setLoadingProfessionals] = useState(true);
+  const [professionalsError, setProfessionalsError] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingUserProfile, setLoadingUserProfile] = useState(true);
   const { user } = useAuth();
@@ -230,8 +312,10 @@ const Professionals = ({isMobile}) => {
   }, [user]);
 
   // Load all professionals
-  useEffect(() => {
-    const getProfessionals = async () => {
+  const loadProfessionals = async () => {
+    setLoadingProfessionals(true);
+    setProfessionalsError(null);
+    try {
       const { data, error } = await supabase
         .from('connect_professional')
         .select('*')
@@ -239,12 +323,22 @@ const Professionals = ({isMobile}) => {
 
       if (error) {
         console.error('Error fetching professionals:', error.message);
+        setProfessionalsError('Unable to load professionals right now.');
+        setProfessionals([]);
       } else {
-        setProfessionals(data);
+        setProfessionals(data || []);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching professionals:', error);
+      setProfessionalsError('Unable to load professionals right now.');
+      setProfessionals([]);
+    } finally {
+      setLoadingProfessionals(false);
+    }
+  };
 
-    getProfessionals();
+  useEffect(() => {
+    loadProfessionals();
   }, []);
 
   const handleProfileAction = () => {
@@ -257,42 +351,90 @@ const Professionals = ({isMobile}) => {
 
   return (
     <>
-      {/* Action Button for logged-in users */}
-      {!loadingUserProfile && user && (
-        <div className="flex justify-end mb-6">
+      <div className="flex flex-col gap-4 mb-8 connect-reveal" style={{ "--delay": "40ms" }}>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Professionals</p>
+            <h2 className="connect-display text-2xl md:text-3xl">
+              Verified specialists ready to help.
+            </h2>
+            <p className="text-sm connect-muted max-w-xl">
+              Hire advisors, consultants, and operators with real-world experience.
+            </p>
+          </div>
+          {!loadingUserProfile && user && (
+            <button
+              onClick={handleProfileAction}
+              className={`connect-action ${userProfile ? 'connect-action--ghost' : ''}`}
+            >
+              {userProfile ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit My Profile
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Become a Professional
+                </>
+              )}
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <span className="connect-chip">Background checked</span>
+          <span className="connect-chip">Verified experience</span>
+          <span className="connect-chip">Fast introductions</span>
+        </div>
+      </div>
+
+      {loadingProfessionals ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {Array.from({ length: isMobile ? 4 : 8 }).map((_, idx) => (
+            <div key={idx} className="connect-card p-4 animate-pulse">
+              <div className="h-32 rounded-xl bg-white/70 mb-4" />
+              <div className="h-4 rounded bg-white/80 w-3/4 mb-2" />
+              <div className="h-3 rounded bg-white/70 w-1/2" />
+            </div>
+          ))}
+        </div>
+      ) : professionalsError ? (
+        <div className="connect-card p-6 flex flex-col gap-4 items-start">
+          <div>
+            <p className="text-sm font-semibold">We could not load profiles.</p>
+            <p className="text-sm connect-muted">{professionalsError}</p>
+          </div>
           <button
-            onClick={handleProfileAction}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#0066FF] text-white rounded-lg text-sm font-medium hover:bg-[#0052CC] transition-colors"
+            type="button"
+            onClick={loadProfessionals}
+            className="connect-action connect-action--ghost connect-action--small"
           >
-            {userProfile ? (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Edit My Profile
-              </>
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Become a Professional
-              </>
-            )}
+            Try again
           </button>
         </div>
+      ) : professionals.length === 0 ? (
+        <div className="connect-card p-6 text-center">
+          <p className="text-sm font-semibold">No professionals listed yet.</p>
+          <p className="text-sm connect-muted mt-1">
+            Check back soon or create a profile to get started.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {professionals.map((professional) => (
+            <ProfessionalCard
+              key={professional.id}
+              professional={professional}
+              onClick={() => setSelectedProfessional(professional.id)}
+              isMobile={isMobile}
+            />
+          ))}
+        </div>
       )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {professionals.map((professional) => (
-          <ProfessionalCard
-            key={professional.id}
-            professional={professional}
-            onClick={() => setSelectedProfessional(professional.id)}
-            isMobile={isMobile}
-          />
-        ))}
-      </div>
 
       {/* Modal */}
       <ProfessionalModal
@@ -311,7 +453,7 @@ const ProfessionalCard = ({ professional, onClick, isMobile }) => {
     return (
       <div
         onClick={onClick}
-        className="cursor-pointer bg-white border border-[#E4E4E7] rounded-lg overflow-hidden transition-all duration-300 hover:border-[#0066FF] hover:shadow-md flex items-stretch"
+        className="cursor-pointer connect-card overflow-hidden transition-all duration-300 flex items-stretch"
       >
         {/* Left: Profile image */}
         <div className="w-24 h-28 flex-shrink-0">
@@ -327,12 +469,12 @@ const ProfessionalCard = ({ professional, onClick, isMobile }) => {
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-sm font-semibold text-[#0A0A0B] line-clamp-1">{professional.full_name}</h3>
             {professional.verified && (
-              <BadgeCheck className="w-4 h-4 text-[#0066FF]" />
+              <BadgeCheck className="w-4 h-4 text-[color:var(--connect-accent)]" />
             )}
           </div>
-          <p className="text-xs text-[#71717A] mb-2 line-clamp-1">{professional.role}</p>
+          <p className="text-xs connect-muted mb-2 line-clamp-1">{professional.role}</p>
           {professional.quote && (
-            <p className="text-xs text-[#A1A1AA] italic line-clamp-2">"{professional.quote}"</p>
+            <p className="text-xs connect-muted italic line-clamp-2">"{professional.quote}"</p>
           )}
         </div>
       </div>
@@ -343,18 +485,18 @@ const ProfessionalCard = ({ professional, onClick, isMobile }) => {
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer bg-white border border-[#E4E4E7] rounded-lg overflow-hidden transition-all duration-300 hover:border-[#0066FF] hover:shadow-md group"
+      className="cursor-pointer connect-card overflow-hidden transition-all duration-300 group"
     >
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-[#F4F4F5]">
         <img
           src={professional.img_url}
           alt={professional.full_name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
         />
         {professional.verified && (
           <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
-            <BadgeCheck className="w-3.5 h-3.5 text-[#0066FF]" />
+            <BadgeCheck className="w-3.5 h-3.5 text-[color:var(--connect-accent)]" />
             <span className="text-xs font-medium text-[#0A0A0B]">Verified</span>
           </div>
         )}
@@ -362,12 +504,12 @@ const ProfessionalCard = ({ professional, onClick, isMobile }) => {
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1 group-hover:text-[#0066FF] transition-colors">
+        <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1 group-hover:text-[color:var(--connect-accent)] transition-colors">
           {professional.full_name}
         </h3>
-        <p className="text-sm text-[#71717A] mb-2 line-clamp-1">{professional.role}</p>
+        <p className="text-sm connect-muted mb-2 line-clamp-1">{professional.role}</p>
         {professional.experience && (
-          <span className="inline-block px-2 py-0.5 bg-[#F4F4F5] text-[#71717A] text-xs rounded">
+          <span className="inline-block px-2 py-0.5 bg-[#F4F4F5] connect-muted text-xs rounded">
             {professional.experience}+ years experience
           </span>
         )}
@@ -464,9 +606,9 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
   if (loading || !professional) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative bg-white rounded-lg p-8">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#E4E4E7] border-t-[#0066FF]"></div>
+        <div className="absolute inset-0 connect-modal-overlay" />
+        <div className="relative connect-card p-8">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#E4E4E7] border-t-[color:var(--connect-accent)]"></div>
         </div>
       </div>
     );
@@ -480,11 +622,11 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
   if (isMobile) {
     return (
       <div className="fixed inset-0 z-50" onClick={handleClose}>
-        <div className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isAnimating ? 'opacity-100' : 'opacity-0'}`} />
+        <div className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${isAnimating ? 'opacity-100' : 'opacity-0'}`} />
 
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`fixed left-0 right-0 bottom-0 bg-white rounded-t-2xl transition-transform duration-300 flex flex-col ${isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
+          className={`fixed left-0 right-0 bottom-0 connect-modal-panel rounded-t-2xl transition-transform duration-300 flex flex-col ${isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
           style={{ height: '90vh' }}
         >
           {/* Drag Handle */}
@@ -492,8 +634,13 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
             <div className="w-10 h-1 bg-[#E4E4E7] rounded-full" />
           </div>
 
-          <button onClick={handleClose} className="absolute top-3 right-3 z-10 p-2 hover:bg-[#F4F4F5] rounded-full transition-colors">
-            <X className="w-5 h-5 text-[#71717A]" />
+          <button
+            type="button"
+            onClick={handleClose}
+            aria-label="Close"
+            className="absolute top-3 right-3 z-10 connect-icon-button"
+          >
+            <X className="w-5 h-5" />
           </button>
 
           <div className="flex-1 overflow-y-auto">
@@ -523,7 +670,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                   <div className="flex items-center gap-2 mb-1">
                     <h2 className="text-xl font-semibold text-[#0A0A0B]">{professional.full_name}</h2>
                     {professional.verified && (
-                      <BadgeCheck className="w-5 h-5 text-[#0066FF]" />
+                      <BadgeCheck className="w-5 h-5 text-[color:var(--connect-accent)]" />
                     )}
                   </div>
                   <p className="text-sm text-[#71717A] mb-2">{professional.role}</p>
@@ -572,7 +719,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                   href={professional.location.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 mb-5 text-sm text-[#0066FF] hover:underline"
+                  className="flex items-center gap-2 mb-5 text-sm text-[color:var(--connect-accent)] hover:underline"
                 >
                   <MapPin className="w-4 h-4" />
                   {professional.location.title}
@@ -590,7 +737,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-2 border border-[#E4E4E7] rounded-lg text-sm text-[#3F3F46] hover:border-[#0066FF] hover:text-[#0066FF] transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 border border-[#E4E4E7] rounded-lg text-sm text-[#3F3F46] hover:border-[color:var(--connect-accent)] hover:text-[color:var(--connect-accent)] transition-colors"
                       >
                         {getSocialIcon(platform)}
                         <span className="capitalize">{platform}</span>
@@ -611,11 +758,11 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                         href={doc.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg hover:border-[#0066FF] transition-colors group"
+                        className="flex items-center gap-3 p-3 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg hover:border-[color:var(--connect-accent)] transition-colors group"
                       >
                         <FileText className="w-5 h-5 text-[#71717A]" />
                         <span className="flex-1 text-sm text-[#3F3F46]">{doc.name}</span>
-                        <ExternalLink className="w-4 h-4 text-[#A1A1AA] group-hover:text-[#0066FF]" />
+                        <ExternalLink className="w-4 h-4 text-[#A1A1AA] group-hover:text-[color:var(--connect-accent)]" />
                       </a>
                     ))}
                   </div>
@@ -627,7 +774,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                 href={professional.contact_url}
                 target={professional.contact_type === 'email' ? '_self' : '_blank'}
                 rel="noopener noreferrer"
-                className="w-full bg-[#0066FF] text-white py-3 rounded-lg font-medium hover:bg-[#0052CC] transition-colors flex items-center justify-center gap-2"
+                className="connect-action w-full"
               >
                 Contact {professional.full_name.split(' ')[0]}
               </a>
@@ -641,16 +788,21 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
   // Desktop layout - Clean enterprise modal
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6" onClick={handleClose}>
-      <div className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isAnimating ? 'opacity-100' : 'opacity-0'}`} />
+      <div className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${isAnimating ? 'opacity-100' : 'opacity-0'}`} />
 
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative bg-white rounded-xl shadow-xl transition-all duration-300 max-w-4xl w-full max-h-[85vh] overflow-hidden ${
+        className={`relative connect-modal-panel rounded-xl shadow-xl transition-all duration-300 max-w-4xl w-full max-h-[85vh] overflow-hidden ${
           isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
       >
-        <button onClick={handleClose} className="absolute top-4 right-4 z-10 p-2 hover:bg-[#F4F4F5] rounded-lg transition-colors">
-          <X className="w-5 h-5 text-[#71717A]" />
+        <button
+          type="button"
+          onClick={handleClose}
+          aria-label="Close"
+          className="absolute top-4 right-4 z-10 connect-icon-button"
+        >
+          <X className="w-5 h-5" />
         </button>
 
         <div className="flex h-full max-h-[85vh]">
@@ -689,7 +841,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                 <div className="flex items-center gap-2 mb-2">
                   <h2 className="text-2xl font-semibold text-[#0A0A0B]">{professional.full_name}</h2>
                   {professional.verified && (
-                    <BadgeCheck className="w-5 h-5 text-[#0066FF]" />
+                    <BadgeCheck className="w-5 h-5 text-[color:var(--connect-accent)]" />
                   )}
                 </div>
                 <p className="text-[#71717A] mb-3">{professional.role}</p>
@@ -737,7 +889,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                   href={professional.location.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 mb-6 text-sm text-[#0066FF] hover:underline"
+                  className="inline-flex items-center gap-2 mb-6 text-sm text-[color:var(--connect-accent)] hover:underline"
                 >
                   <MapPin className="w-4 h-4" />
                   {professional.location.title}
@@ -755,7 +907,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-2 border border-[#E4E4E7] rounded-lg text-sm text-[#3F3F46] hover:border-[#0066FF] hover:text-[#0066FF] transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 border border-[#E4E4E7] rounded-lg text-sm text-[#3F3F46] hover:border-[color:var(--connect-accent)] hover:text-[color:var(--connect-accent)] transition-colors"
                       >
                         {getSocialIcon(platform)}
                         <span className="capitalize">{platform}</span>
@@ -776,11 +928,11 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                         href={doc.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg hover:border-[#0066FF] transition-colors group"
+                        className="flex items-center gap-3 p-3 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg hover:border-[color:var(--connect-accent)] transition-colors group"
                       >
                         <FileText className="w-5 h-5 text-[#71717A]" />
                         <span className="flex-1 text-sm text-[#3F3F46]">{doc.name}</span>
-                        <ExternalLink className="w-4 h-4 text-[#A1A1AA] group-hover:text-[#0066FF]" />
+                        <ExternalLink className="w-4 h-4 text-[#A1A1AA] group-hover:text-[color:var(--connect-accent)]" />
                       </a>
                     ))}
                   </div>
@@ -794,435 +946,11 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                 href={professional.contact_url}
                 target={professional.contact_type === 'email' ? '_self' : '_blank'}
                 rel="noopener noreferrer"
-                className="w-full bg-[#0066FF] text-white py-3 rounded-lg font-medium hover:bg-[#0052CC] transition-colors flex items-center justify-center gap-2"
+                className="connect-action w-full"
               >
                 Contact {professional.full_name.split(' ')[0]}
               </a>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ProModal = ({ professionalId, isOpen, onClose, isMobile }) => {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [professional, setProfessional] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const handleClose = () => {
-    setIsAnimating(false);
-    setTimeout(onClose, 300);
-  };
-
-  useEffect(() => {
-    // Mock fetch - replace with actual Supabase call
-    const fetchProfessional = async () => {
-      if (!professionalId) {
-        setLoading(false);
-        return;
-      }
-      
-      setLoading(true);
-      const { data, error } = await supabase
-      .from('connect_professional')
-      .select('*')
-      .eq('id', professionalId)
-      .single();
-
-      if(error){
-        console.log(error.message)
-        setLoading(false)
-      }
-      else{
-        setProfessional(data)
-        setLoading(false)
-      }
-
-    };
-    
-    if (isOpen && professionalId) {
-      fetchProfessional();
-    }
-  }, [professionalId, isOpen]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => setIsAnimating(true), 10);
-      if (isMobile) document.body.style.overflow = "hidden";
-    } else {
-      setIsAnimating(false);
-      if (isMobile) document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, isMobile]);
-  
-  
-
-  const extractYouTubeId = (url) => {
-    if (!url) return null;
-    try {
-      const parsedUrl = new URL(url);
-      if (parsedUrl.hostname.includes("youtu.be")) return parsedUrl.pathname.slice(1);
-      return parsedUrl.searchParams.get("v");
-    } catch {
-      return url;
-    }
-  };
-
-  const getIndustryDisplay = (industry) => {
-    return industry?.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ') || '';
-  };
-
-  const getSocialIcon = (platform) => {
-    switch(platform) {
-      case 'instagram': return <Instagram className="w-4 h-4" />;
-      case 'facebook': return <Facebook className="w-4 h-4" />;
-      case 'tiktok': return <VideoIcon className="w-4 h-4" />;
-      case 'website': return <Globe className="w-4 h-4" />;
-      default: return <Globe className="w-4 h-4" />;
-    }
-  };
-
-  if (!isOpen) return null;
-  
-  if (loading || !professional) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black opacity-50" />
-        <div className="relative bg-white rounded-lg p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </div>
-    );
-  }
-
-  const videoId = extractYouTubeId(professional.video_url);
-  const hasSocials = professional.socials && Object.keys(professional.socials).length > 0;
-  const hasBusinessDocs = professional.business_data_url && professional.business_data_url.length > 0;
-
-  // Mobile layout
-  if (isMobile) {
-    return (
-      <div className="fixed inset-0 z-50" onClick={handleClose}>
-        <div className={`absolute inset-0 bg-black transition-opacity duration-300 ${isAnimating ? 'opacity-50' : 'opacity-0'}`} />
-        
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className={`fixed left-0 right-0 bottom-0 bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
-          style={{ height: '85vh' }}
-        >
-          <div className="flex justify-center pt-3 pb-2">
-            <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-          </div>
-
-          <button onClick={handleClose} className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors">
-            <X className="w-5 h-5 text-gray-600" />
-          </button>
-
-          <div className="flex-1 overflow-y-auto">
-            {/* Media Section */}
-            <div className="relative aspect-video bg-black overflow-hidden">
-              {professional.show_type === 'video' && videoId ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
-                  title={professional.full_name}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              ) : professional.banner_url ? (
-                <img src={professional.banner_url} alt={professional.full_name} className="w-full h-full object-cover" />
-              ) : (
-                <img src={professional.img_url} alt={professional.full_name} className="w-full h-full object-cover" />
-              )}
-              
-              {professional.quote && (
-                <div className="absolute bottom-4 left-4 bg-blue-700/80 text-white text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-sm">
-                  {professional.quote}
-                </div>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="p-6 pb-8">
-              {/* Header */}
-              <div className="flex items-start gap-4 mb-4">
-                <img src={professional.img_url} alt={professional.full_name} className="w-20 h-20 rounded-full object-cover shadow-lg" />
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">{professional.full_name}</h2>
-                  <div className="flex items-center text-sm text-gray-600 gap-2 mb-2">
-                    <Briefcase className="w-4 h-4" />
-                    <span>{professional.role}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600 gap-2">
-                    <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-                      {professional.experience}+ years in {getIndustryDisplay(professional.industry)}
-                    </span>
-                    {professional.verified && (
-                      <span className="px-3 py-1.5  text-green-700 rounded-full text-sm font-semibold flex items-center gap-1">
-                        ✓
-                      </span>
-                     )}
-                  </div>
-                </div>
-                {professional.location?.url  && professional.location?.title && (
-                <div className="">
-                  <a
-                  href={professional.location.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start rounded-4xl p-3 hover:bg-gray-100 transition border-1 border-blue-100/70"
-                >
-                  <MapPin className="w-5 h-5 text-blue-600 mt-0.5" />
-                </a>
-                </div>
-              )}
-              </div>
-
-              {/* Bio */}
-              {professional.bio && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-bold text-gray-900 mb-2">About</h3>
-                  <p className="text-gray-700 leading-relaxed text-sm">{professional.bio}</p>
-                </div>
-              )}
-
-              {/* Professional Styles */}
-              {professional.style && professional.style.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">Professional Style</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {professional.style.map((item, idx) => (
-                      <span key={idx} className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-50 to-purple-50 text-gray-800 rounded-full text-sm font-medium border border-blue-100">
-                        <span className="text-base">{item.emoji}</span>
-                        <span>{item.text}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Social Links */}
-              {hasSocials && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">Connect</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(professional.socials).map(([platform, url], idx) => (
-                      <a
-                        key={idx}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:border-blue-500 hover:text-blue-600 transition-all"
-                      >
-                        {getSocialIcon(platform)}
-                        <span className="capitalize">{platform}</span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Business Documents */}
-              {hasBusinessDocs && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">Documents</h3>
-                  <div className="space-y-2">
-                    {professional.business_data_url.map((doc, idx) => (
-                      <a
-                        key={idx}
-                        href={doc.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group"
-                      >
-                        <FileText className="w-5 h-5 text-red-600" />
-                        <span className="flex-1 text-sm font-medium text-gray-700 group-hover:text-gray-900">{doc.name}</span>
-                        <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Contact Button */}
-              <a
-                href={professional.contact_url}
-                target={professional.contact_type === 'email' ? '_self' : '_blank'}
-                rel="noopener noreferrer"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
-              >
-                Contact {professional.full_name.split(' ')[0]}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Desktop layout
-  return (
-    <div className="fixed inset-0 z-50" onClick={handleClose}>
-      <div className={`absolute inset-0 bg-black transition-opacity duration-300 ${isAnimating ? 'opacity-50' : 'opacity-0'}`} />
-      
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={`fixed top-0 right-0 h-full bg-white shadow-2xl transition-transform duration-300 overflow-hidden ${isAnimating ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ width: '60%' }}
-      >
-        <button onClick={handleClose} className="absolute top-6 right-6 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors">
-          <X className="w-6 h-6 text-gray-600" />
-        </button>
-
-        <div className="h-full overflow-y-auto">
-          <div className="p-8 lg:p-12">
-            {/* Media Section */}
-            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden mb-8">
-              {professional.show_type === 'video' && videoId ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
-                  title={professional.full_name}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              ) : professional.banner_url ? (
-                <img src={professional.banner_url} alt={professional.full_name} className="w-full h-full object-cover" />
-              ) : (
-                <img src={professional.img_url} alt={professional.full_name} className="w-full h-full object-cover" />
-              )}
-              
-              {professional.quote && (
-                <div className="absolute bottom-6 left-6 bg-blue-700/80 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur-sm">
-                  {professional.quote}
-                </div>
-              )}
-            </div>
-
-            {/* Header */}
-            <div className="flex items-start gap-6 mb-8">
-              <img src={professional.img_url} alt={professional.full_name} className="w-28 h-28 rounded-full object-cover shadow-lg border-2 border-violet-700/70" />
-              <div className="flex-1">
-                <h2 className="text-4xl font-bold text-gray-900 mb-2">{professional.full_name}</h2>
-                <div className="flex items-center text-base text-gray-600 gap-2 mb-3">
-                  <Briefcase className="w-5 h-5" />
-                  <span className="font-medium">{professional.role}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  {professional.verified && (
-                    <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold flex items-center gap-1">
-                      {professional.experience}+ years in {getIndustryDisplay(professional.industry)}
-                    </span>
-                  )}
-                  {professional.verified && (
-                      <span className="px-3 py-1.5  text-green-700 rounded-full text-sm font-semibold flex items-center gap-1">
-                        ✓
-                      </span>
-                  )}
-                </div>
-              </div>
-              {professional.location?.url  && professional.location?.title && (
-                <div className="">
-                  <a
-                  href={professional.location.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start lg:gap-3 bg-none bg-gray-50 rounded-4xl p-4 hover:bg-gray-100 md:hover:bg-blue-700 transition  border border-blue-600/50 md:hover:border-white md:bg-blue-600 lg:bg-white lg:hover:bg-gray-100/50 lg:border-gray-100/50"
-                >
-                  <MapPin className="w-5 h-5 text-blue-600 mt-0.5 md:text-white lg:text-blue-600"/>
-                  <div>
-                    <p className="font-semibold text-gray-700 text-sm mt-0.5 md:hidden lg:block lg:text-blue-600 ">
-                      {professional.location.title || 'View on Map'}
-                    </p>
-                  </div>
-                </a>
-                </div>
-              )}
-            </div>
-
-            {/* Bio */}
-            {professional.bio && (
-              <div className="mb-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">About</h3>
-                <p className="text-gray-700 leading-relaxed">{professional.bio}</p>
-              </div>
-            )}
-
-            {/* Professional Styles */}
-              {professional.style && professional.style.length > 0 && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Professional Style</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {professional.style.map((item, idx) => (
-                      <span key={idx} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-50 to-purple-50 text-gray-800 rounded-xl text-sm font-medium border border-blue-100">
-                        <span className="text-lg">{item.emoji}</span>
-                        <span>{item.text}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-            {/* Social Links */}
-            {hasSocials && (
-              <div className="mb-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Connect</h3>
-                <div className="flex flex-wrap gap-3">
-                  {Object.entries(professional.socials).map(([platform, url], idx) => (
-                    <a
-                      key={idx}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-5 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-medium hover:border-blue-500 hover:text-blue-600 hover:shadow-md transition-all"
-                    >
-                      {getSocialIcon(platform)}
-                      <span className="capitalize">{platform}</span>
-                      <ExternalLink className="w-4 h-4 ml-1" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Business Documents */}
-            {hasBusinessDocs && (
-              <div className="mb-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Documents</h3>
-                <div className="grid gap-3">
-                  {professional.business_data_url.map((doc, idx) => (
-                    <a
-                      key={idx}
-                      href={doc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors group"
-                    >
-                      <FileText className="w-6 h-6 text-red-600" />
-                      <span className="flex-1 font-medium text-gray-700 group-hover:text-gray-900">{doc.name}</span>
-                      <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-blue-600" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Contact Button */}
-            <a
-              href={professional.contact_url}
-              target={professional.contact_type === 'email' ? '_self' : '_blank'}
-              rel="noopener noreferrer"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold hover:shadow-xl transition-all shadow-lg hover:scale-[1.02] flex items-center justify-center gap-2 text-lg"
-            >
-              Contact {professional.full_name.split(' ')[0]}
-            </a>
           </div>
         </div>
       </div>
@@ -1232,53 +960,40 @@ const ProModal = ({ professionalId, isOpen, onClose, isMobile }) => {
 
 // for independent talent.
 const Freelancers = ({ isMobile }) => {
+  const [selectedTalent, setSelectedTalent] = useState(null);
+
   return (
-    <div className="text-center py-16">
-      <div className="max-w-md mx-auto">
-        <div className="w-16 h-16 bg-[#F4F4F5] rounded-full flex items-center justify-center mx-auto mb-6">
-          <Briefcase className="w-8 h-8 text-[#71717A]" />
-        </div>
-        <h3 className="text-xl font-semibold text-[#0A0A0B] mb-2">Freelancers Coming Soon</h3>
-        <p className="text-[#71717A] mb-6">
-          We're building a marketplace to connect you with talented freelancers in our community.
-        </p>
-        <span className="inline-block px-4 py-2 bg-[#F4F4F5] text-[#71717A] rounded-lg text-sm">
-          Stay tuned for updates
-        </span>
-      </div>
-    </div>
-  );
-};
-
-{/* <>
-      <div className="text-center mb-12 md:mb-16">
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-          We've helped thousands of people reach their goals
-        </h1>
-        <p className="text-sm md:text-xl text-gray-600">
-          Don't just take it from us. LEarn with us!
+    <>
+      <div className="flex flex-col gap-3 mb-8 connect-reveal" style={{ "--delay": "40ms" }}>
+        <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Freelancers</p>
+        <h2 className="connect-display text-2xl md:text-3xl">
+          Independent talent for short-term work.
+        </h2>
+        <p className="text-sm connect-muted max-w-xl">
+          Find specialists who can move fast on design, marketing, engineering, and operations.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:px-50 md:px-50 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 w-full">
         {talents.map((talent) => (
           <FreelancerCard
-              key={talent.id}
-              talent={talent}
-              onClick={() => setSelectedTalent(talent)}
-              isMobile={isMobile}
-            />
+            key={talent.id}
+            talent={talent}
+            onClick={() => setSelectedTalent(talent)}
+            isMobile={isMobile}
+          />
         ))}
       </div>
 
-      Modal
       <FreelancerModal
         talent={selectedTalent}
         isOpen={!!selectedTalent}
         onClose={() => setSelectedTalent(null)}
         isMobile={isMobile}
       />
-    </> */}
+    </>
+  );
+};
 
 const FreelancerCard = ({ talent, onClick, isMobile }) => {
   // Mobile: Horizontal compact card
@@ -1286,7 +1001,7 @@ const FreelancerCard = ({ talent, onClick, isMobile }) => {
     return (
       <div
         onClick={onClick}
-        className="cursor-pointer rounded-3xl mx-3 overflow-hidden bg-white transition-all duration-300 hover:shadow-lg border-b border-gray-200 h-[140px] flex items-center"
+        className="cursor-pointer connect-card overflow-hidden transition-all duration-300 h-[140px] flex items-center"
       >
         {/* Left: Profile image */}
         <div className="w-[120px] h-full flex-shrink-0">
@@ -1299,9 +1014,9 @@ const FreelancerCard = ({ talent, onClick, isMobile }) => {
         
         {/* Right: Info */}
         <div className="flex-1 px-4 py-3 flex flex-col justify-center">
-          <h3 className="text-base font-bold text-gray-900 mb-1 line-clamp-1">{talent.name}</h3>
-          <p className="text-sm text-gray-600 mb-2 line-clamp-1">{talent.role}</p>
-          <p className="text-sm text-gray-500 italic mb-2 line-clamp-2">"{talent.quote}"</p>
+          <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1">{talent.name}</h3>
+          <p className="text-sm connect-muted mb-2 line-clamp-1">{talent.role}</p>
+          <p className="text-sm connect-muted italic mb-2 line-clamp-2">"{talent.quote}"</p>
           
           {/* Star rating */}
           <div className="flex items-center gap-1">
@@ -1331,23 +1046,27 @@ const FreelancerCard = ({ talent, onClick, isMobile }) => {
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 transition-all duration-300 hover:scale-105 hover:shadow-xl w-full"
+      className="cursor-pointer connect-card overflow-hidden transition-all duration-300 w-full group"
     >
       <div className="relative aspect-[3/4] w-full">
         <img
           src={talent.image}
           alt={talent.name}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-6">
-          <div className="bg-blue-700/70 text-white/90 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2">
+          <div className="bg-white/85 text-[#0A0A0B] text-[11px] font-semibold px-3 py-1 rounded-full inline-block mb-2">
             {talent.quote}
           </div>
           
           <h3 className="text-white text-lg sm:text-xl font-bold mb-1">{talent.name}</h3>
           <p className="text-white/90 text-sm">{talent.role}</p>
         </div>
-        <button className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-none hover:bg-black/10 rounded-full p-2 shadow-lg">
+        <button
+          type="button"
+          aria-label="Open profile"
+          className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-none hover:bg-black/10 rounded-full p-2 shadow-lg"
+        >
           <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path d="M6.3 5.7a1 1 0 011.4 0l4 4a1 1 0 010 1.4l-4 4a1 1 0 01-1.4-1.4L9.6 10 6.3 6.7a1 1 0 010-1.4z"/>
           </svg>
@@ -1403,7 +1122,7 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
       >
         {/* Backdrop */}
         <div 
-          className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+          className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${
             isAnimating ? 'opacity-50' : 'opacity-0'
           }`}
         />
@@ -1411,7 +1130,7 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
         {/* Modal - 80% height from bottom */}
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`fixed left-0 right-0 bottom-0 bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${
+          className={`fixed left-0 right-0 bottom-0 connect-modal-panel rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${
             isAnimating ? 'translate-y-0' : 'translate-y-full'
           }`}
           style={{ height: '80vh' }}
@@ -1424,9 +1143,11 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+            type="button"
+            aria-label="Close"
+            className="absolute top-4 right-4 z-10 connect-icon-button"
           >
-            <X className="w-5 h-5 text-gray-600" />
+            <X className="w-5 h-5" />
           </button>
 
           {/* Scrollable content */}
@@ -1442,7 +1163,7 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
                 allowFullScreen
                 className="w-full h-full"
               />
-              <div className="absolute bottom-4 left-4 bg-blue-700/70 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+              <div className="absolute bottom-4 left-4 bg-white/85 text-[#0A0A0B] text-xs font-semibold px-3 py-1.5 rounded-full">
                 {talent.quote}
               </div>
             </div>
@@ -1464,16 +1185,13 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
                       key={idx}
                       className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
                     >
-                      {s === "Supportive" && "👋 "}
-                      {s === "Proactive" && "✅ "}
-                      {s === "Collaborative" && "🤝 "}
                       {s}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <button className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold transition-colors shadow-lg">
+              <button className="connect-action w-full">
                 Choose {talent.name.split(' ')[0]}
               </button>
             </div>
@@ -1491,7 +1209,7 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
     >
       {/* Backdrop */}
       <div 
-        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+        className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${
           isAnimating ? 'opacity-50' : 'opacity-0'
         }`}
       />
@@ -1499,7 +1217,7 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
       {/* Modal - slides from right */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`fixed top-0 right-0 h-full bg-white shadow-2xl transition-transform duration-300 overflow-hidden ${
+        className={`fixed top-0 right-0 h-full connect-modal-panel shadow-2xl transition-transform duration-300 overflow-hidden ${
           isAnimating ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ width: '60%' }}
@@ -1507,9 +1225,11 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-6 right-6 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+          type="button"
+          aria-label="Close"
+          className="absolute top-6 right-6 z-10 connect-icon-button"
         >
-          <X className="w-6 h-6 text-gray-600" />
+          <X className="w-6 h-6" />
         </button>
 
         {/* Scrollable content */}
@@ -1526,7 +1246,7 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
                 allowFullScreen
                 className="w-full h-full"
               />
-              <div className="absolute bottom-4 left-4 bg-blue-700/70 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg">
+              <div className="absolute bottom-4 left-4 bg-white/85 text-[#0A0A0B] text-sm font-semibold px-4 py-2 rounded-full shadow-lg">
                 {talent.quote}
               </div>
             </div>
@@ -1548,24 +1268,21 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
                     key={idx}
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
                   >
-                    {s === "Supportive" && "👋 "}
-                    {s === "Proactive" && "✅ "}
-                    {s === "Collaborative" && "🤝 "}
                     {s}
                   </span>
                 ))}
               </div>
             </div>
 
-            <button className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-900/90 transition-colors shadow-lg mb-6">
+            <button className="connect-action w-full mb-6">
               Choose {talent.name.split(' ')[0]}
             </button>
 
             <div className="flex justify-between text-sm text-gray-500">
-              <button className="hover:text-gray-700 transition-colors">
+              <button type="button" className="hover:text-gray-700 transition-colors">
                 ← Previous
               </button>
-              <button className="hover:text-gray-700 transition-colors">
+              <button type="button" className="hover:text-gray-700 transition-colors">
                 Next →
               </button>
             </div>
@@ -1579,53 +1296,40 @@ const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
 
 // for business and company-driven initiatives.
 const Projects = ({ isMobile }) => {
+  const [selectedTalent, setSelectedTalent] = useState(null);
+
   return (
-    <div className="text-center py-16">
-      <div className="max-w-md mx-auto">
-        <div className="w-16 h-16 bg-[#F4F4F5] rounded-full flex items-center justify-center mx-auto mb-6">
-          <Calendar className="w-8 h-8 text-[#71717A]" />
-        </div>
-        <h3 className="text-xl font-semibold text-[#0A0A0B] mb-2">Projects Coming Soon</h3>
-        <p className="text-[#71717A] mb-6">
-          Discover and collaborate on community projects and business initiatives.
-        </p>
-        <span className="inline-block px-4 py-2 bg-[#F4F4F5] text-[#71717A] rounded-lg text-sm">
-          Stay tuned for updates
-        </span>
-      </div>
-    </div>
-  );
-};
-
-{/* <>
-      <div className="text-center mb-12 md:mb-16">
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-          We've helped thousands of people reach their goals
-        </h1>
-        <p className="text-sm md:text-xl text-gray-600">
-          Don't just take it from us. Join to our projects!
+    <>
+      <div className="flex flex-col gap-3 mb-8 connect-reveal" style={{ "--delay": "40ms" }}>
+        <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Projects</p>
+        <h2 className="connect-display text-2xl md:text-3xl">
+          Teams looking for the right collaborators.
+        </h2>
+        <p className="text-sm connect-muted max-w-xl">
+          Explore ongoing initiatives and join founders, creators, and operators building together.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 w-full">
         {talents.map((talent) => (
           <ProjectCard
-              key={talent.id}
-              talent={talent}
-              onClick={() => setSelectedTalent(talent)}
-              isMobile={isMobile}
-            />
+            key={talent.id}
+            talent={talent}
+            onClick={() => setSelectedTalent(talent)}
+            isMobile={isMobile}
+          />
         ))}
       </div>
 
-       Modal 
       <ProjectModal
         talent={selectedTalent}
         isOpen={!!selectedTalent}
         onClose={() => setSelectedTalent(null)}
         isMobile={isMobile}
       />
-    </> */}
+    </>
+  );
+};
 
 const ProjectCard = ({ talent, onClick, isMobile }) => {
   // Mobile: Horizontal compact card
@@ -1633,7 +1337,7 @@ const ProjectCard = ({ talent, onClick, isMobile }) => {
     return (
       <div
         onClick={onClick}
-        className="cursor-pointer rounded-3xl mx-3 overflow-hidden bg-white transition-all duration-300 hover:shadow-lg border-b border-gray-200 h-[140px] flex items-center"
+        className="cursor-pointer connect-card overflow-hidden transition-all duration-300 h-[140px] flex items-center"
       >
         {/* Left: Profile image */}
         <div className="w-[120px] h-full flex-shrink-0">
@@ -1646,9 +1350,9 @@ const ProjectCard = ({ talent, onClick, isMobile }) => {
         
         {/* Right: Info */}
         <div className="flex-1 px-4 py-3 flex flex-col justify-center">
-          <h3 className="text-base font-bold text-gray-900 mb-1 line-clamp-1">{talent.name}</h3>
-          <p className="text-sm text-gray-600 mb-2 line-clamp-1">{talent.role}</p>
-          <p className="text-sm text-gray-500 italic mb-2 line-clamp-2">"{talent.quote}"</p>
+          <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1">{talent.name}</h3>
+          <p className="text-sm connect-muted mb-2 line-clamp-1">{talent.role}</p>
+          <p className="text-sm connect-muted italic mb-2 line-clamp-2">"{talent.quote}"</p>
           
           {/* Star rating */}
           <div className="flex items-center gap-1">
@@ -1678,23 +1382,27 @@ const ProjectCard = ({ talent, onClick, isMobile }) => {
   return (
     <div
       onClick={onClick}
-      className="cursor-pointer rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 transition-all duration-300 hover:scale-105 hover:shadow-xl w-full"
+      className="cursor-pointer connect-card overflow-hidden transition-all duration-300 w-full group"
     >
       <div className="relative aspect-[3/4] w-full">
         <img
           src={talent.image}
           alt={talent.name}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-6">
-          <div className="bg-blue-700/70 text-white/90 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-2">
+          <div className="bg-white/85 text-[#0A0A0B] text-[11px] font-semibold px-3 py-1 rounded-full inline-block mb-2">
             {talent.quote}
           </div>
           
           <h3 className="text-white text-lg sm:text-xl font-bold mb-1">{talent.name}</h3>
           <p className="text-white/90 text-sm">{talent.role}</p>
         </div>
-        <button className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-none hover:bg-black/10 rounded-full p-2 shadow-lg">
+        <button
+          type="button"
+          aria-label="Open project"
+          className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-none hover:bg-black/10 rounded-full p-2 shadow-lg"
+        >
           <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path d="M6.3 5.7a1 1 0 011.4 0l4 4a1 1 0 010 1.4l-4 4a1 1 0 01-1.4-1.4L9.6 10 6.3 6.7a1 1 0 010-1.4z"/>
           </svg>
@@ -1750,7 +1458,7 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
       >
         {/* Backdrop */}
         <div 
-          className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+          className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${
             isAnimating ? 'opacity-50' : 'opacity-0'
           }`}
         />
@@ -1758,7 +1466,7 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
         {/* Modal - 80% height from bottom */}
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`fixed left-0 right-0 bottom-0 bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${
+          className={`fixed left-0 right-0 bottom-0 connect-modal-panel rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${
             isAnimating ? 'translate-y-0' : 'translate-y-full'
           }`}
           style={{ height: '80vh' }}
@@ -1771,9 +1479,11 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+            type="button"
+            aria-label="Close"
+            className="absolute top-4 right-4 z-10 connect-icon-button"
           >
-            <X className="w-5 h-5 text-gray-600" />
+            <X className="w-5 h-5" />
           </button>
 
           {/* Scrollable content */}
@@ -1789,7 +1499,7 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
                 allowFullScreen
                 className="w-full h-full"
               />
-              <div className="absolute bottom-4 left-4 bg-blue-700/70 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+              <div className="absolute bottom-4 left-4 bg-white/85 text-[#0A0A0B] text-xs font-semibold px-3 py-1.5 rounded-full">
                 {talent.quote}
               </div>
             </div>
@@ -1811,16 +1521,13 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
                       key={idx}
                       className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
                     >
-                      {s === "Supportive" && "👋 "}
-                      {s === "Proactive" && "✅ "}
-                      {s === "Collaborative" && "🤝 "}
                       {s}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <button className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold transition-colors shadow-lg">
+              <button className="connect-action w-full">
                 Choose {talent.name.split(' ')[0]}
               </button>
             </div>
@@ -1838,7 +1545,7 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
     >
       {/* Backdrop */}
       <div 
-        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+        className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${
           isAnimating ? 'opacity-50' : 'opacity-0'
         }`}
       />
@@ -1846,7 +1553,7 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
       {/* Modal - slides from right */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`fixed top-0 right-0 h-full bg-white shadow-2xl transition-transform duration-300 overflow-hidden ${
+        className={`fixed top-0 right-0 h-full connect-modal-panel shadow-2xl transition-transform duration-300 overflow-hidden ${
           isAnimating ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ width: '60%' }}
@@ -1854,9 +1561,11 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-6 right-6 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+          type="button"
+          aria-label="Close"
+          className="absolute top-6 right-6 z-10 connect-icon-button"
         >
-          <X className="w-6 h-6 text-gray-600" />
+          <X className="w-6 h-6" />
         </button>
 
         {/* Scrollable content */}
@@ -1873,7 +1582,7 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
                 allowFullScreen
                 className="w-full h-full"
               />
-              <div className="absolute bottom-4 left-4 bg-blue-700/70 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg">
+              <div className="absolute bottom-4 left-4 bg-white/85 text-[#0A0A0B] text-sm font-semibold px-4 py-2 rounded-full shadow-lg">
                 {talent.quote}
               </div>
             </div>
@@ -1895,24 +1604,21 @@ const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
                     key={idx}
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
                   >
-                    {s === "Supportive" && "👋 "}
-                    {s === "Proactive" && "✅ "}
-                    {s === "Collaborative" && "🤝 "}
                     {s}
                   </span>
                 ))}
               </div>
             </div>
 
-            <button className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-900/90 transition-colors shadow-lg mb-6">
+            <button className="connect-action w-full mb-6">
               Choose {talent.name.split(' ')[0]}
             </button>
 
             <div className="flex justify-between text-sm text-gray-500">
-              <button className="hover:text-gray-700 transition-colors">
+              <button type="button" className="hover:text-gray-700 transition-colors">
                 ← Previous
               </button>
-              <button className="hover:text-gray-700 transition-colors">
+              <button type="button" className="hover:text-gray-700 transition-colors">
                 Next →
               </button>
             </div>

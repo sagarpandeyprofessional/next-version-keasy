@@ -4,20 +4,6 @@ const Footer = () => {
   return (
     <footer className="relative z-50 bg-black py-8 text-white lg:px-20 md:px-10">
       <div className="container">
-        {/* Instagram carousel placeholder
-        <div className="mb-8 overflow-hidden rounded-lg bg-gray-900 p-4 shadow-sm">
-          <h3 className="mb-4 text-lg font-semibold text-white">Follow us on Instagram</h3>
-          <div className="flex space-x-4 overflow-x-auto pb-2">
-            {[1, 2, 3, 4, 5].map((item) => (
-              <div
-                key={item}
-                className="h-32 w-32 flex-shrink-0 rounded-md bg-gray-800"
-                aria-label="Instagram post"
-              />
-            ))}
-          </div>
-        </div> */}
-
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Column 1: About */}
           <div>
@@ -54,22 +40,22 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy_policy" className="text-sm text-gray-300 hover:text-white hover:underline">
+                <Link href="/legal/privacy" className="text-sm text-gray-300 hover:text-white hover:underline">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms_of_service" className="text-sm text-gray-300 hover:text-white hover:underline">
+                <Link href="/legal/terms" className="text-sm text-gray-300 hover:text-white hover:underline">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/marketplace_policy" className="text-sm text-gray-300 hover:text-white hover:underline">
+                <Link href="/legal/marketplace" className="text-sm text-gray-300 hover:text-white hover:underline">
                   Marketplace Policy
                 </Link>
               </li>
               <li>
-                <Link href="/membership-terms" className="text-sm text-gray-300 hover:text-white hover:underline">
+                <Link href="/legal/membership" className="text-sm text-gray-300 hover:text-white hover:underline">
                   Membership Terms of Service
                 </Link>
               </li>

@@ -114,9 +114,7 @@ const Profile = () => {
         })()}
       </div>
 
-      
-        
-        {/* <p>{error}</p> */}
+      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
     </div>
   );
 };
@@ -344,10 +342,10 @@ const MarketplaceItem = ({product, isMobile, setError}) => {
     
             <h3 className="mb-2 text-lg font-semibold text-black">{product.title}</h3>
     
-            {/* <div className="mb-2 flex items-center gap-1 text-gray-800 text-sm">
-              <FiEye />
-              <span>{item.views || 0}</span>
-            </div> */}
+            <div className="mb-2 flex items-center gap-1 text-gray-800 text-sm">
+              <IoEyeOutline />
+              <span>{product.views || 0}</span>
+            </div>
     
             <div className="flex items-center justify-between">
               <p className="font-bold text-black">{formatCurrency(product.price)}</p>

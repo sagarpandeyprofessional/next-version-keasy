@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
-import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
 import ComingSoonOverlay from "@/components/layout/Upcoming";
 
@@ -13,20 +12,24 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const { session, profile, loading } = useAuth();
 
-  const upcomingRoutes = ["/blog", "/nearby", `/profile/id`, "/marketplace/my", "/settings", "/blog/", "/nearby/"];
+  const upcomingRoutes: string[] = [];
   const showUpcoming = upcomingRoutes.includes(pathname);
 
   const publicRoutes = [
-    "/privacy_policy",
-    "/privacy_policy/",
-    "/terms_of_service",
-    "/terms_of_service/",
+    "/legal",
+    "/legal/",
+    "/legal/privacy",
+    "/legal/privacy/",
+    "/legal/terms",
+    "/legal/terms/",
+    "/legal/marketplace",
+    "/legal/marketplace/",
     "/signin",
     "/signup",
+    "/forgot-password",
+    "/forgot-password/",
     "/about",
     "/faq",
-    "/blog",
-    "/nearby",
     "/guides",
     "/community",
     "/events",
@@ -38,8 +41,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     "/plans/",
     "/pricing",
     "/pricing/",
-    "/membership-terms/",
-    "/membership-terms",
+    "/legal/membership/",
+    "/legal/membership",
   ];
 
   const publicGuideRoutes = pathname.startsWith("/guides/guide/");
@@ -102,7 +105,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <Sidebar />
 
       <div className={`relative flex-grow ${isHome ? "" : "lg:flex lg:justify-center"}`}>
         <div

@@ -697,7 +697,7 @@ export default function TalentsPost() {
               </button>
               <button
                 type="button"
-                onClick={() => router.push("/talents")}
+                onClick={() => router.push("/connect?tab=talents")}
                 disabled={loading}
                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >

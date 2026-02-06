@@ -40,9 +40,9 @@ export default function SettingsPage() {
   // Redirect if not logged in
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push('/auth/login');
+      router.push('/signin');
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isLoading, router]);
 
   // Initialize form data
   useEffect(() => {
@@ -275,7 +275,10 @@ export default function SettingsPage() {
           <div className="flex justify-end space-x-3">
             <button
               type="button"
-              onClick={() => router.push('/profile')}
+              onClick={() => {
+                const username = profile?.username || user?.username;
+                router.push(username ? `/profile/${username}` : '/');
+              }}
               className="rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-black hover:bg-gray-50"
             >
               Cancel

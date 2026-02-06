@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
+import { loadTossPayments, ANONYMOUS } from "@/lib/tosspayments-sdk";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -158,7 +158,7 @@ export function WidgetCheckoutPage() {
         </button>
       </div>
 
-      {/* <div
+      <div
         className="box_section"
         style={{
           padding: "40px 30px 50px 30px",
@@ -185,7 +185,7 @@ export function WidgetCheckoutPage() {
         >
           Integrate payment page only (without widget)
         </button>
-      </div> */}
+      </div>
     </div>
   );
 }

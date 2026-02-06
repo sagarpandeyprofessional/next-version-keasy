@@ -158,7 +158,7 @@ export default function TalentDetail() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <Link href="/talents" className="mb-6 inline-flex items-center text-gray-800 hover:underline">
+      <Link href="/connect?tab=talents" className="mb-6 inline-flex items-center text-gray-800 hover:underline">
         ← Back to Talents
       </Link>
 

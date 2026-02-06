@@ -121,7 +121,7 @@ const TalentCard = ({ talent, userId, onToggleLike }) => {
             </span>
           </div>
           <Link
-            to={`/talents/${talent.id}`}
+            href={`/talents/${talent.id}`}
             onClick={(e) => e.stopPropagation()}
             className="text-sm font-medium text-black hover:underline"
           >
@@ -342,7 +342,11 @@ const FilterSidebar = ({
 // =========================
 // Talents Component
 // =========================
-export default function Talent() {
+type TalentProps = {
+  embedded?: boolean;
+};
+
+export default function Talent({ embedded = false }: TalentProps) {
   const router = useRouter();
   const [userId, setUserId] = useState(null);
   const [filters, setFilters] = useState({
@@ -495,25 +499,27 @@ export default function Talent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-12">
+    <div className={embedded ? "" : "min-h-screen bg-white"}>
+      <div className={embedded ? "w-full" : "container mx-auto px-4 py-12"}>
         {/* Header */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-black md:text-4xl">Talents</h1>
-            <p className="mt-2 text-lg text-gray-600">
-              Find professionals and service providers in the community.
-            </p>
+        {!embedded && (
+          <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-black md:text-4xl">Talents</h1>
+              <p className="mt-2 text-lg text-gray-600">
+                Find professionals and service providers in the community.
+              </p>
+            </div>
+            {/* Desktop Button */}
+            <button
+              onClick={() => router.push("/talents/new")}
+              className="hidden md:flex items-center gap-2 mt-4 md:mt-0 rounded-md bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-800 transition-colors"
+            >
+              <FiPlus className="text-lg" />
+              Become Talent
+            </button>
           </div>
-          {/* Desktop Button */}
-          <button
-            onClick={() => router.push("/talents/new")}
-            className="hidden md:flex items-center gap-2 mt-4 md:mt-0 rounded-md bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-800 transition-colors"
-          >
-            <FiPlus className="text-lg" />
-            Become Talent
-          </button>
-        </div>
+        )}
 
         {/* Search */}
         <div className="flex items-center justify-between mb-6">
@@ -583,7 +589,7 @@ export default function Talent() {
       </div>
 
       {/* Mobile Floating Add Button */}
-      {isMobile && (
+      {isMobile && !embedded && (
         <button
           onClick={() => router.push("/talents/new")}
           className="fixed bottom-18 left-1/2 transform -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-800 active:scale-95 transition-all z-40"

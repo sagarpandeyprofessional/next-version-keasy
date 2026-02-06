@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
+import { loadTossPayments } from "@/lib/tosspayments-sdk";
 import { useEffect, useState } from "react";
 
 // ------  SDK 초기화 ------

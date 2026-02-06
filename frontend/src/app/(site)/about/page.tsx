@@ -158,41 +158,6 @@ const CertificationSection = () => {
   );
 };
 
-// Instagram Follow Component
-const InstagramFollow = () => {
-  const images = [
-    "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=400&fit=crop",
-    "https://images.unsplash.com/photo-1522159259853-4c45513aff05?w=400&h=400&fit=crop",
-  ];
-
-  return (
-    <div className="py-16 px-4 bg-white">
-      <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Follow us on Instagram</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 max-w-7xl mx-auto">
-        {images.map((img, idx) => (
-          <div
-            key={idx}
-            className="aspect-square overflow-hidden group cursor-pointer transform transition-all duration-500 hover:scale-105 hover:z-10"
-            style={{
-              animation: `fadeInUp 0.6s ease-out ${idx * 0.1}s both`,
-            }}
-          >
-            <img
-              src={img}
-              alt={`Instagram post ${idx + 1}`}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 // Main About Us Component
 const AboutUs = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -324,8 +289,6 @@ Keasy is more than a service — it's a space to belong, grow, and thrive.`,
       {/* Team Section */}
       <TeamSection />
       <CertificationSection />
-      {/* Instagram Section */}
-      {/* <InstagramFollow /> */}
     </div>
   );
 };

@@ -316,7 +316,7 @@ const SignIn = () => {
               >
                 By clicking on Sign in, you agree to keasy&apos;s{" "}
                 <a
-                  href="/terms_of_service"
+                  href="/legal/terms"
                   className="text-[#FF6B6B] hover:underline font-medium"
                 >
                   Terms of Service
@@ -324,14 +324,14 @@ const SignIn = () => {
                 . To learn more about how keasy collects, uses, and protects your
                 personal data, please see our{" "}
                 <a
-                  href="/privacy_policy"
+                  href="/legal/privacy"
                   className="text-[#FF6B6B] hover:underline font-medium"
                 >
                   Privacy Policy 
                 </a> 
                 {" "}and{" "}
                 <a
-                  href="/membership-terms"
+                  href="/legal/membership"
                   className="text-[#FF6B6B] hover:underline font-medium"
                 >
                   Membership Terms of Service
@@ -396,7 +396,7 @@ const SignIn = () => {
       </div>
 
       {/* Optional background particles (component already defined) */}
-      {/* <FloatingParticles /> */}
+      <FloatingParticles />
     </div>
   );
 };

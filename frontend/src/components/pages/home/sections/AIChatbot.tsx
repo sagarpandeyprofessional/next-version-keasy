@@ -21,7 +21,7 @@ Our platform offers:
 - Marketplace to buy and sell new or used items safely.
 - Events & Activities listings to help you explore your city.
 - Community groups and chats where you can connect with others.
-- Blog and resources for legal advice, cultural tips, and local insights.
+- Guides and resources for legal advice, cultural tips, and local insights.
 
 Keasy's goal is simple: make life easier for foreigners in South Korea through community, technology, and meaningful support.
 

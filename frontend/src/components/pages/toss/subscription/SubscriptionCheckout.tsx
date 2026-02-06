@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
+import { loadTossPayments } from "@/lib/tosspayments-sdk";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -209,26 +209,26 @@ export function SubscriptionCheckout() {
   const PlanIcon = plan.icon;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 py-6 px-3">
+      <div className="max-w-4xl mx-auto text-[0.85rem]">
         {/* Back Button */}
         <button
           onClick={() => router.push('/pricing')}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors"
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-5 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="font-medium">Back to pricing</span>
         </button>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-4 items-stretch">
           {/* Left Column - Plan Summary */}
-          <div className={`${colors.bg} ${colors.border} border-2 rounded-3xl p-8 h-fit sticky top-8`}>
+          <div className={`${colors.bg} ${colors.border} border-2 rounded-3xl p-4 h-full min-h-[720px] flex flex-col`}>
             <div className="flex items-start gap-4 mb-6">
-              <div className={`p-3 ${colors.button} rounded-2xl`}>
-                <PlanIcon className="w-8 h-8 text-white" />
+              <div className={`p-2 ${colors.button} rounded-2xl`}>
+                <PlanIcon className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">{plan.name}</h2>
+                <h2 className="text-base font-bold text-gray-900">{plan.name}</h2>
                 <p className="text-gray-600">Recurring Subscription</p>
               </div>
             </div>
@@ -265,14 +265,14 @@ export function SubscriptionCheckout() {
             </div>
 
             {/* Pricing Display */}
-            <div className="bg-white rounded-xl p-6 mb-6">
+            <div className="bg-white rounded-xl p-3 mb-4">
               <div className="flex items-end justify-between mb-2">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">
                     {billingCycle === 'monthly' ? 'Monthly price' : 'Annual price'}
                   </p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-gray-900">
+                    <span className="text-xl font-bold text-gray-900">
                       ₩{amount.toLocaleString()}
                     </span>
                     <span className="text-gray-500">
@@ -301,20 +301,20 @@ export function SubscriptionCheckout() {
             </div>
 
             {/* Features */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-gray-900 mb-4">What's included:</h3>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-900 mb-1.5">What's included:</h3>
               {plan.features.map((feature, index) => (
                 <div key={index} className="flex items-start gap-3">
-                  <Check className={`w-5 h-5 ${colors.text} flex-shrink-0 mt-0.5`} />
+                  <Check className={`w-3.5 h-3.5 ${colors.text} flex-shrink-0 mt-0.5`} />
                   <span className="text-gray-700">{feature}</span>
                 </div>
               ))}
             </div>
 
             {/* Auto-renewal Notice */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="flex items-start gap-2 text-sm text-gray-600 bg-blue-50 rounded-lg p-3">
-                <RefreshCw className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-600" />
+                <RefreshCw className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-blue-600" />
                 <div>
                   <p className="font-medium text-blue-900 mb-1">Auto-renewal subscription</p>
                   <p className="text-blue-700">
@@ -326,17 +326,17 @@ export function SubscriptionCheckout() {
             </div>
 
             {/* Security Badge */}
-            <div className="mt-4">
+            <div className="mt-2">
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Shield className="w-5 h-5" />
+                <Shield className="w-4 h-4" />
                 <span>Secure payment powered by Toss Payments</span>
               </div>
             </div>
           </div>
 
           {/* Right Column - Payment Setup */}
-          <div className="bg-white rounded-3xl shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Set up your subscription</h2>
+          <div className="bg-white rounded-3xl shadow-xl p-4 h-full min-h-[720px] flex flex-col">
+            <h2 className="text-base font-bold text-gray-900 mb-3">Set up your subscription</h2>
             
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
@@ -347,8 +347,8 @@ export function SubscriptionCheckout() {
               <>
                 {/* User Info Summary */}
                 {userProfile && (
-                  <div className="bg-gray-50 rounded-xl p-6 mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-4">Account Information</h3>
+                  <div className="bg-gray-50 rounded-xl p-3 mb-4">
+                    <h3 className="font-semibold text-gray-900 mb-2">Account Information</h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Name:</span>
@@ -373,9 +373,9 @@ export function SubscriptionCheckout() {
                 )}
 
                 {/* How it works */}
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
-                  <div className="flex items-start gap-3 mb-4">
-                    <CreditCard className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-3 mb-4">
+                  <div className="flex items-start gap-3 mb-3">
+                    <CreditCard className="w-5 h-5 text-blue-600 flex-shrink-0" />
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2">How billing works</h3>
                       <div className="space-y-2 text-sm text-gray-700">
@@ -389,7 +389,7 @@ export function SubscriptionCheckout() {
                 </div>
 
                 {/* Subscription Summary */}
-                <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-3 mb-4">
                   <h3 className="font-semibold text-gray-900 mb-3">Subscription Summary</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
@@ -406,7 +406,7 @@ export function SubscriptionCheckout() {
                     </div>
                     <div className="flex justify-between pt-3 border-t border-blue-200">
                       <span className="text-gray-700 font-medium">Amount Due Today:</span>
-                      <span className="font-bold text-gray-900 text-lg">
+                      <span className="font-bold text-gray-900 text-sm">
                         ₩{amount.toLocaleString()}
                       </span>
                     </div>
@@ -417,7 +417,7 @@ export function SubscriptionCheckout() {
                 <button
                   onClick={handleRequestBillingAuth}
                   disabled={isProcessing || !payment}
-                  className={`w-full py-4 px-6 rounded-xl font-bold text-white text-lg shadow-lg transition-all ${
+                  className={`w-full py-2.5 px-3 rounded-xl font-bold text-white text-xs shadow-lg transition-all ${
                     isProcessing || !payment
                       ? 'bg-gray-400 cursor-not-allowed'
                       : `${colors.button} hover:shadow-xl transform hover:scale-[1.02]`
@@ -433,22 +433,24 @@ export function SubscriptionCheckout() {
                   )}
                 </button>
 
-                {/* Terms */}
-                <p className="text-xs text-gray-500 text-center mt-4">
+                <div className="mt-auto pt-3">
+                  {/* Terms */}
+                  <p className="text-xs text-gray-500 text-center">
                   By continuing, you agree to our{' '}
-                  <a href="/terms_of_service" className="text-blue-600 hover:underline">
+                  <a href="/legal/terms" className="text-blue-600 hover:underline">
                     Terms of Service
                   </a>{', '}
-                  <a href="/membership-terms" className="text-blue-600 hover:underline">
+                  <a href="/legal/membership" className="text-blue-600 hover:underline">
                     Membership Terms of Service
                   </a>{', '}
                   and{' '}
-                  <a href="/privacy_policy" className="text-blue-600 hover:underline">
+                  <a href="/legal/privacy" className="text-blue-600 hover:underline">
                     Privacy Policy
                   </a>
                   . Your subscription will auto-renew {billingCycle === 'monthly' ? 'monthly' : 'annually'}. 
                   You can cancel anytime from your account settings.
-                </p>
+                  </p>
+                </div>
               </>
             )}
           </div>

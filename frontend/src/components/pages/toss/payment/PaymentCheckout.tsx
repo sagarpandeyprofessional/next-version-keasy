@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
+import { loadTossPayments, ANONYMOUS } from "@/lib/tosspayments-sdk";
 import { useEffect, useState } from "react";
 
 // ------  SDK 초기화 ------

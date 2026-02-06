@@ -4,6 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Play } from "lucide-react";
 
 /* =============================================================================
    LOCAL CLASSES CTA - Bold, Engaging Banner
@@ -24,9 +25,9 @@ export const LocalClassesCTA = () => {
           <div className="absolute inset-0 opacity-10">
             <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
               <defs>
-                {/* <pattern id="circles" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                <pattern id="circles" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
                   <circle cx="10" cy="10" r="2" fill="white" />
-                </pattern> */}
+                </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#circles)" />
             </svg>
@@ -46,12 +47,12 @@ export const LocalClassesCTA = () => {
                 />
                 {/* Play button overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  {/* <motion.div
+                  <motion.div
                     whileHover={{ scale: 1.1 }}
                     className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg cursor-pointer"
                   >
                     <Play className="w-6 h-6 text-[#FF6B6B] ml-1" />
-                  </motion.div> */}
+                  </motion.div>
                 </div>
               </motion.div>
             </div>

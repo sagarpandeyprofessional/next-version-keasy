@@ -7,12 +7,11 @@ import {
   FiSearch,
   FiX,
   FiUser,
-  FiHome,
   FiShoppingBag,
   FiCalendar,
   FiUsers,
   FiBookOpen,
-  FiCreditCard,
+  FiBriefcase,
 } from "react-icons/fi";
 import { UserRoundCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -248,7 +247,6 @@ const SearchModal = ({ isOpen, onClose, searchQuery, setSearchQuery }: SearchMod
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { profile, user } = useAuth();
   const router = useRouter();
@@ -263,10 +261,13 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { name: "Home", path: "/" },
-    { name: "Guides", path: "/guides" },
-    { name: "Connect", path: "/connect" },
-    { name: "Pricing", path: "/plans" },
+    { name: "Marketplace", path: "/marketplace", icon: FiShoppingBag },
+    { name: "Jobs", path: "/jobs", icon: FiBriefcase },
+    { name: "Events", path: "/events", icon: FiCalendar },
+    { name: "Community", path: "/community", icon: FiUsers },
+    { name: "Guides", path: "/guides", icon: FiBookOpen },
+    { name: "Connect", path: "/connect", icon: UserRoundCheck },
+    { name: "About", path: "/about", icon: FiUser },
   ];
 
   const isActive = (path: string) => {
@@ -276,54 +277,46 @@ const Navbar = () => {
     return pathname?.startsWith(path);
   };
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  // No menu state to sync on route changes.
 
-  const navItemsWithIcons = [
-    { name: "Home", path: "/", icon: FiHome },
-    { name: "Marketplace", path: "/marketplace", icon: FiShoppingBag },
-    { name: "Events", path: "/events", icon: FiCalendar },
-    { name: "Community", path: "/community", icon: FiUsers },
-    { name: "Guides", path: "/guides", icon: FiBookOpen },
-    { name: "Connect", path: "/connect", icon: UserRoundCheck },
-    { name: "About", path: "/about", icon: FiUser },
-    { name: "Subscription", path: "/plans", icon: FiCreditCard },
-  ];
+  const navItemsWithIcons = navItems;
 
   return (
     <>
       {/* Desktop Top Navbar */}
-      <nav className="hidden lg:block sticky top-0 z-50 bg-white shadow-sm">
+      <nav className="hidden lg:block sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-black/5">
         <div className="container mx-auto px-[3%]">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex items-center min-h-16 py-2">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <div className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors">keasy</div>
+              <div className="text-xl font-semibold text-gray-900 tracking-tight">keasy</div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="flex items-center space-x-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    isActive(item.path)
-                      ? "text-blue-600 bg-blue-50"
-                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
+            {/* Center Navigation */}
+            <div className="flex-1 flex justify-center">
+              <div className="flex items-center gap-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    className={`relative px-3 py-2 text-[13px] font-medium tracking-tight transition-colors ${
+                      isActive(item.path) ? "text-gray-900" : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    {item.name}
+                    {isActive(item.path) && (
+                      <span className="absolute left-2 right-2 -bottom-1 h-[2px] rounded-full bg-gray-900" />
+                    )}
+                  </Link>
+                ))}
+              </div>
             </div>
 
             {/* Right Side: Search + User */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-full hover:bg-black/5 transition-colors"
                 aria-label="Search"
               >
                 <FiSearch className="h-5 w-5 text-gray-700" />
@@ -331,14 +324,14 @@ const Navbar = () => {
 
               <button
                 onClick={handleUserClick}
-                className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-gray-100 transition-all duration-200"
+                className="flex items-center justify-center h-9 w-9 rounded-full hover:bg-black/5 transition-all duration-200"
                 aria-label="User profile"
               >
                 {user && (profile as { pfp_url?: string; username?: string })?.pfp_url ? (
                   <img
                     src={(profile as { pfp_url?: string }).pfp_url}
                     alt={(profile as { username?: string }).username || "User"}
-                    className="h-9 w-9 rounded-full object-cover border-2 border-blue-200"
+                    className="h-8 w-8 rounded-full object-cover border border-black/10"
                   />
                 ) : (
                   <FiUser className="h-5 w-5 text-gray-700" />
@@ -350,12 +343,12 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Top Bar - Logo + Search Only */}
-      <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
+      <div className="lg:hidden sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-black/5">
         <div className="container mx-auto px-[3%]">
           <div className="flex justify-between items-center h-14">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <div className="text-xl font-bold text-blue-600">keasy</div>
+              <div className="text-lg font-semibold text-gray-900 tracking-tight">keasy</div>
             </Link>
 
             <div className="flex flex-row">
@@ -388,8 +381,8 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Bottom Navigation with Icons */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-        <div className="flex items-center justify-around h-16 px-2">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-black/5 shadow-lg z-50">
+        <div className="flex items-center h-16 px-2 gap-1 overflow-x-auto">
           {navItemsWithIcons.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -398,12 +391,12 @@ const Navbar = () => {
               <Link
                 key={item.path}
                 href={item.path}
-                className={`flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-xl transition-all ${
-                  active ? "text-blue-600" : "text-gray-600 hover:text-blue-600"
+                className={`flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-xl transition-all flex-shrink-0 ${
+                  active ? "text-gray-900" : "text-gray-500 hover:text-gray-900"
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span className={`text-[10px] font-medium ${active ? "text-blue-600" : "text-gray-500"}`}>
+                <span className={`text-[10px] font-medium ${active ? "text-gray-900" : "text-gray-500"}`}>
                   {item.name}
                 </span>
               </Link>
@@ -412,13 +405,13 @@ const Navbar = () => {
 
           <button
             onClick={handleUserClick}
-            className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-xl transition-all text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-xl transition-all text-gray-500 hover:text-gray-900"
           >
             {user && (profile as { pfp_url?: string; username?: string })?.pfp_url ? (
               <img
                 src={(profile as { pfp_url?: string }).pfp_url}
                 alt={(profile as { username?: string }).username || "User"}
-                className="h-6 w-6 rounded-full object-cover border-2 border-blue-200"
+                className="h-6 w-6 rounded-full object-cover border border-black/10"
               />
             ) : (
               <FiUser className="w-5 h-5" />

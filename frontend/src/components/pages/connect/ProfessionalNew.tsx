@@ -204,7 +204,7 @@ const ProfessionalNew = () => {
     setImgPreview(previewUrl);
 
     if (!userId) {
-      setErrors(prev => ({ ...prev, img_url: 'Please log in to upload images' }));
+      setErrors(prev => ({ ...prev, img_url: 'Please enter your account to upload images.' }));
       return;
     }
 
@@ -239,7 +239,7 @@ const ProfessionalNew = () => {
     setBannerPreview(previewUrl);
 
     if (!userId) {
-      setErrors(prev => ({ ...prev, banner_url: 'Please sign in to upload banners' }));
+      setErrors(prev => ({ ...prev, banner_url: 'Please enter your account to upload banners.' }));
       return;
     }
 
@@ -459,16 +459,16 @@ const ProfessionalNew = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
+    <div className="connect-shell min-h-screen py-10 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Professional Profile</h1>
-          <p className="text-gray-600 mb-8">Share your expertise and connect with opportunities</p>
+        <div className="connect-panel p-8 md:p-10">
+          <h1 className="connect-display text-3xl md:text-4xl mb-2">Create Professional Profile</h1>
+          <p className="connect-muted mb-8">Share your expertise and connect with opportunities.</p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="connect-form space-y-6">
             {/* Profile Image */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 <Camera className="inline w-4 h-4 mr-2" />
                 Profile Image (3:4 ratio)
               </label>
@@ -482,6 +482,7 @@ const ProfessionalNew = () => {
                     />
                     <button
                       type="button"
+                      aria-label="Remove image"
                       onClick={async () => {
                         if (oldImgPath) {
                           await deleteFile('connect_professional_img', oldImgPath);
@@ -496,7 +497,7 @@ const ProfessionalNew = () => {
                     </button>
                   </div>
                 )}
-                <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition w-fit disabled:opacity-50">
+                <label className="connect-action connect-action--ghost connect-action--small w-fit cursor-pointer disabled:opacity-50">
                   {uploadingImage ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -522,7 +523,7 @@ const ProfessionalNew = () => {
 
             {/* Full Name */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 Full Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -530,18 +531,18 @@ const ProfessionalNew = () => {
                 value={formData.full_name}
                 onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
                 maxLength={100}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full"
                 placeholder="Enter your full name"
               />
-              <p className="text-xs text-gray-500">{formData.full_name.length}/100</p>
+              <p className="text-xs connect-muted">{formData.full_name.length}/100</p>
               {errors.full_name && <p className="text-red-500 text-sm">{errors.full_name}</p>}
             </div>
 
             {/* Bio List */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 Bio Highlights
-                <span className="text-gray-500 font-normal ml-2">
+                <span className="connect-help ml-2">
                   (Add up to 5 key points about yourself)
                 </span>
               </label>
@@ -556,7 +557,7 @@ const ProfessionalNew = () => {
                       addBioItem();
                     }
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1"
                   placeholder="e.g., Fluent in English/Korean or 100+ foreigners found homes with us"
                   disabled={formData.bio_list.length >= 5}
                 />
@@ -564,25 +565,26 @@ const ProfessionalNew = () => {
                   type="button"
                   onClick={addBioItem}
                   disabled={!currentBioItem.trim() || formData.bio_list.length >= 5}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="connect-action connect-action--small disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   Add
                 </button>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600">Items:</span>
-                <span className={`font-semibold ${formData.bio_list.length === 5 ? 'text-red-600' : 'text-blue-600'}`}>
+                <span className="connect-muted">Items:</span>
+                <span className={`font-semibold ${formData.bio_list.length === 5 ? 'text-red-600' : 'connect-accent'}`}>
                   {formData.bio_list.length}/5
                 </span>
               </div>
               {formData.bio_list.length > 0 && (
                 <div className="space-y-2 mt-2">
                   {formData.bio_list.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg">
+                    <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-lg connect-accent-soft">
                       <span className="flex-1">{item}</span>
                       <button
                         type="button"
+                        aria-label="Remove highlight"
                         onClick={() => removeBioItem(idx)}
                         className="text-red-600 hover:text-red-800"
                       >
@@ -597,7 +599,7 @@ const ProfessionalNew = () => {
 
             {/* Role */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 <Briefcase className="inline w-4 h-4 mr-2" />
                 Professional Role
               </label>
@@ -605,20 +607,20 @@ const ProfessionalNew = () => {
                 type="text"
                 value={formData.role}
                 onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full"
                 placeholder="e.g., Real Estate Agent, Property Manager, Broker"
               />
             </div>
 
             {/* Industry */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 Industry <span className="text-red-500">*</span>
               </label>
               <select
                 value={formData.industry}
                 onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full"
               >
                 {INDUSTRY_TYPES.map(ind => (
                   <option key={ind.value} value={ind.value}>
@@ -630,21 +632,21 @@ const ProfessionalNew = () => {
 
             {/* Bio */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 Professional Bio
               </label>
               <textarea
                 value={formData.bio}
                 onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full"
                 placeholder="Tell us about your professional background and expertise"
               />
             </div>
 
             {/* Location */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 <MapPin className="inline w-4 h-4 mr-2" />
                 Location
               </label>
@@ -656,7 +658,7 @@ const ProfessionalNew = () => {
                     ...prev,
                     location: { ...prev.location, title: e.target.value }
                   }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full"
                   placeholder="Location name (e.g., New York, USA)"
                 />
                 <input
@@ -666,7 +668,7 @@ const ProfessionalNew = () => {
                     ...prev,
                     location: { ...prev.location, url: e.target.value }
                   }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full"
                   placeholder="Location URL (e.g., Google Maps link)"
                 />
               </div>
@@ -674,7 +676,7 @@ const ProfessionalNew = () => {
 
             {/* Experience */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 Years of Experience
               </label>
               <input
@@ -682,21 +684,21 @@ const ProfessionalNew = () => {
                 min="0"
                 value={formData.experience}
                 onChange={(e) => setFormData(prev => ({ ...prev, experience: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full"
                 placeholder="Enter years of experience"
               />
             </div>
 
             {/* Contact Type */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 Contact Information <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={formData.contact_type}
                   onChange={(e) => setFormData(prev => ({ ...prev, contact_type: e.target.value }))}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full"
                 >
                   {CONTACT_TYPES.map(type => (
                     <option key={type.value} value={type.value}>{type.label}</option>
@@ -706,7 +708,7 @@ const ProfessionalNew = () => {
                   type="text"
                   value={formData.contact_url}
                   onChange={(e) => setFormData(prev => ({ ...prev, contact_url: e.target.value }))}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full"
                   placeholder={formData.contact_type === 'email' ? 'your@email.com' : 'username or number'}
                 />
               </div>
@@ -715,7 +717,7 @@ const ProfessionalNew = () => {
 
             {/* Video or Banner Upload */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 <Video className="inline w-4 h-4 mr-2" />
                 Media Content
               </label>
@@ -748,7 +750,7 @@ const ProfessionalNew = () => {
                     type="url"
                     value={formData.video_url}
                     onChange={(e) => handleVideoUrlChange(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full"
                     placeholder="https://youtube.com/watch?v=..."
                   />
                   {videoId && (
@@ -776,6 +778,7 @@ const ProfessionalNew = () => {
                       />
                       <button
                         type="button"
+                        aria-label="Remove banner"
                         onClick={async () => {
                           if (oldBannerPath) {
                             await deleteFile('connect_professional_banner', oldBannerPath);
@@ -790,7 +793,7 @@ const ProfessionalNew = () => {
                       </button>
                     </div>
                   )}
-                  <label className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition w-fit disabled:opacity-50">
+                  <label className="connect-action connect-action--ghost connect-action--small w-fit cursor-pointer disabled:opacity-50">
                     {uploadingBanner ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -817,7 +820,7 @@ const ProfessionalNew = () => {
 
             {/* Social Media */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 <Link className="inline w-4 h-4 mr-2" />
                 Social Media
               </label>
@@ -829,7 +832,7 @@ const ProfessionalNew = () => {
                     ...prev,
                     socials: { ...prev.socials, instagram_username: e.target.value }
                   }))}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full"
                   placeholder="Instagram username"
                 />
                 <input
@@ -839,7 +842,7 @@ const ProfessionalNew = () => {
                     ...prev,
                     socials: { ...prev.socials, tiktok_username: e.target.value }
                   }))}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full"
                   placeholder="TikTok username"
                 />
                 <input
@@ -849,7 +852,7 @@ const ProfessionalNew = () => {
                     ...prev,
                     socials: { ...prev.socials, facebook_username: e.target.value }
                   }))}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full"
                   placeholder="Facebook username"
                 />
                 <input
@@ -859,7 +862,7 @@ const ProfessionalNew = () => {
                     ...prev,
                     socials: { ...prev.socials, website_url: e.target.value }
                   }))}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full"
                   placeholder="Website URL"
                 />
               </div>
@@ -867,11 +870,11 @@ const ProfessionalNew = () => {
 
             {/* Business Documents */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block connect-label">
                 <FileText className="inline w-4 h-4 mr-2" />
                 Business Documents
               </label>
-              <label className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg cursor-pointer hover:bg-indigo-700 transition w-fit">
+              <label className="connect-action connect-action--ghost connect-action--small w-fit cursor-pointer">
                 <Upload className="w-4 h-4" />
                 Upload Documents
                 <input
@@ -884,11 +887,12 @@ const ProfessionalNew = () => {
               {formData.business_data_url.length > 0 && (
                 <div className="space-y-1 mt-2">
                   {formData.business_data_url.map((doc, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded">
-                      <Check className="w-4 h-4 text-green-600" />
+                    <div key={idx} className="flex items-center gap-2 text-sm connect-muted bg-white px-3 py-2 rounded-lg border border-[var(--connect-border)]">
+                      <Check className="w-4 h-4 text-[color:var(--connect-accent)]" />
                       {doc.name}
                       <button
                         type="button"
+                        aria-label="Remove document"
                         onClick={async () => {
                           if (doc.path) {
                             await deleteFile('connect_professional_business', doc.path);
@@ -913,7 +917,7 @@ const ProfessionalNew = () => {
             <button
               type="submit"
               disabled={loading || !userId || uploadingImage || uploadingBanner}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="connect-action w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -926,7 +930,7 @@ const ProfessionalNew = () => {
             </button>
 
             {!userId && (
-              <p className="text-center text-red-500 text-sm">Please log in to create a profile</p>
+              <p className="text-center text-red-500 text-sm">Please enter your account to create a profile.</p>
             )}
           </form>
         </div>

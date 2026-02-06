@@ -151,7 +151,7 @@ const FAQPage = () => {
 
                   <h3 className="text-xl font-semibold text-gray-800 mb-3">How do I create a marketplace listing?</h3>
                   <p className="text-gray-700 mb-4">
-                    Go to <Link href="/marketplace" className="text-blue-600 hover:underline">Marketplace</Link>, click "Post Listing", add clear photos (minimum 3, up to 10), detailed description, price, and location. Identity verification required for sellers. <Link href="/marketplace_policy" className="text-blue-600 hover:underline">View marketplace policies →</Link>
+                    Go to <Link href="/marketplace" className="text-blue-600 hover:underline">Marketplace</Link>, click "Post Listing", add clear photos (minimum 3, up to 10), detailed description, price, and location. Identity verification required for sellers. <Link href="/legal/marketplace" className="text-blue-600 hover:underline">View marketplace policies →</Link>
                   </p>
 
                   <h3 className="text-xl font-semibold text-gray-800 mb-3">How many listings can I have?</h3>
@@ -161,12 +161,12 @@ const FAQPage = () => {
 
                   <h3 className="text-xl font-semibold text-gray-800 mb-3">Is it safe to buy and sell on Keasy?</h3>
                   <p className="text-gray-700 mb-4">
-                    We prioritize safety with identity verification, secure messaging, and community guidelines. KoreaEasy operates as a communications sales intermediary (통신판매중개자). Always meet in public places, inspect items before purchase, and report suspicious activity. <Link href="/marketplace_policy" className="text-blue-600 hover:underline">Read safety guidelines →</Link>
+                    We prioritize safety with identity verification, secure messaging, and community guidelines. KoreaEasy operates as a communications sales intermediary (통신판매중개자). Always meet in public places, inspect items before purchase, and report suspicious activity. <Link href="/legal/marketplace" className="text-blue-600 hover:underline">Read safety guidelines →</Link>
                   </p>
 
                   <h3 className="text-xl font-semibold text-gray-800 mb-3">What items can I sell?</h3>
                   <p className="text-gray-700 mb-4">
-                    You can sell used goods, electronics, furniture, books, and more. Prohibited items include counterfeit goods, weapons, drugs, alcohol, tobacco, and items requiring licenses. See our <Link href="/marketplace_policy" className="text-blue-600 hover:underline">complete prohibited items list</Link>.
+                    You can sell used goods, electronics, furniture, books, and more. Prohibited items include counterfeit goods, weapons, drugs, alcohol, tobacco, and items requiring licenses. See our <Link href="/legal/marketplace" className="text-blue-600 hover:underline">complete prohibited items list</Link>.
                   </p>
                 </section>
 
@@ -237,16 +237,16 @@ const FAQPage = () => {
                     Review our policies for details on data use, platform rules, marketplace guidelines, and paid membership terms:
                   </p>
                   <div className="flex flex-wrap gap-x-6 gap-y-2">
-                    <Link href="/privacy_policy" className="text-blue-600 hover:underline text-sm">
+                    <Link href="/legal/privacy" className="text-blue-600 hover:underline text-sm">
                       Privacy Policy
                     </Link>
-                    <Link href="/terms_of_service" className="text-blue-600 hover:underline text-sm">
+                    <Link href="/legal/terms" className="text-blue-600 hover:underline text-sm">
                       Terms of Service
                     </Link>
-                    <Link href="/marketplace_policy" className="text-blue-600 hover:underline text-sm">
+                    <Link href="/legal/marketplace" className="text-blue-600 hover:underline text-sm">
                       Marketplace Policy
                     </Link>
-                    <Link href="/membership-terms" className="text-blue-600 hover:underline text-sm">
+                    <Link href="/legal/membership" className="text-blue-600 hover:underline text-sm">
                       Membership Terms of Service
                     </Link>
                   </div>
@@ -290,16 +290,16 @@ const FAQPage = () => {
                       </Link>
                     </div>
                     <div className="flex flex-wrap gap-x-6 gap-y-2">
-                      <Link href="/privacy_policy" className="text-gray-600 hover:text-gray-900 hover:underline text-sm">
+                      <Link href="/legal/privacy" className="text-gray-600 hover:text-gray-900 hover:underline text-sm">
                         Privacy Policy
                       </Link>
-                      <Link href="/terms_of_service" className="text-gray-600 hover:text-gray-900 hover:underline text-sm">
+                      <Link href="/legal/terms" className="text-gray-600 hover:text-gray-900 hover:underline text-sm">
                         Terms of Service
                       </Link>
-                      <Link href="/marketplace_policy" className="text-gray-600 hover:text-gray-900 hover:underline text-sm">
+                      <Link href="/legal/marketplace" className="text-gray-600 hover:text-gray-900 hover:underline text-sm">
                         Marketplace Policy
                       </Link>
-                      <Link href="/membership-terms" className="text-gray-600 hover:text-gray-900 hover:underline text-sm">
+                      <Link href="/legal/membership" className="text-gray-600 hover:text-gray-900 hover:underline text-sm">
                         Membership Terms of Service
                       </Link>
                     </div>

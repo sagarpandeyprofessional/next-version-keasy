@@ -525,21 +525,21 @@ const SignUp = () => {
               >
                 By clicking Sign up, you agree to keasy&apos;s{" "}
                 <a
-                  href="/terms_of_service"
+                  href="/legal/terms"
                   className="text-[#4ECDC4] hover:underline font-medium"
                 >
                   Terms of Service
                 </a>{" "}
                 ,{" "}
                 <a
-                  href="/privacy_policy"
+                  href="/legal/privacy"
                   className="text-[#4ECDC4] hover:underline font-medium"
                 >
                   Privacy Policy
                 </a>
                 {" "}and{" "}
                 <a
-                  href="/membership-terms"
+                  href="/legal/membership"
                   className="text-[#4ECDC4] hover:underline font-medium"
                 >
                   Membership Terms of Service
