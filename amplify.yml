@@ -17,6 +17,7 @@ frontend:
       commands:
         - npm run build --prefix frontend
         - cp -r frontend/public frontend/.next/standalone/public
+        - mkdir -p frontend/.next/standalone/.next
         - cp -r frontend/.next/static frontend/.next/standalone/.next/static
   artifacts:
     baseDirectory: frontend/.next/standalone
