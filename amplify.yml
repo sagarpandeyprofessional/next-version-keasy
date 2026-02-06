@@ -15,12 +15,12 @@ applications:
       phases:
         preBuild:
           commands:
-            - npm ci
+            - npm ci --prefix frontend
         build:
           commands:
-            - npm run build
+            - npm run build --prefix frontend
       artifacts:
-        baseDirectory: .next
+        baseDirectory: frontend/.next
         files:
           - '**/*'
       cache:
