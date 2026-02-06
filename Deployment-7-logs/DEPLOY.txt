@@ -1,2 +1,0 @@
-Frontend build failed; no deploy artifacts published.
-See BUILD.txt for full logs.

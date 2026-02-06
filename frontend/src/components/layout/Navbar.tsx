@@ -288,8 +288,8 @@ const Navbar = () => {
         <div className="container mx-auto px-[3%]">
           <div className="flex items-center min-h-16 py-2">
             {/* Logo */}
-            <Link href="/" className="flex-shrink-0">
-              <div className="text-xl font-semibold text-gray-900 tracking-tight">keasy</div>
+            <Link href="/" className="flex-shrink-0" aria-label="keasy home">
+              <img src="/logo.png" alt="keasy" className="h-8 w-auto object-contain" />
             </Link>
 
             {/* Center Navigation */}
@@ -347,8 +347,8 @@ const Navbar = () => {
         <div className="container mx-auto px-[3%]">
           <div className="flex justify-between items-center h-14">
             {/* Logo */}
-            <Link href="/" className="flex-shrink-0">
-              <div className="text-lg font-semibold text-gray-900 tracking-tight">keasy</div>
+            <Link href="/" className="flex-shrink-0" aria-label="keasy home">
+              <img src="/logo.png" alt="keasy" className="h-7 w-auto object-contain" />
             </Link>
 
             <div className="flex flex-row">

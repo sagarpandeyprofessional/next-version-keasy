@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   title: "Keasy",
   description: "Keasy platform",
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
+    icon: "/K%20로고.png",
+    shortcut: "/K%20로고.png",
     apple: "/apple-icon.png",
   },
 };

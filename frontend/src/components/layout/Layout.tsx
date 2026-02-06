@@ -94,7 +94,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             ></path>
           </svg>
 
-          <span className="mt-3 text-blue-700 font-semibold text-lg animate-pulse">keasy</span>
+          <img src="/logo.png" alt="keasy" className="mt-3 h-8 w-auto animate-pulse object-contain" />
         </div>
       </div>
     );
