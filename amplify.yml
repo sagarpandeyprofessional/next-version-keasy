@@ -16,8 +16,10 @@ frontend:
     build:
       commands:
         - npm run build --prefix frontend
+        - cp -r frontend/public frontend/.next/standalone/public
+        - cp -r frontend/.next/static frontend/.next/standalone/.next/static
   artifacts:
-    baseDirectory: frontend/.next
+    baseDirectory: frontend/.next/standalone
     files:
       - '**/*'
   cache:
