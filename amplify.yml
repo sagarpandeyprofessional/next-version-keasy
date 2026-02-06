@@ -15,11 +15,9 @@ applications:
       phases:
         preBuild:
           commands:
-            - cd frontend
             - npm ci
         build:
           commands:
-            - cd frontend
             - npm run build
       artifacts:
         baseDirectory: .next
