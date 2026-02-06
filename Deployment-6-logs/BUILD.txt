@@ -1,0 +1,40 @@
+2026-02-06T03:59:47.312Z [INFO]: # Build environment configured with Standard build compute type: 8GiB Memory, 4vCPUs, 128GB Disk Space
+2026-02-06T03:59:47.775Z [INFO]: # Cloning repository: git@github.com:sagarpandeyprofessional/next-version-keasy.git
+2026-02-06T03:59:48.959Z [INFO]: Cloning into 'next-version-keasy'...
+2026-02-06T03:59:48.960Z [INFO]: # Switching to commit: 5fcfe29021090451cb290e7e1ff4606f309d2825
+2026-02-06T03:59:49.048Z [INFO]: HEAD is now at 5fcfe29 Add Deployment-5 logs and update assistant workflow
+2026-02-06T03:59:49.088Z [INFO]: Successfully cleaned up Git credentials
+2026-02-06T03:59:49.144Z [INFO]: ---- Setting Up SSM Secrets ----
+2026-02-06T03:59:49.191Z [WARNING]: !Failed to set up process.env.secrets
+2026-02-06T03:59:54.257Z [INFO]: ## Starting Backend Build
+2026-02-06T03:59:54.305Z [INFO]: # Executing command: npm install
+2026-02-06T04:01:37.548Z [INFO]: added 797 packages, and audited 1629 packages in 2m
+2026-02-06T04:01:37.678Z [INFO]: # Executing command: npm ci --prefix frontend
+2026-02-06T04:01:49.443Z [INFO]: added 461 packages, and audited 462 packages in 12s
+2026-02-06T04:01:49.449Z [INFO]: found 0 vulnerabilities
+2026-02-06T04:01:49.468Z [INFO]: # Completed phase: preBuild
+2026-02-06T04:01:49.469Z [INFO]: # Executing command: npx --yes @aws-amplify/backend-cli@latest pipeline-deploy
+2026-02-06T04:02:39.256Z [INFO]: 4:02:38 AM Synthesizing backend...
+2026-02-06T04:02:42.157Z [INFO]: 4:02:42 AM Backend synthesized in 3.27 seconds
+2026-02-06T04:02:42.157Z [INFO]: 4:02:42 AM Running type checks...
+2026-02-06T04:02:42.811Z [INFO]: 4:02:42 AM Type checks completed in 0.65 seconds
+2026-02-06T04:02:42.819Z [INFO]: 4:02:42 AM Building and publishing assets...
+2026-02-06T04:02:43.834Z [INFO]: [AccessDeniedError] Unable to deploy due to insufficient permissions
+                                 Resolution: Ensure you have permissions to call cloudformation:DescribeStacks for arn:aws:cloudformation:us-east-1:891377201946:stack/amplify-d1iuj894qe9pco-main-branch-a3de5f073e/*
+2026-02-06T04:02:43.934Z [ERROR]: !!! Build failed
+2026-02-06T04:02:43.934Z [ERROR]: !!! Error: Command failed with exit code 1
+
+---
+ANALYSIS:
+- npm install: PASSED
+- npm ci --prefix frontend: PASSED
+- Backend synthesize: PASSED (3.27 seconds)
+- Type checks: PASSED (0.65 seconds)
+- Asset publishing: PASSED (CDK S3 error gone!)
+- CloudFormation deploy: FAILED
+
+ERROR: [AccessDeniedError] cloudformation:DescribeStacks permission denied
+STACK: arn:aws:cloudformation:us-east-1:891377201946:stack/amplify-d1iuj894qe9pco-main-branch-a3de5f073e/*
+
+FIX REQUIRED (AWS Console):
+Add CloudFormation permissions to Amplify build role
