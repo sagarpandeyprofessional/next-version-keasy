@@ -6,3 +6,5 @@ AWS BUILD/ deploy errors/BUILD.txt
 AWS BUILD/ deploy errors/DEPLOY.txt
 .DS_Store
 PROCESS.md
+ASSISTANT_WORKFLOW.md
+file-tree generate.txt
