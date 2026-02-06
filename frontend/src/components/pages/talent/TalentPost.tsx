@@ -8,13 +8,16 @@ import { FiUpload, FiX, FiAlertCircle, FiMapPin } from "react-icons/fi";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 // Fix Leaflet default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: import("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: import("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: import("leaflet/dist/images/marker-shadow.png"),
+  iconRetinaUrl: typeof markerIcon2x === "string" ? markerIcon2x : markerIcon2x.src,
+  iconUrl: typeof markerIcon === "string" ? markerIcon : markerIcon.src,
+  shadowUrl: typeof markerShadow === "string" ? markerShadow : markerShadow.src,
 });
 
 // Map component for selecting location

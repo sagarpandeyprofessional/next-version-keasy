@@ -20,9 +20,10 @@ applications:
           commands:
             - npm run build
       artifacts:
-        baseDirectory: dist
+        baseDirectory: .next
         files:
           - '**/*'
       cache:
         paths:
+          - .next/cache/**/*
           - node_modules/**/*

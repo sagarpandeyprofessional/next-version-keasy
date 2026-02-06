@@ -52,8 +52,15 @@ export function PaymentBillingPage() {
   // 이해를 돕기 위해 클라이언트에서 강제로 실행해볼 수 있도록 샘플 API 가 구현되어 있습니다.
   async function confirm() {
     async function confirmBilling() {
+      const billingKey = responseData?.billingKey;
+
+      if (!billingKey) {
+        throw { message: "Missing billingKey. Please re-issue the billing key.", code: "BILLING_KEY_MISSING" };
+      }
+
       const requestData = {
         customerKey: searchParams.get("customerKey"),
+        billingKey,
         amount: 4900,
         orderId: generateRandomString(),
         orderName: "토스 프라임 구독",

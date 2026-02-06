@@ -22,10 +22,21 @@ const integration = new HttpLambdaIntegration(
   backend.keasyApiFunction.resources.lambda
 );
 
-httpApi.addRoutes({
-  path: "/api/keasy/chat",
-  methods: [HttpMethod.POST],
-  integration,
+const apiRoutes = [
+  "/api/keasy/chat",
+  "/api/confirm/payment",
+  "/api/confirm/widget",
+  "/api/confirm/brandpay",
+  "/api/issue-billing-key",
+  "/api/confirm-billing",
+];
+
+apiRoutes.forEach((path) => {
+  httpApi.addRoutes({
+    path,
+    methods: [HttpMethod.POST],
+    integration,
+  });
 });
 
 backend.addOutput({

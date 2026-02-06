@@ -133,6 +133,7 @@ export function SubscriptionBilling() {
     
     const requestData = {
       customerKey: customerKey,
+      billingKey: billingKey,
       amount: amount,
       orderId: orderId,
       orderName: `Keasy ${plan.name} - ${billingCycle === 'monthly' ? 'Monthly' : 'Annual'} Subscription`,
