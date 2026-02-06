@@ -1,117 +1,28 @@
 // @ts-nocheck
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from '@/lib/supabase/client';
-import { X, MapPin, Globe, Instagram, Facebook, FileText, ExternalLink, BadgeCheck } from "lucide-react";
+import { X, MapPin, Globe, Instagram, Facebook, FileText, ExternalLink, BadgeCheck, Filter, ChevronDown } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RiTiktokLine } from "react-icons/ri";
-import Talent from "@/components/pages/talent/Talent";
 
-// Mock data
+type FilterType = 'all' | 'professionals' | 'talents' | 'freelancers' | 'projects';
 
-const id = "0d4d00cd-c74a-4fa7-b47c-f7f39a5647e2"
-const talents = [
-  {
-    id: 1,
-    name: "Monica Chen",
-    role: "Financial Advisor",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-    quote: "I have a clear roadmap.",
-    description: "Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.Monica has 5 years of experience in financial planning and investment strategy. She's passionate about helping people achieve their financial goals through personalized advice and comprehensive planning.\n\nHer approach focuses on creating customized financial strategies that align with your life goals, whether you're planning for retirement, saving for a major purchase, or building long-term wealth. Monica believes in educating her clients about every aspect of their financial decisions, ensuring they feel confident and empowered.\n\nWith certifications in both CFP and CFA, Monica brings a deep understanding of market dynamics and financial instruments. She has successfully helped over 200 clients optimize their investment portfolios and achieve their financial milestones. Her clients appreciate her ability to break down complex financial concepts into easy-to-understand language.",
-    style: ["Analytical", "Patient", "Detail-oriented"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
-    rating: 5
-  },
-  {
-    id: 2,
-    name: "Amy Rodriguez",
-    role: "Business Consultant",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop",
-    quote: "It's given me a lot of peace and clarity around my finances.",
-    description: "Amy specializes in helping small businesses optimize their operations and financial processes. With 8 years of consulting experience, she brings clarity and actionable strategies to complex business challenges.\n\nHer methodology involves deep-dive analysis of business operations, identifying inefficiencies, and implementing sustainable solutions that drive growth. Amy has worked with startups, family businesses, and mid-sized companies across various industries including retail, technology, and healthcare.\n\nWhat sets Amy apart is her hands-on approach. She doesn't just provide recommendations—she works alongside your team to ensure successful implementation. Her clients have reported average revenue increases of 35% within the first year of working together. Amy's expertise spans strategic planning, process optimization, financial management, and team development.",
-    style: ["Strategic", "Supportive", "Results-driven"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
-    rating: 5
-  },
-  {
-    id: 3,
-    name: "Eli Thompson",
-    role: "Career Coach",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-    quote: "I don't feel like I'm flying by the seat of my pants.",
-    description: "Eli helps professionals navigate career transitions and achieve their professional goals. His approach combines practical advice with motivational support to help clients find their true calling.\n\nWith a background in HR and organizational psychology, Eli understands the complexities of modern career paths. He specializes in helping mid-career professionals who feel stuck, recent graduates finding their direction, and executives preparing for leadership roles. His coaching program includes personality assessments, skills mapping, industry research, and strategic networking guidance.\n\nEli's clients have successfully transitioned into new industries, negotiated significant salary increases, and launched their own businesses. He provides ongoing support through resume optimization, interview preparation, and personal branding strategies. His holistic approach addresses both professional development and work-life balance, ensuring sustainable career success.",
-    style: ["Motivational", "Empathetic", "Action-oriented"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
-    rating: 5
-  },
-  {
-    id: 4,
-    name: "Kathleen Martinez",
-    role: "Life Coach",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop",
-    quote: "It has been pivotal with major life decisions.",
-    description: "Kathleen specializes in helping individuals make confident decisions during life's major transitions. Her holistic approach integrates personal values with practical goal-setting strategies.\n\nWhether you're navigating a career change, relationship transition, relocation, or personal transformation, Kathleen provides the clarity and support you need. Her coaching philosophy centers on self-discovery, helping you identify what truly matters and creating actionable plans to get there.\n\nKathleen combines various methodologies including cognitive behavioral techniques, mindfulness practices, and values-based decision-making frameworks. She has guided hundreds of clients through major life transitions, helping them overcome self-doubt and fear of change. Her sessions create a safe space for exploring difficult emotions while maintaining focus on forward progress.\n\nClients describe Kathleen as intuitive, wise, and incredibly supportive. She has a gift for asking the right questions that lead to breakthrough moments.",
-    style: ["Holistic", "Encouraging", "Insightful"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
-    rating: 5
-  },
-  {
-    id: 5,
-    name: "David Park",
-    role: "Marketing Strategist",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-    quote: "Transforming brands into market leaders.",
-    description: "David has helped over 50 companies scale their marketing efforts. He specializes in digital strategy, content marketing, and brand positioning for growing businesses.\n\nHis expertise spans SEO, social media marketing, email campaigns, content strategy, and marketing automation. David believes in data-driven decision making and builds campaigns that deliver measurable ROI. He's particularly skilled at identifying untapped market opportunities and creating strategies to capitalize on them.\n\nDavid's approach starts with deep market research and competitor analysis, followed by developing a unique brand voice and positioning strategy. He then creates integrated marketing campaigns that leverage multiple channels for maximum impact. His clients have experienced average growth rates of 150% in their marketing-driven revenue.\n\nBeyond strategy, David helps build in-house marketing capabilities, training teams and establishing processes that ensure long-term success. He stays ahead of industry trends and continuously adapts strategies to leverage emerging platforms and technologies.",
-    style: ["Creative", "Data-driven", "Innovative"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
-    rating: 5
-  },
-  {
-    id: 6,
-    name: "Sarah Johnson",
-    role: "Wellness Coach",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
-    quote: "Health is wealth, and balance is key.",
-    description: "Sarah combines nutrition science with mindfulness practices to help clients achieve holistic wellness. Her programs focus on sustainable lifestyle changes rather than quick fixes.\n\nWith a Master's degree in Nutrition and certifications in yoga and meditation instruction, Sarah offers a comprehensive approach to health. She recognizes that true wellness encompasses physical health, mental clarity, emotional balance, and spiritual fulfillment. Her programs are customized to each client's unique needs, preferences, and lifestyle.\n\nSarah specializes in helping busy professionals who struggle to prioritize self-care, individuals recovering from burnout, and anyone seeking to establish healthier habits. Her methodology includes personalized nutrition plans, stress management techniques, movement practices, and sleep optimization strategies.\n\nClients working with Sarah report increased energy levels, better stress management, improved sleep quality, and a more positive relationship with food and exercise. She emphasizes progress over perfection and creates supportive accountability structures that make lasting change achievable.",
-    style: ["Compassionate", "Knowledgeable", "Balanced"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
-    rating: 4.5
-  },
-  {
-    id: 7,
-    name: "Michael Lee",
-    role: "Tech Consultant",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
-    quote: "Simplifying technology for everyone.",
-    description: "Michael helps businesses adopt new technologies efficiently. With expertise in cloud solutions and digital transformation, he makes complex tech accessible to non-technical teams.\n\nHis consulting practice focuses on helping small to medium-sized businesses leverage technology to improve operations, reduce costs, and scale effectively. Michael specializes in cloud migration, cybersecurity, workflow automation, and software integration. He has successfully guided over 40 companies through digital transformation initiatives.\n\nWhat makes Michael exceptional is his ability to bridge the gap between technical possibilities and business needs. He takes time to understand your operations, pain points, and goals before recommending solutions. His implementations are pragmatic, focusing on tools that deliver immediate value while building toward long-term capabilities.\n\nMichael provides comprehensive support from initial assessment through implementation and training. He ensures your team feels confident using new systems and establishes processes for ongoing optimization. His clients appreciate his patient teaching style and his commitment to making technology an enabler rather than a source of frustration.",
-    style: ["Patient", "Technical", "Pragmatic"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
-    rating: 3
-  },
-  {
-    id: 8,
-    name: "Jessica Brown",
-    role: "Real Estate Advisor",
-    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop",
-    quote: "Finding your perfect space is my mission.",
-    description: "Jessica has guided hundreds of families through the home-buying process. Her market knowledge and negotiation skills help clients find their dream properties at the right price.\n\nWith 12 years of experience in residential real estate, Jessica brings deep expertise in market analysis, property valuation, and negotiation strategy. She represents both buyers and sellers, always prioritizing her clients' best interests. Her intimate knowledge of local neighborhoods, school districts, and market trends gives her clients a significant advantage.\n\nJessica's approach is consultative and educational. She takes time to understand your needs, preferences, and constraints before showing properties. For buyers, she guides you through every step from pre-approval to closing. For sellers, she develops comprehensive marketing strategies that showcase your property's best features and attract qualified buyers.\n\nHer clients value her responsiveness, attention to detail, and calm presence during what can be a stressful process. Jessica has consistently ranked in the top 5% of agents in her market and maintains a 98% client satisfaction rate. Many of her clients return to her for future transactions and refer their friends and family.",
-    style: ["Attentive", "Trustworthy", "Proactive"],
-    video: 'https://www.youtube.com/watch?v=RFgbivd82sQ',
-    rating: 3
-  }
+const filterOptions: { value: FilterType; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'professionals', label: 'Professionals' },
+  { value: 'talents', label: 'Talents' },
+  { value: 'freelancers', label: 'Freelancers' },
+  { value: 'projects', label: 'Projects' },
 ];
 
-type ConnectTab = 'professionals' | 'talents' | 'freelancers' | 'projects';
-
-type ConnectProps = {
-  initialTab?: ConnectTab;
-};
-
-export default function Connect({ initialTab = 'professionals' }: ConnectProps) {
+export default function Connect() {
   const [isMobile, setIsMobile] = useState(false);
-  const [activeTab, setActiveTab] = useState<ConnectTab>(initialTab);
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -119,153 +30,129 @@ export default function Connect({ initialTab = 'professionals' }: ConnectProps) 
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
-    const tab = searchParams?.get('tab') as ConnectTab | null;
-    if (tab && ['professionals', 'talents', 'freelancers', 'projects'].includes(tab)) {
-      setActiveTab(tab);
+    const filter = searchParams?.get('filter') as FilterType | null;
+    if (filter && filterOptions.some(opt => opt.value === filter)) {
+      setActiveFilter(filter);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setIsFilterOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleFilterChange = (filter: FilterType) => {
+    setActiveFilter(filter);
+    setIsFilterOpen(false);
+  };
+
+  const currentFilterLabel = filterOptions.find(opt => opt.value === activeFilter)?.label || 'All';
 
   return (
     <div className="connect-shell min-h-screen">
       {/* Hero Section */}
-      <section className="relative pt-16 pb-12 lg:pt-20">
+      <section className="relative pt-16 pb-8 lg:pt-20">
         <div className="container mx-auto px-6">
-          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] items-center">
-            <div className="space-y-6 connect-reveal" style={{ "--delay": "40ms" }}>
-              <span className="connect-pill">Connect</span>
-              <h1 className="connect-display text-4xl md:text-5xl lg:text-6xl leading-[1.05]">
-                Find the right partner for your next move.
-              </h1>
-              <p className="text-base md:text-lg connect-muted max-w-xl">
-                A curated network of verified professionals, talents, freelancers, and project teams—ready to collaborate.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('professionals')}
-                  className="connect-action"
-                >
-                  Browse professionals
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('talents')}
-                  className="connect-action connect-action--ghost"
-                >
-                  Meet talents
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="connect-chip">Verified profiles</span>
-                <span className="connect-chip">Portfolio-first</span>
-                <span className="connect-chip">Fast response</span>
-              </div>
-            </div>
-            <div className="connect-card p-6 md:p-8 connect-reveal" style={{ "--delay": "120ms" }}>
-              <div className="space-y-5">
-                <div className="connect-outline rounded-2xl bg-white/70 p-4">
-                  <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Professionals</p>
-                  <h3 className="connect-display text-xl md:text-2xl font-semibold">
-                    Advisors and experts
-                  </h3>
-                  <p className="text-sm connect-muted">Legal, finance, growth, product.</p>
-                </div>
-                <div className="connect-outline rounded-2xl bg-white/70 p-4">
-                  <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Talents</p>
-                  <h3 className="connect-display text-xl md:text-2xl font-semibold">
-                    Creators and makers
-                  </h3>
-                  <p className="text-sm connect-muted">Design, media, engineering, community.</p>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="connect-outline rounded-xl bg-white/75 p-3 text-center">
-                    <p className="text-sm font-semibold">Verified</p>
-                    <p className="text-[10px] uppercase tracking-[0.2em] connect-muted">Profiles</p>
-                  </div>
-                  <div className="connect-outline rounded-xl bg-white/75 p-3 text-center">
-                    <p className="text-sm font-semibold">Direct</p>
-                    <p className="text-[10px] uppercase tracking-[0.2em] connect-muted">Contact</p>
-                  </div>
-                  <div className="connect-outline rounded-xl bg-white/75 p-3 text-center">
-                    <p className="text-sm font-semibold">Fast</p>
-                    <p className="text-[10px] uppercase tracking-[0.2em] connect-muted">Matching</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex justify-center mt-10 connect-reveal" style={{ "--delay": "180ms" }}>
-            <div className="connect-tabs">
-              <button
-                onClick={() => setActiveTab('professionals')}
-                data-active={activeTab === 'professionals'}
-                className="connect-tab"
-              >
-                Professionals
-              </button>
-              <button
-                onClick={() => setActiveTab('talents')}
-                data-active={activeTab === 'talents'}
-                className="connect-tab"
-              >
-                Talents
-              </button>
-              <button
-                onClick={() => setActiveTab('freelancers')}
-                data-active={activeTab === 'freelancers'}
-                className="connect-tab"
-              >
-                Freelancers
-              </button>
-              <button
-                onClick={() => setActiveTab('projects')}
-                data-active={activeTab === 'projects'}
-                className="connect-tab"
-              >
-                Projects
-              </button>
+          <div className="max-w-3xl mx-auto text-center connect-reveal" style={{ "--delay": "40ms" }}>
+            <span className="connect-pill">Connect</span>
+            <h1 className="connect-display text-3xl md:text-4xl lg:text-5xl leading-[1.1] mt-4 mb-4">
+              Find the right partner for your next move.
+            </h1>
+            <p className="text-base md:text-lg connect-muted max-w-xl mx-auto mb-6">
+              A curated network of verified professionals, talents, freelancers, and project teams—ready to collaborate.
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              <span className="connect-chip">Verified profiles</span>
+              <span className="connect-chip">Portfolio-first</span>
+              <span className="connect-chip">Fast response</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Content Section */}
-      <section className="pb-16 pt-10 lg:pb-20">
+      {/* Filter Header */}
+      <section className="py-6 border-b border-[#E4E4E7]">
         <div className="container mx-auto px-6">
-          {activeTab === 'professionals' && <Professionals isMobile={isMobile} />}
-          {activeTab === 'freelancers' && <Freelancers isMobile={isMobile} />}
-          {activeTab === 'talents' && (
-            <div className="w-full">
-              <div className="flex justify-end mb-4">
-                <button
-                  onClick={() => router.push('/talents/new')}
-                  className="connect-action"
-                >
-                  Become Talent
-                </button>
-              </div>
-              <Talent embedded />
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-[#0A0A0B]">
+                {activeFilter === 'all' ? 'Browse All' : currentFilterLabel}
+              </h2>
+              <p className="text-sm connect-muted">
+                {activeFilter === 'all'
+                  ? 'Explore professionals, talents, freelancers, and projects'
+                  : `Showing ${currentFilterLabel.toLowerCase()} only`
+                }
+              </p>
             </div>
+
+            {/* Filter Dropdown */}
+            <div className="relative" ref={filterRef}>
+              <button
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E4E4E7] rounded-lg hover:border-[#A1A1AA] transition-colors"
+              >
+                <Filter className="w-4 h-4 text-[#71717A]" />
+                <span className="text-sm font-medium text-[#3F3F46]">{currentFilterLabel}</span>
+                <ChevronDown className={`w-4 h-4 text-[#71717A] transition-transform ${isFilterOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isFilterOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-[#E4E4E7] rounded-lg shadow-lg z-20 overflow-hidden">
+                  {filterOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleFilterChange(option.value)}
+                      className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
+                        activeFilter === option.value
+                          ? 'bg-[#F4F4F5] text-[#0A0A0B] font-medium'
+                          : 'text-[#3F3F46] hover:bg-[#FAFAFA]'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Content Sections */}
+      <section className="py-10 lg:py-12">
+        <div className="container mx-auto px-6 space-y-16">
+          {(activeFilter === 'all' || activeFilter === 'professionals') && (
+            <Professionals isMobile={isMobile} showHeader={activeFilter === 'all'} />
           )}
-          {activeTab === 'projects' && <Projects isMobile={isMobile} />}
+          {(activeFilter === 'all' || activeFilter === 'talents') && (
+            <Talents isMobile={isMobile} showHeader={activeFilter === 'all'} />
+          )}
+          {(activeFilter === 'all' || activeFilter === 'freelancers') && (
+            <Freelancers isMobile={isMobile} showHeader={activeFilter === 'all'} />
+          )}
+          {(activeFilter === 'all' || activeFilter === 'projects') && (
+            <Projects isMobile={isMobile} showHeader={activeFilter === 'all'} />
+          )}
         </div>
       </section>
     </div>
   );
 }
 
-// for professionals (lawyers, real estate agents, consultants).
-// Updated Professionals component with Edit/Create button
-const Professionals = ({isMobile}) => {
+// Professionals Section
+const Professionals = ({ isMobile, showHeader = true }) => {
   const [selectedProfessional, setSelectedProfessional] = useState(null);
   const [professionals, setProfessionals] = useState([]);
   const [loadingProfessionals, setLoadingProfessionals] = useState(true);
@@ -275,28 +162,20 @@ const Professionals = ({isMobile}) => {
   const { user } = useAuth();
   const router = useRouter();
 
-   // Check if current user has a professional profile
   useEffect(() => {
     const checkUserProfile = async () => {
-      // If user is undefined, still loading auth state
-      if (user === undefined) {
-        return;
-      }
-      
-      // If user is null or has no id, no user logged in
+      if (user === undefined) return;
       if (!user || !user.id) {
         setLoadingUserProfile(false);
         return;
       }
-
       try {
         const { data, error } = await supabase
           .from('connect_professional')
           .select('*')
           .eq('user_id', user.id)
           .single();
-
-        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        if (error && error.code !== 'PGRST116') {
           console.error('Error checking user profile:', error);
         } else if (data) {
           setUserProfile(data);
@@ -307,11 +186,9 @@ const Professionals = ({isMobile}) => {
         setLoadingUserProfile(false);
       }
     };
-
     checkUserProfile();
   }, [user]);
 
-  // Load all professionals
   const loadProfessionals = async () => {
     setLoadingProfessionals(true);
     setProfessionalsError(null);
@@ -320,16 +197,13 @@ const Professionals = ({isMobile}) => {
         .from('connect_professional')
         .select('*')
         .eq('show', true);
-
       if (error) {
-        console.error('Error fetching professionals:', error.message);
         setProfessionalsError('Unable to load professionals right now.');
         setProfessionals([]);
       } else {
         setProfessionals(data || []);
       }
     } catch (error) {
-      console.error('Error fetching professionals:', error);
       setProfessionalsError('Unable to load professionals right now.');
       setProfessionals([]);
     } finally {
@@ -350,51 +224,27 @@ const Professionals = ({isMobile}) => {
   };
 
   return (
-    <>
-      <div className="flex flex-col gap-4 mb-8 connect-reveal" style={{ "--delay": "40ms" }}>
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Professionals</p>
-            <h2 className="connect-display text-2xl md:text-3xl">
-              Verified specialists ready to help.
-            </h2>
-            <p className="text-sm connect-muted max-w-xl">
-              Hire advisors, consultants, and operators with real-world experience.
-            </p>
+    <div>
+      {showHeader && (
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+          <div>
+            <p className="text-xs uppercase tracking-widest connect-muted mb-1">Professionals</p>
+            <h3 className="text-xl font-semibold text-[#0A0A0B]">Verified specialists</h3>
           </div>
           {!loadingUserProfile && user && (
             <button
               onClick={handleProfileAction}
-              className={`connect-action ${userProfile ? 'connect-action--ghost' : ''}`}
+              className="connect-action connect-action--small"
             >
-              {userProfile ? (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit My Profile
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Become a Professional
-                </>
-              )}
+              {userProfile ? 'Edit Profile' : 'Become Professional'}
             </button>
           )}
         </div>
-        <div className="flex flex-wrap gap-2">
-          <span className="connect-chip">Background checked</span>
-          <span className="connect-chip">Verified experience</span>
-          <span className="connect-chip">Fast introductions</span>
-        </div>
-      </div>
+      )}
 
       {loadingProfessionals ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {Array.from({ length: isMobile ? 4 : 8 }).map((_, idx) => (
+          {Array.from({ length: isMobile ? 2 : 4 }).map((_, idx) => (
             <div key={idx} className="connect-card p-4 animate-pulse">
               <div className="h-32 rounded-xl bg-white/70 mb-4" />
               <div className="h-4 rounded bg-white/80 w-3/4 mb-2" />
@@ -404,24 +254,14 @@ const Professionals = ({isMobile}) => {
         </div>
       ) : professionalsError ? (
         <div className="connect-card p-6 flex flex-col gap-4 items-start">
-          <div>
-            <p className="text-sm font-semibold">We could not load profiles.</p>
-            <p className="text-sm connect-muted">{professionalsError}</p>
-          </div>
-          <button
-            type="button"
-            onClick={loadProfessionals}
-            className="connect-action connect-action--ghost connect-action--small"
-          >
+          <p className="text-sm connect-muted">{professionalsError}</p>
+          <button onClick={loadProfessionals} className="connect-action connect-action--small connect-action--ghost">
             Try again
           </button>
         </div>
       ) : professionals.length === 0 ? (
         <div className="connect-card p-6 text-center">
-          <p className="text-sm font-semibold">No professionals listed yet.</p>
-          <p className="text-sm connect-muted mt-1">
-            Check back soon or create a profile to get started.
-          </p>
+          <p className="text-sm connect-muted">No professionals listed yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -436,64 +276,38 @@ const Professionals = ({isMobile}) => {
         </div>
       )}
 
-      {/* Modal */}
       <ProfessionalModal
         professionalId={selectedProfessional}
         isOpen={!!selectedProfessional}
         onClose={() => setSelectedProfessional(null)}
         isMobile={isMobile}
       />
-    </>
+    </div>
   );
 };
 
 const ProfessionalCard = ({ professional, onClick, isMobile }) => {
-  // Mobile: Horizontal compact card
   if (isMobile) {
     return (
-      <div
-        onClick={onClick}
-        className="cursor-pointer connect-card overflow-hidden transition-all duration-300 flex items-stretch"
-      >
-        {/* Left: Profile image */}
+      <div onClick={onClick} className="cursor-pointer connect-card overflow-hidden flex items-stretch">
         <div className="w-24 h-28 flex-shrink-0">
-          <img
-            src={professional.img_url}
-            alt={professional.full_name}
-            className="w-full h-full object-cover"
-          />
+          <img src={professional.img_url} alt={professional.full_name} className="w-full h-full object-cover" />
         </div>
-
-        {/* Right: Info */}
         <div className="flex-1 p-4 flex flex-col justify-center">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-sm font-semibold text-[#0A0A0B] line-clamp-1">{professional.full_name}</h3>
-            {professional.verified && (
-              <BadgeCheck className="w-4 h-4 text-[color:var(--connect-accent)]" />
-            )}
+            {professional.verified && <BadgeCheck className="w-4 h-4 text-[color:var(--connect-accent)]" />}
           </div>
-          <p className="text-xs connect-muted mb-2 line-clamp-1">{professional.role}</p>
-          {professional.quote && (
-            <p className="text-xs connect-muted italic line-clamp-2">"{professional.quote}"</p>
-          )}
+          <p className="text-xs connect-muted line-clamp-1">{professional.role}</p>
         </div>
       </div>
     );
   }
 
-  // Desktop: Clean enterprise card design
   return (
-    <div
-      onClick={onClick}
-      className="cursor-pointer connect-card overflow-hidden transition-all duration-300 group"
-    >
-      {/* Image */}
+    <div onClick={onClick} className="cursor-pointer connect-card overflow-hidden group">
       <div className="relative aspect-[4/3] overflow-hidden bg-[#F4F4F5]">
-        <img
-          src={professional.img_url}
-          alt={professional.full_name}
-          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-        />
+        <img src={professional.img_url} alt={professional.full_name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
         {professional.verified && (
           <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
             <BadgeCheck className="w-3.5 h-3.5 text-[color:var(--connect-accent)]" />
@@ -501,18 +315,9 @@ const ProfessionalCard = ({ professional, onClick, isMobile }) => {
           </div>
         )}
       </div>
-
-      {/* Content */}
       <div className="p-4">
-        <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1 group-hover:text-[color:var(--connect-accent)] transition-colors">
-          {professional.full_name}
-        </h3>
-        <p className="text-sm connect-muted mb-2 line-clamp-1">{professional.role}</p>
-        {professional.experience && (
-          <span className="inline-block px-2 py-0.5 bg-[#F4F4F5] connect-muted text-xs rounded">
-            {professional.experience}+ years experience
-          </span>
-        )}
+        <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1">{professional.full_name}</h3>
+        <p className="text-sm connect-muted line-clamp-1">{professional.role}</p>
       </div>
     </div>
   );
@@ -529,31 +334,24 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
   };
 
   useEffect(() => {
-    // Mock fetch - replace with actual Supabase call
     const fetchProfessional = async () => {
       if (!professionalId) {
         setLoading(false);
         return;
       }
-      
       setLoading(true);
       const { data, error } = await supabase
-      .from('connect_professional')
-      .select('*')
-      .eq('id', professionalId)
-      .single();
-
-      if(error){
-        console.log(error.message)
-        setLoading(false)
+        .from('connect_professional')
+        .select('*')
+        .eq('id', professionalId)
+        .single();
+      if (error) {
+        console.log(error.message);
+      } else {
+        setProfessional(data);
       }
-      else{
-        setProfessional(data)
-        setLoading(false)
-      }
-
+      setLoading(false);
     };
-    
     if (isOpen && professionalId) {
       fetchProfessional();
     }
@@ -567,12 +365,8 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
       setIsAnimating(false);
       if (isMobile) document.body.style.overflow = "";
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [isOpen, isMobile]);
-  
-  
 
   const extractYouTubeId = (url) => {
     if (!url) return null;
@@ -580,15 +374,11 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
       const parsedUrl = new URL(url);
       if (parsedUrl.hostname.includes("youtu.be")) return parsedUrl.pathname.slice(1);
       return parsedUrl.searchParams.get("v");
-    } catch {
-      return url;
-    }
+    } catch { return url; }
   };
 
   const getIndustryDisplay = (industry) => {
-    return industry?.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ') || '';
+    return industry?.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') || '';
   };
 
   const getSocialIcon = (platform) => {
@@ -596,7 +386,6 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
       case 'instagram': return <Instagram className="w-4 h-4 text-[#71717A]" />;
       case 'facebook': return <Facebook className="w-4 h-4 text-[#71717A]" />;
       case 'tiktok': return <RiTiktokLine className="w-4 h-4 text-[#71717A]" />;
-      case 'website': return <Globe className="w-4 h-4 text-[#71717A]" />;
       default: return <Globe className="w-4 h-4 text-[#71717A]" />;
     }
   };
@@ -618,127 +407,63 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
   const hasSocials = professional.socials && Object.keys(professional.socials).length > 0;
   const hasBusinessDocs = professional.business_data_url && professional.business_data_url.length > 0;
 
-  // Mobile layout
   if (isMobile) {
     return (
       <div className="fixed inset-0 z-50" onClick={handleClose}>
         <div className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${isAnimating ? 'opacity-100' : 'opacity-0'}`} />
-
         <div
           onClick={(e) => e.stopPropagation()}
           className={`fixed left-0 right-0 bottom-0 connect-modal-panel rounded-t-2xl transition-transform duration-300 flex flex-col ${isAnimating ? 'translate-y-0' : 'translate-y-full'}`}
           style={{ height: '90vh' }}
         >
-          {/* Drag Handle */}
           <div className="flex justify-center pt-3 pb-2">
             <div className="w-10 h-1 bg-[#E4E4E7] rounded-full" />
           </div>
-
-          <button
-            type="button"
-            onClick={handleClose}
-            aria-label="Close"
-            className="absolute top-3 right-3 z-10 connect-icon-button"
-          >
+          <button onClick={handleClose} className="absolute top-3 right-3 z-10 connect-icon-button">
             <X className="w-5 h-5" />
           </button>
-
           <div className="flex-1 overflow-y-auto">
-            {/* Media Section */}
             <div className="relative aspect-video bg-[#F4F4F5] overflow-hidden">
               {professional.show_type === 'video' && videoId ? (
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
-                  title={professional.full_name}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              ) : professional.banner_url ? (
-                <img src={professional.banner_url} alt={professional.full_name} className="w-full h-full object-cover" />
+                <iframe src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`} title={professional.full_name} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full" />
               ) : (
-                <img src={professional.img_url} alt={professional.full_name} className="w-full h-full object-cover" />
+                <img src={professional.banner_url || professional.img_url} alt={professional.full_name} className="w-full h-full object-cover" />
               )}
             </div>
-
-            {/* Content */}
             <div className="p-5">
-              {/* Header */}
               <div className="flex items-start gap-4 mb-5">
                 <img src={professional.img_url} alt={professional.full_name} className="w-16 h-16 rounded-lg object-cover border border-[#E4E4E7]" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h2 className="text-xl font-semibold text-[#0A0A0B]">{professional.full_name}</h2>
-                    {professional.verified && (
-                      <BadgeCheck className="w-5 h-5 text-[color:var(--connect-accent)]" />
-                    )}
+                    {professional.verified && <BadgeCheck className="w-5 h-5 text-[color:var(--connect-accent)]" />}
                   </div>
-                  <p className="text-sm text-[#71717A] mb-2">{professional.role}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {professional.experience && (
-                      <span className="px-2 py-0.5 bg-[#F4F4F5] text-[#71717A] rounded text-xs">
-                        {professional.experience}+ years
-                      </span>
-                    )}
-                    {professional.industry && (
-                      <span className="px-2 py-0.5 bg-[#F4F4F5] text-[#71717A] rounded text-xs">
-                        {getIndustryDisplay(professional.industry)}
-                      </span>
-                    )}
-                  </div>
+                  <p className="text-sm text-[#71717A]">{professional.role}</p>
                 </div>
               </div>
-
-              {/* Quote */}
               {professional.quote && (
                 <div className="mb-5 p-4 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg">
                   <p className="text-sm text-[#3F3F46] italic">"{professional.quote}"</p>
                 </div>
               )}
-
-              {/* Bio */}
               {professional.bio && (
                 <div className="mb-5">
                   <h3 className="text-sm font-semibold text-[#0A0A0B] mb-2">About</h3>
                   <p className="text-sm text-[#3F3F46] leading-relaxed">{professional.bio}</p>
                 </div>
               )}
-
-              {/* Bio List */}
-              {professional.bio_list && professional.bio_list.length > 0 && (
-                <ul className="mb-5 space-y-1 ml-4">
-                  {professional.bio_list.map((item, idx) => (
-                    <li key={idx} className="text-sm text-[#3F3F46] list-disc">{item}</li>
-                  ))}
-                </ul>
-              )}
-
-              {/* Location */}
               {professional.location?.url && professional.location?.title && (
-                <a
-                  href={professional.location.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 mb-5 text-sm text-[color:var(--connect-accent)] hover:underline"
-                >
+                <a href={professional.location.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 mb-5 text-sm text-[color:var(--connect-accent)] hover:underline">
                   <MapPin className="w-4 h-4" />
                   {professional.location.title}
                 </a>
               )}
-
-              {/* Social Links */}
               {hasSocials && (
                 <div className="mb-5">
                   <h3 className="text-sm font-semibold text-[#0A0A0B] mb-3">Connect</h3>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(professional.socials).map(([platform, url], idx) => (
-                      <a
-                        key={idx}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-2 border border-[#E4E4E7] rounded-lg text-sm text-[#3F3F46] hover:border-[color:var(--connect-accent)] hover:text-[color:var(--connect-accent)] transition-colors"
-                      >
+                      <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-2 border border-[#E4E4E7] rounded-lg text-sm text-[#3F3F46] hover:border-[color:var(--connect-accent)]">
                         {getSocialIcon(platform)}
                         <span className="capitalize">{platform}</span>
                       </a>
@@ -746,36 +471,7 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                   </div>
                 </div>
               )}
-
-              {/* Business Documents */}
-              {hasBusinessDocs && (
-                <div className="mb-5">
-                  <h3 className="text-sm font-semibold text-[#0A0A0B] mb-3">Documents</h3>
-                  <div className="space-y-2">
-                    {professional.business_data_url.map((doc, idx) => (
-                      <a
-                        key={idx}
-                        href={doc.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg hover:border-[color:var(--connect-accent)] transition-colors group"
-                      >
-                        <FileText className="w-5 h-5 text-[#71717A]" />
-                        <span className="flex-1 text-sm text-[#3F3F46]">{doc.name}</span>
-                        <ExternalLink className="w-4 h-4 text-[#A1A1AA] group-hover:text-[color:var(--connect-accent)]" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Contact Button */}
-              <a
-                href={professional.contact_url}
-                target={professional.contact_type === 'email' ? '_self' : '_blank'}
-                rel="noopener noreferrer"
-                className="connect-action w-full"
-              >
+              <a href={professional.contact_url} target={professional.contact_type === 'email' ? '_self' : '_blank'} rel="noopener noreferrer" className="connect-action w-full">
                 Contact {professional.full_name.split(' ')[0]}
               </a>
             </div>
@@ -785,130 +481,66 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
     );
   }
 
-  // Desktop layout - Clean enterprise modal
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6" onClick={handleClose}>
       <div className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${isAnimating ? 'opacity-100' : 'opacity-0'}`} />
-
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`relative connect-modal-panel rounded-xl shadow-xl transition-all duration-300 max-w-4xl w-full max-h-[85vh] overflow-hidden ${
-          isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
+        className={`relative connect-modal-panel rounded-xl shadow-xl transition-all duration-300 max-w-4xl w-full max-h-[85vh] overflow-hidden ${isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
       >
-        <button
-          type="button"
-          onClick={handleClose}
-          aria-label="Close"
-          className="absolute top-4 right-4 z-10 connect-icon-button"
-        >
+        <button onClick={handleClose} className="absolute top-4 right-4 z-10 connect-icon-button">
           <X className="w-5 h-5" />
         </button>
-
         <div className="flex h-full max-h-[85vh]">
-          {/* Left side - Media */}
           <div className="w-2/5 bg-[#F4F4F5] flex items-center justify-center p-6">
             {professional.show_type === 'video' && videoId ? (
               <div className="w-full aspect-[3/4] rounded-lg overflow-hidden bg-black">
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
-                  title={professional.full_name}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
+                <iframe src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`} title={professional.full_name} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full" />
               </div>
-            ) : professional.banner_url ? (
-              <img
-                src={professional.banner_url}
-                alt={professional.full_name}
-                className="w-full aspect-[3/4] object-cover rounded-lg"
-              />
             ) : (
-              <img
-                src={professional.img_url}
-                alt={professional.full_name}
-                className="w-full aspect-[3/4] object-cover rounded-lg"
-              />
+              <img src={professional.banner_url || professional.img_url} alt={professional.full_name} className="w-full aspect-[3/4] object-cover rounded-lg" />
             )}
           </div>
-
-          {/* Right side - Content */}
           <div className="w-3/5 flex flex-col overflow-y-auto">
             <div className="p-6 flex-1">
-              {/* Header */}
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">
                   <h2 className="text-2xl font-semibold text-[#0A0A0B]">{professional.full_name}</h2>
-                  {professional.verified && (
-                    <BadgeCheck className="w-5 h-5 text-[color:var(--connect-accent)]" />
-                  )}
+                  {professional.verified && <BadgeCheck className="w-5 h-5 text-[color:var(--connect-accent)]" />}
                 </div>
                 <p className="text-[#71717A] mb-3">{professional.role}</p>
                 <div className="flex flex-wrap gap-2">
                   {professional.experience && (
-                    <span className="px-3 py-1 bg-[#F4F4F5] text-[#3F3F46] rounded-md text-sm">
-                      {professional.experience}+ years experience
-                    </span>
+                    <span className="px-3 py-1 bg-[#F4F4F5] text-[#3F3F46] rounded-md text-sm">{professional.experience}+ years</span>
                   )}
                   {professional.industry && (
-                    <span className="px-3 py-1 bg-[#F4F4F5] text-[#3F3F46] rounded-md text-sm">
-                      {getIndustryDisplay(professional.industry)}
-                    </span>
+                    <span className="px-3 py-1 bg-[#F4F4F5] text-[#3F3F46] rounded-md text-sm">{getIndustryDisplay(professional.industry)}</span>
                   )}
                 </div>
               </div>
-
-              {/* Quote */}
               {professional.quote && (
                 <div className="mb-6 p-4 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg">
                   <p className="text-[#3F3F46] italic">"{professional.quote}"</p>
                 </div>
               )}
-
-              {/* Bio */}
               {professional.bio && (
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-[#0A0A0B] mb-2">About</h3>
                   <p className="text-sm text-[#3F3F46] leading-relaxed">{professional.bio}</p>
                 </div>
               )}
-
-              {/* Bio List */}
-              {professional.bio_list && professional.bio_list.length > 0 && (
-                <ul className="mb-6 space-y-1 ml-4">
-                  {professional.bio_list.map((item, idx) => (
-                    <li key={idx} className="text-sm text-[#3F3F46] list-disc">{item}</li>
-                  ))}
-                </ul>
-              )}
-
-              {/* Location */}
               {professional.location?.url && professional.location?.title && (
-                <a
-                  href={professional.location.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 mb-6 text-sm text-[color:var(--connect-accent)] hover:underline"
-                >
+                <a href={professional.location.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mb-6 text-sm text-[color:var(--connect-accent)] hover:underline">
                   <MapPin className="w-4 h-4" />
                   {professional.location.title}
                 </a>
               )}
-
-              {/* Social Links */}
               {hasSocials && (
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-[#0A0A0B] mb-3">Connect</h3>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(professional.socials).map(([platform, url], idx) => (
-                      <a
-                        key={idx}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-2 border border-[#E4E4E7] rounded-lg text-sm text-[#3F3F46] hover:border-[color:var(--connect-accent)] hover:text-[color:var(--connect-accent)] transition-colors"
-                      >
+                      <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-2 border border-[#E4E4E7] rounded-lg text-sm text-[#3F3F46] hover:border-[color:var(--connect-accent)]">
                         {getSocialIcon(platform)}
                         <span className="capitalize">{platform}</span>
                       </a>
@@ -916,20 +548,12 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                   </div>
                 </div>
               )}
-
-              {/* Business Documents */}
               {hasBusinessDocs && (
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-[#0A0A0B] mb-3">Documents</h3>
                   <div className="space-y-2">
                     {professional.business_data_url.map((doc, idx) => (
-                      <a
-                        key={idx}
-                        href={doc.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg hover:border-[color:var(--connect-accent)] transition-colors group"
-                      >
+                      <a key={idx} href={doc.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-[#FAFAFA] border border-[#E4E4E7] rounded-lg hover:border-[color:var(--connect-accent)] group">
                         <FileText className="w-5 h-5 text-[#71717A]" />
                         <span className="flex-1 text-sm text-[#3F3F46]">{doc.name}</span>
                         <ExternalLink className="w-4 h-4 text-[#A1A1AA] group-hover:text-[color:var(--connect-accent)]" />
@@ -939,15 +563,8 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
                 </div>
               )}
             </div>
-
-            {/* Footer with CTA */}
             <div className="p-6 border-t border-[#E4E4E7] bg-[#FAFAFA]">
-              <a
-                href={professional.contact_url}
-                target={professional.contact_type === 'email' ? '_self' : '_blank'}
-                rel="noopener noreferrer"
-                className="connect-action w-full"
-              >
+              <a href={professional.contact_url} target={professional.contact_type === 'email' ? '_self' : '_blank'} rel="noopener noreferrer" className="connect-action w-full">
                 Contact {professional.full_name.split(' ')[0]}
               </a>
             </div>
@@ -958,672 +575,168 @@ const ProfessionalModal = ({ professionalId, isOpen, onClose, isMobile }) => {
   );
 };
 
-// for independent talent.
-const Freelancers = ({ isMobile }) => {
+// Talents Section - uses existing Talent component
+const Talents = ({ isMobile, showHeader = true }) => {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [talents, setTalents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTalent, setSelectedTalent] = useState(null);
 
-  return (
-    <>
-      <div className="flex flex-col gap-3 mb-8 connect-reveal" style={{ "--delay": "40ms" }}>
-        <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Freelancers</p>
-        <h2 className="connect-display text-2xl md:text-3xl">
-          Independent talent for short-term work.
-        </h2>
-        <p className="text-sm connect-muted max-w-xl">
-          Find specialists who can move fast on design, marketing, engineering, and operations.
-        </p>
-      </div>
+  useEffect(() => {
+    const loadTalents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('talents')
+          .select('*')
+          .eq('status', 'approved');
+        if (!error) setTalents(data || []);
+      } catch (err) {
+        console.error('Error loading talents:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadTalents();
+  }, []);
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 w-full">
-        {talents.map((talent) => (
-          <FreelancerCard
-            key={talent.id}
-            talent={talent}
-            onClick={() => setSelectedTalent(talent)}
-            isMobile={isMobile}
-          />
+  return (
+    <div>
+      {showHeader && (
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+          <div>
+            <p className="text-xs uppercase tracking-widest connect-muted mb-1">Talents</p>
+            <h3 className="text-xl font-semibold text-[#0A0A0B]">Creators and makers</h3>
+          </div>
+          {user && (
+            <button onClick={() => router.push('/talents/new')} className="connect-action connect-action--small">
+              Become Talent
+            </button>
+          )}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {Array.from({ length: isMobile ? 2 : 4 }).map((_, idx) => (
+            <div key={idx} className="connect-card p-4 animate-pulse">
+              <div className="h-48 rounded-xl bg-white/70 mb-4" />
+              <div className="h-4 rounded bg-white/80 w-3/4 mb-2" />
+              <div className="h-3 rounded bg-white/70 w-1/2" />
+            </div>
+          ))}
+        </div>
+      ) : talents.length === 0 ? (
+        <div className="connect-card p-6 text-center">
+          <p className="text-sm connect-muted">No talents listed yet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {talents.map((talent) => (
+            <div
+              key={talent.id}
+              onClick={() => router.push(`/talents/${talent.id}`)}
+              className="cursor-pointer connect-card overflow-hidden group"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden bg-[#F4F4F5]">
+                <img
+                  src={talent.profile_image_url || '/placeholder-avatar.png'}
+                  alt={talent.name}
+                  className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1">{talent.name}</h3>
+                <p className="text-sm connect-muted line-clamp-1">{talent.title || talent.category}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Freelancers Section
+const mockFreelancers = [
+  { id: 1, name: "Monica Chen", role: "Financial Advisor", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop", quote: "I have a clear roadmap.", rating: 5 },
+  { id: 2, name: "Amy Rodriguez", role: "Business Consultant", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop", quote: "Peace and clarity.", rating: 5 },
+  { id: 3, name: "Eli Thompson", role: "Career Coach", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop", quote: "No more flying blind.", rating: 5 },
+  { id: 4, name: "David Park", role: "Marketing Strategist", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop", quote: "Transform your brand.", rating: 4.5 },
+];
+
+const Freelancers = ({ isMobile, showHeader = true }) => {
+  return (
+    <div>
+      {showHeader && (
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+          <div>
+            <p className="text-xs uppercase tracking-widest connect-muted mb-1">Freelancers</p>
+            <h3 className="text-xl font-semibold text-[#0A0A0B]">Independent talent</h3>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {mockFreelancers.map((freelancer) => (
+          <div key={freelancer.id} className="connect-card overflow-hidden group cursor-pointer">
+            <div className="relative aspect-[4/3] overflow-hidden bg-[#F4F4F5]">
+              <img src={freelancer.image} alt={freelancer.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
+              <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+                <svg className="w-3.5 h-3.5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="text-xs font-medium text-[#0A0A0B]">{freelancer.rating}</span>
+              </div>
+            </div>
+            <div className="p-4">
+              <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1">{freelancer.name}</h3>
+              <p className="text-sm connect-muted line-clamp-1">{freelancer.role}</p>
+            </div>
+          </div>
         ))}
       </div>
-
-      <FreelancerModal
-        talent={selectedTalent}
-        isOpen={!!selectedTalent}
-        onClose={() => setSelectedTalent(null)}
-        isMobile={isMobile}
-      />
-    </>
-  );
-};
-
-const FreelancerCard = ({ talent, onClick, isMobile }) => {
-  // Mobile: Horizontal compact card
-  if (isMobile) {
-    return (
-      <div
-        onClick={onClick}
-        className="cursor-pointer connect-card overflow-hidden transition-all duration-300 h-[140px] flex items-center"
-      >
-        {/* Left: Profile image */}
-        <div className="w-[120px] h-full flex-shrink-0">
-          <img
-            src={talent.image}
-            alt={talent.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        
-        {/* Right: Info */}
-        <div className="flex-1 px-4 py-3 flex flex-col justify-center">
-          <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1">{talent.name}</h3>
-          <p className="text-sm connect-muted mb-2 line-clamp-1">{talent.role}</p>
-          <p className="text-sm connect-muted italic mb-2 line-clamp-2">"{talent.quote}"</p>
-          
-          {/* Star rating */}
-          <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <svg
-                key={star}
-                className={`w-4 h-4 ${
-                  star <= Math.floor(talent.rating)
-                    ? 'text-yellow-400 fill-current'
-                    : star <= talent.rating
-                    ? 'text-yellow-400 fill-current opacity-50'
-                    : 'text-gray-300 fill-current'
-                }`}
-                viewBox="0 0 20 20"
-              >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            ))}
-            <span className="text-sm text-gray-600 ml-1 font-medium">{talent.rating}</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Desktop: Original card design
-  return (
-    <div
-      onClick={onClick}
-      className="cursor-pointer connect-card overflow-hidden transition-all duration-300 w-full group"
-    >
-      <div className="relative aspect-[3/4] w-full">
-        <img
-          src={talent.image}
-          alt={talent.name}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-        />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-6">
-          <div className="bg-white/85 text-[#0A0A0B] text-[11px] font-semibold px-3 py-1 rounded-full inline-block mb-2">
-            {talent.quote}
-          </div>
-          
-          <h3 className="text-white text-lg sm:text-xl font-bold mb-1">{talent.name}</h3>
-          <p className="text-white/90 text-sm">{talent.role}</p>
-        </div>
-        <button
-          type="button"
-          aria-label="Open profile"
-          className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-none hover:bg-black/10 rounded-full p-2 shadow-lg"
-        >
-          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M6.3 5.7a1 1 0 011.4 0l4 4a1 1 0 010 1.4l-4 4a1 1 0 01-1.4-1.4L9.6 10 6.3 6.7a1 1 0 010-1.4z"/>
-          </svg>
-        </button>
-
-        {/* Star rating - Top Right */}
-        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg flex items-center gap-1">
-          <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <span className="text-sm font-bold text-gray-900">{talent.rating}</span>
-        </div>
-      </div>
     </div>
   );
 };
 
-const FreelancerModal = ({ talent, isOpen, onClose, isMobile }) => {
-  const [isAnimating, setIsAnimating] = useState(false);
+// Projects Section
+const mockProjects = [
+  { id: 1, name: "Startup Accelerator", category: "Business", image: "https://images.unsplash.com/photo-1553484771-371a605b060b?w=400&h=400&fit=crop", status: "Active" },
+  { id: 2, name: "Community Platform", category: "Technology", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=400&fit=crop", status: "Recruiting" },
+  { id: 3, name: "Creative Studio", category: "Design", image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=400&fit=crop", status: "Active" },
+  { id: 4, name: "Social Impact Fund", category: "Finance", image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=400&fit=crop", status: "Recruiting" },
+];
 
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => setIsAnimating(true), 10);
-      // Prevent body scroll on mobile when modal is open
-      if (isMobile) {
-        document.body.style.overflow = 'hidden';
-      }
-    } else {
-      setIsAnimating(false);
-      if (isMobile) {
-        document.body.style.overflow = '';
-      }
-    }
-    
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen, isMobile]);
-
-  if (!isOpen) return null;
-
-  const handleClose = () => {
-    setIsAnimating(false);
-    setTimeout(onClose, 300);
-  };
-
-  // Mobile layout (80% screen height from bottom)
-  if (isMobile) {
-    return (
-      <div 
-        className="fixed inset-0 z-50"
-        onClick={handleClose}
-      >
-        {/* Backdrop */}
-        <div 
-          className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${
-            isAnimating ? 'opacity-50' : 'opacity-0'
-          }`}
-        />
-        
-        {/* Modal - 80% height from bottom */}
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className={`fixed left-0 right-0 bottom-0 connect-modal-panel rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${
-            isAnimating ? 'translate-y-0' : 'translate-y-full'
-          }`}
-          style={{ height: '80vh' }}
-        >
-          {/* Handle bar */}
-          <div className="flex justify-center pt-3 pb-2">
-            <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-          </div>
-
-          {/* Close button */}
-          <button
-            onClick={handleClose}
-            type="button"
-            aria-label="Close"
-            className="absolute top-4 right-4 z-10 connect-icon-button"
-          >
-            <X className="w-5 h-5" />
-          </button>
-
-          {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto">
-            {/* Video section */}
-            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
-              <iframe
-                src={`https://www.youtube.com/embed/${
-                  new URL(talent.video).searchParams.get("v")
-                }?autoplay=1&modestbranding=1&rel=0`}
-                title={talent.name}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-              <div className="absolute bottom-4 left-4 bg-white/85 text-[#0A0A0B] text-xs font-semibold px-3 py-1.5 rounded-full">
-                {talent.quote}
-              </div>
-            </div>
-
-            {/* Content section */}
-            <div className="p-6 pb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">{talent.name}</h2>
-              <p className="text-base text-gray-600 mb-5">{talent.role}</p>
-              
-              <p className="text-gray-700 leading-relaxed mb-6">
-                {talent.description}
-              </p>
-
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Style</h3>
-                <div className="flex flex-wrap gap-2">
-                  {talent.style.map((s, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <button className="connect-action w-full">
-                Choose {talent.name.split(' ')[0]}
-              </button>
-            </div>
+const Projects = ({ isMobile, showHeader = true }) => {
+  return (
+    <div>
+      {showHeader && (
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+          <div>
+            <p className="text-xs uppercase tracking-widest connect-muted mb-1">Projects</p>
+            <h3 className="text-xl font-semibold text-[#0A0A0B]">Teams looking for collaborators</h3>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  // Desktop layout (slides from right, 60% width)
-  return (
-    <div 
-      className="fixed inset-0 z-50"
-      onClick={handleClose}
-    >
-      {/* Backdrop */}
-      <div 
-        className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${
-          isAnimating ? 'opacity-50' : 'opacity-0'
-        }`}
-      />
-      
-      {/* Modal - slides from right */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={`fixed top-0 right-0 h-full connect-modal-panel shadow-2xl transition-transform duration-300 overflow-hidden ${
-          isAnimating ? 'translate-x-0' : 'translate-x-full'
-        }`}
-        style={{ width: '60%' }}
-      >
-        {/* Close button */}
-        <button
-          onClick={handleClose}
-          type="button"
-          aria-label="Close"
-          className="absolute top-6 right-6 z-10 connect-icon-button"
-        >
-          <X className="w-6 h-6" />
-        </button>
-
-        {/* Scrollable content */}
-        <div className="h-full overflow-y-auto">
-          <div className="p-8 lg:p-12">
-            {/* Video section */}
-            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
-              <iframe
-                src={`https://www.youtube.com/embed/${
-                  new URL(talent.video).searchParams.get("v")
-                }?autoplay=1&modestbranding=1&rel=0`}
-                title={talent.name}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-              <div className="absolute bottom-4 left-4 bg-white/85 text-[#0A0A0B] text-sm font-semibold px-4 py-2 rounded-full shadow-lg">
-                {talent.quote}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {mockProjects.map((project) => (
+          <div key={project.id} className="connect-card overflow-hidden group cursor-pointer">
+            <div className="relative aspect-[4/3] overflow-hidden bg-[#F4F4F5]">
+              <img src={project.image} alt={project.name} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
+              <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-full px-2 py-1">
+                <span className={`text-xs font-medium ${project.status === 'Recruiting' ? 'text-green-600' : 'text-[#0A0A0B]'}`}>
+                  {project.status}
+                </span>
               </div>
             </div>
-
-
-            {/* Content section */}
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{talent.name}</h2>
-            <p className="text-lg text-gray-600 mb-8">{talent.role}</p>
-            
-            <p className="text-gray-700 leading-relaxed mb-8 text-base">
-              {talent.description}
-            </p>
-
-            <div className="mb-8">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Style</h3>
-              <div className="flex flex-wrap gap-2">
-                {talent.style.map((s, idx) => (
-                  <span
-                    key={idx}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <button className="connect-action w-full mb-6">
-              Choose {talent.name.split(' ')[0]}
-            </button>
-
-            <div className="flex justify-between text-sm text-gray-500">
-              <button type="button" className="hover:text-gray-700 transition-colors">
-                ← Previous
-              </button>
-              <button type="button" className="hover:text-gray-700 transition-colors">
-                Next →
-              </button>
+            <div className="p-4">
+              <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1">{project.name}</h3>
+              <p className="text-sm connect-muted line-clamp-1">{project.category}</p>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
-// for business and company-driven initiatives.
-const Projects = ({ isMobile }) => {
-  const [selectedTalent, setSelectedTalent] = useState(null);
-
-  return (
-    <>
-      <div className="flex flex-col gap-3 mb-8 connect-reveal" style={{ "--delay": "40ms" }}>
-        <p className="text-[10px] uppercase tracking-[0.3em] connect-muted">Projects</p>
-        <h2 className="connect-display text-2xl md:text-3xl">
-          Teams looking for the right collaborators.
-        </h2>
-        <p className="text-sm connect-muted max-w-xl">
-          Explore ongoing initiatives and join founders, creators, and operators building together.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 w-full">
-        {talents.map((talent) => (
-          <ProjectCard
-            key={talent.id}
-            talent={talent}
-            onClick={() => setSelectedTalent(talent)}
-            isMobile={isMobile}
-          />
         ))}
-      </div>
-
-      <ProjectModal
-        talent={selectedTalent}
-        isOpen={!!selectedTalent}
-        onClose={() => setSelectedTalent(null)}
-        isMobile={isMobile}
-      />
-    </>
-  );
-};
-
-const ProjectCard = ({ talent, onClick, isMobile }) => {
-  // Mobile: Horizontal compact card
-  if (isMobile) {
-    return (
-      <div
-        onClick={onClick}
-        className="cursor-pointer connect-card overflow-hidden transition-all duration-300 h-[140px] flex items-center"
-      >
-        {/* Left: Profile image */}
-        <div className="w-[120px] h-full flex-shrink-0">
-          <img
-            src={talent.image}
-            alt={talent.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        
-        {/* Right: Info */}
-        <div className="flex-1 px-4 py-3 flex flex-col justify-center">
-          <h3 className="text-base font-semibold text-[#0A0A0B] mb-1 line-clamp-1">{talent.name}</h3>
-          <p className="text-sm connect-muted mb-2 line-clamp-1">{talent.role}</p>
-          <p className="text-sm connect-muted italic mb-2 line-clamp-2">"{talent.quote}"</p>
-          
-          {/* Star rating */}
-          <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <svg
-                key={star}
-                className={`w-4 h-4 ${
-                  star <= Math.floor(talent.rating)
-                    ? 'text-yellow-400 fill-current'
-                    : star <= talent.rating
-                    ? 'text-yellow-400 fill-current opacity-50'
-                    : 'text-gray-300 fill-current'
-                }`}
-                viewBox="0 0 20 20"
-              >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            ))}
-            <span className="text-sm text-gray-600 ml-1 font-medium">{talent.rating}</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Desktop: Original card design
-  return (
-    <div
-      onClick={onClick}
-      className="cursor-pointer connect-card overflow-hidden transition-all duration-300 w-full group"
-    >
-      <div className="relative aspect-[3/4] w-full">
-        <img
-          src={talent.image}
-          alt={talent.name}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-        />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 sm:p-6">
-          <div className="bg-white/85 text-[#0A0A0B] text-[11px] font-semibold px-3 py-1 rounded-full inline-block mb-2">
-            {talent.quote}
-          </div>
-          
-          <h3 className="text-white text-lg sm:text-xl font-bold mb-1">{talent.name}</h3>
-          <p className="text-white/90 text-sm">{talent.role}</p>
-        </div>
-        <button
-          type="button"
-          aria-label="Open project"
-          className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-none hover:bg-black/10 rounded-full p-2 shadow-lg"
-        >
-          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M6.3 5.7a1 1 0 011.4 0l4 4a1 1 0 010 1.4l-4 4a1 1 0 01-1.4-1.4L9.6 10 6.3 6.7a1 1 0 010-1.4z"/>
-          </svg>
-        </button>
-
-        {/* Star rating - Top Right */}
-        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg flex items-center gap-1">
-          <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <span className="text-sm font-bold text-gray-900">{talent.rating}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ProjectModal = ({ talent, isOpen, onClose, isMobile }) => {
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => setIsAnimating(true), 10);
-      // Prevent body scroll on mobile when modal is open
-      if (isMobile) {
-        document.body.style.overflow = 'hidden';
-      }
-    } else {
-      setIsAnimating(false);
-      if (isMobile) {
-        document.body.style.overflow = '';
-      }
-    }
-    
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen, isMobile]);
-
-  if (!isOpen) return null;
-
-  const handleClose = () => {
-    setIsAnimating(false);
-    setTimeout(onClose, 300);
-  };
-
-  // Mobile layout (80% screen height from bottom)
-  if (isMobile) {
-    return (
-      <div 
-        className="fixed inset-0 z-50"
-        onClick={handleClose}
-      >
-        {/* Backdrop */}
-        <div 
-          className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${
-            isAnimating ? 'opacity-50' : 'opacity-0'
-          }`}
-        />
-        
-        {/* Modal - 80% height from bottom */}
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className={`fixed left-0 right-0 bottom-0 connect-modal-panel rounded-t-3xl shadow-2xl transition-transform duration-300 flex flex-col ${
-            isAnimating ? 'translate-y-0' : 'translate-y-full'
-          }`}
-          style={{ height: '80vh' }}
-        >
-          {/* Handle bar */}
-          <div className="flex justify-center pt-3 pb-2">
-            <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-          </div>
-
-          {/* Close button */}
-          <button
-            onClick={handleClose}
-            type="button"
-            aria-label="Close"
-            className="absolute top-4 right-4 z-10 connect-icon-button"
-          >
-            <X className="w-5 h-5" />
-          </button>
-
-          {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto">
-            {/* Video section */}
-            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
-              <iframe
-                src={`https://www.youtube.com/embed/${
-                  new URL(talent.video).searchParams.get("v")
-                }?autoplay=1&modestbranding=1&rel=0`}
-                title={talent.name}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-              <div className="absolute bottom-4 left-4 bg-white/85 text-[#0A0A0B] text-xs font-semibold px-3 py-1.5 rounded-full">
-                {talent.quote}
-              </div>
-            </div>
-
-            {/* Content section */}
-            <div className="p-6 pb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">{talent.name}</h2>
-              <p className="text-base text-gray-600 mb-5">{talent.role}</p>
-              
-              <p className="text-gray-700 leading-relaxed mb-6">
-                {talent.description}
-              </p>
-
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Style</h3>
-                <div className="flex flex-wrap gap-2">
-                  {talent.style.map((s, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <button className="connect-action w-full">
-                Choose {talent.name.split(' ')[0]}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Desktop layout (slides from right, 60% width)
-  return (
-    <div 
-      className="fixed inset-0 z-50"
-      onClick={handleClose}
-    >
-      {/* Backdrop */}
-      <div 
-        className={`absolute inset-0 connect-modal-overlay transition-opacity duration-300 ${
-          isAnimating ? 'opacity-50' : 'opacity-0'
-        }`}
-      />
-      
-      {/* Modal - slides from right */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={`fixed top-0 right-0 h-full connect-modal-panel shadow-2xl transition-transform duration-300 overflow-hidden ${
-          isAnimating ? 'translate-x-0' : 'translate-x-full'
-        }`}
-        style={{ width: '60%' }}
-      >
-        {/* Close button */}
-        <button
-          onClick={handleClose}
-          type="button"
-          aria-label="Close"
-          className="absolute top-6 right-6 z-10 connect-icon-button"
-        >
-          <X className="w-6 h-6" />
-        </button>
-
-        {/* Scrollable content */}
-        <div className="h-full overflow-y-auto">
-          <div className="p-8 lg:p-12">
-            {/* Video section */}
-            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
-              <iframe
-                src={`https://www.youtube.com/embed/${
-                  new URL(talent.video).searchParams.get("v")
-                }?autoplay=1&modestbranding=1&rel=0`}
-                title={talent.name}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-              <div className="absolute bottom-4 left-4 bg-white/85 text-[#0A0A0B] text-sm font-semibold px-4 py-2 rounded-full shadow-lg">
-                {talent.quote}
-              </div>
-            </div>
-
-
-            {/* Content section */}
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{talent.name}</h2>
-            <p className="text-lg text-gray-600 mb-8">{talent.role}</p>
-            
-            <p className="text-gray-700 leading-relaxed mb-8 text-base">
-              {talent.description}
-            </p>
-
-            <div className="mb-8">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Style</h3>
-              <div className="flex flex-wrap gap-2">
-                {talent.style.map((s, idx) => (
-                  <span
-                    key={idx}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <button className="connect-action w-full mb-6">
-              Choose {talent.name.split(' ')[0]}
-            </button>
-
-            <div className="flex justify-between text-sm text-gray-500">
-              <button type="button" className="hover:text-gray-700 transition-colors">
-                ← Previous
-              </button>
-              <button type="button" className="hover:text-gray-700 transition-colors">
-                Next →
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
