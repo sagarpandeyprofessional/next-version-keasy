@@ -5,3 +5,4 @@ AWS BUILD/
 AWS BUILD/ deploy errors/BUILD.txt
 AWS BUILD/ deploy errors/DEPLOY.txt
 .DS_Store
+PROCESS.md
