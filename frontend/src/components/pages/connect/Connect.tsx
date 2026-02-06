@@ -19,9 +19,18 @@ const filterOptions: { value: FilterType; label: string }[] = [
   { value: 'projects', label: 'Projects' },
 ];
 
-export default function Connect() {
+type ConnectProps = {
+  initialTab?: FilterType;
+};
+
+export default function Connect({ initialTab }: ConnectProps) {
   const [isMobile, setIsMobile] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [activeFilter, setActiveFilter] = useState<FilterType>(() => {
+    if (initialTab && filterOptions.some(opt => opt.value === initialTab)) {
+      return initialTab;
+    }
+    return 'all';
+  });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
