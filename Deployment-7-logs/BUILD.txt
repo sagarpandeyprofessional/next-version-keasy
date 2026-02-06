@@ -1,0 +1,142 @@
+2026-02-06T08:59:47.466Z [INFO]: # Build environment configured with Standard build compute type: 8GiB Memory, 4vCPUs, 128GB Disk Space
+2026-02-06T08:59:47.957Z [INFO]: # Cloning repository: git@github.com:sagarpandeyprofessional/next-version-keasy.git
+2026-02-06T08:59:49.159Z [INFO]: 
+2026-02-06T08:59:49.159Z [INFO]: Cloning into 'next-version-keasy'...
+2026-02-06T08:59:49.160Z [INFO]: # Switching to commit: f0909ffe04da80ab02eec2183ae42895dfef5824
+2026-02-06T08:59:49.260Z [INFO]: Note: switching to 'f0909ffe04da80ab02eec2183ae42895dfef5824'.
+                                 You are in 'detached HEAD' state. You can look around, make experimental
+                                 changes and commit them, and you can discard any commits you make in this
+                                 state without impacting any branches by switching back to a branch.
+                                 If you want to create a new branch to retain commits you create, you may
+                                 do so (now or later) by using -c with the switch command. Example:
+                                 git switch -c <new-branch-name>
+                                 Or undo this operation with:
+                                 git switch -
+                                 Turn off this advice by setting config variable advice.detachedHead to false
+                                 HEAD is now at f0909ff Fix Amplify static export output
+2026-02-06T08:59:49.352Z [INFO]: Successfully cleaned up Git credentials
+2026-02-06T08:59:49.353Z [INFO]: # Checking for Git submodules at: /codebuild/output/src2501465176/src/next-version-keasy/.gitmodules
+2026-02-06T08:59:49.360Z [INFO]: # Retrieving environment cache...
+2026-02-06T08:59:49.462Z [INFO]: # Retrieved environment cache
+2026-02-06T08:59:49.462Z [INFO]: ---- Setting Up SSM Secrets ----
+2026-02-06T08:59:49.462Z [INFO]: SSM params {"Path":"/amplify/d1iuj894qe9pco/main/","WithDecryption":true}
+2026-02-06T08:59:49.515Z [WARNING]: !Failed to set up process.env.secrets
+2026-02-06T08:59:49.989Z [INFO]: # No package override configuration found.
+2026-02-06T08:59:49.993Z [INFO]: # Retrieving cache...
+2026-02-06T08:59:58.742Z [INFO]: # Extracting cache...
+2026-02-06T09:00:07.583Z [INFO]: # Extraction completed
+2026-02-06T09:00:07.748Z [INFO]: # Retrieved cache
+2026-02-06T09:00:12.550Z [INFO]: ## Starting Backend Build
+                                 # Starting phase: preBuild
+                                 # Executing command: npm install
+2026-02-06T09:00:31.721Z [WARNING]: npm warn ERESOLVE overriding peer dependency
+2026-02-06T09:00:31.726Z [WARNING]: npm warn While resolving: @aws-amplify/plugin-types@1.10.1
+                                    npm warn Found: @aws-sdk/types@3.821.0
+                                    npm warn node_modules/@aws-amplify/data-construct/node_modules/@aws-amplify/ai-constructs/node_modules/@aws-amplify/plugin-types/node_modules/@aws-sdk/types
+                                    npm warn
+                                    npm warn Could not resolve dependency:
+                                    npm warn peer @aws-sdk/types@"^3.734.0" from @aws-amplify/plugin-types@1.10.1
+                                    npm warn node_modules/@aws-amplify/data-construct/node_modules/@aws-amplify/ai-constructs/node_modules/@aws-amplify/plugin-types
+                                    npm warn   @aws-amplify/plugin-types@"^1.10.1" from @aws-amplify/ai-constructs@1.5.3
+                                    npm warn   node_modules/@aws-amplify/data-construct/node_modules/@aws-amplify/ai-constructs
+2026-02-06T09:00:31.749Z [WARNING]: npm warn ERESOLVE overriding peer dependency
+2026-02-06T09:00:31.749Z [WARNING]: npm warn While resolving: @aws-amplify/plugin-types@1.10.1
+                                    npm warn Found: @aws-sdk/types@3.821.0
+                                    npm warn node_modules/@aws-amplify/graphql-api-construct/node_modules/@aws-amplify/ai-constructs/node_modules/@aws-amplify/plugin-types/node_modules/@aws-sdk/types
+                                    npm warn
+                                    npm warn Could not resolve dependency:
+                                    npm warn peer @aws-sdk/types@"^3.734.0" from @aws-amplify/plugin-types@1.10.1
+                                    npm warn node_modules/@aws-amplify/graphql-api-construct/node_modules/@aws-amplify/ai-constructs/node_modules/@aws-amplify/plugin-types
+                                    npm warn   @aws-amplify/plugin-types@"^1.10.1" from @aws-amplify/ai-constructs@1.5.3
+                                    npm warn   node_modules/@aws-amplify/graphql-api-construct/node_modules/@aws-amplify/ai-constructs
+2026-02-06T09:01:49.772Z [WARNING]: npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+2026-02-06T09:01:49.836Z [WARNING]: npm warn deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+2026-02-06T09:01:50.179Z [WARNING]: npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+2026-02-06T09:01:50.181Z [WARNING]: npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+2026-02-06T09:01:50.214Z [WARNING]: npm warn deprecated @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-object-rest-spread instead.
+2026-02-06T09:01:50.344Z [WARNING]: npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+2026-02-06T09:01:50.887Z [WARNING]: npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+2026-02-06T09:01:58.662Z [WARNING]: npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+2026-02-06T09:02:00.665Z [INFO]: added 797 packages, and audited 1629 packages in 2m
+2026-02-06T09:02:00.666Z [INFO]: 150 packages are looking for funding
+                                 run `npm fund` for details
+2026-02-06T09:02:00.764Z [INFO]: 29 vulnerabilities (7 low, 1 moderate, 21 high)
+                                 To address all issues, run:
+                                 npm audit fix
+                                 Run `npm audit` for details.
+2026-02-06T09:02:00.792Z [INFO]: # Executing command: npm ci --prefix frontend
+2026-02-06T09:02:13.803Z [INFO]: added 461 packages, and audited 462 packages in 13s
+2026-02-06T09:02:13.808Z [INFO]: 182 packages are looking for funding
+                                 run `npm fund` for details
+                                 found 0 vulnerabilities
+2026-02-06T09:02:13.828Z [INFO]: # Completed phase: preBuild
+                                 # Starting phase: build
+2026-02-06T09:02:13.829Z [INFO]: # Executing command: npx --yes @aws-amplify/backend-cli@latest pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+2026-02-06T09:02:48.141Z [WARNING]: npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+2026-02-06T09:02:48.223Z [WARNING]: npm warn deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+2026-02-06T09:02:48.357Z [WARNING]: npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+2026-02-06T09:02:48.475Z [WARNING]: npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-02-06T09:02:48.476Z [WARNING]: npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-02-06T09:02:48.497Z [WARNING]: npm warn deprecated @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-object-rest-spread instead.
+2026-02-06T09:02:49.549Z [WARNING]: npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+2026-02-06T09:02:50.443Z [WARNING]: npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-02-06T09:02:50.484Z [WARNING]: npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-02-06T09:02:53.909Z [WARNING]: npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+2026-02-06T09:02:58.789Z [INFO]: 9:02:58 AM Synthesizing backend...
+2026-02-06T09:02:58.793Z [INFO]: 
+2026-02-06T09:03:01.073Z [WARNING]: Bundling asset amplify-d1iuj894qe9pco-main-branch-a3de5f073e/AmplifyBranchLinker/CustomResourceLambda/Code/Stage...
+2026-02-06T09:03:01.152Z [WARNING]: ...bc12e34e57ca51cd14f60ab25f192df3536ec75e0fcb6e-building/index.js  930.2kb
+                                    ⚡ Done in 72ms
+2026-02-06T09:03:01.266Z [WARNING]: Bundling asset amplify-d1iuj894qe9pco-main-branch-a3de5f073e/function/keasy-api-lambda/Code/Stage...
+2026-02-06T09:03:01.544Z [INFO]: 9:03:01 AM ✔ Backend synthesized in 3.13 seconds
+2026-02-06T09:03:01.544Z [INFO]: 9:03:01 AM Running type checks...
+2026-02-06T09:03:02.217Z [INFO]: 9:03:02 AM ✔ Type checks completed in 0.67 seconds
+2026-02-06T09:03:02.223Z [INFO]: 
+2026-02-06T09:03:02.232Z [INFO]: 9:03:02 AM Building and publishing assets...
+2026-02-06T09:03:02.652Z [INFO]: 9:03:02 AM ✔ Built and published assets
+2026-02-06T09:03:05.609Z [INFO]: amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   0 | 9:03:03 AM | UPDATE_IN_PROGRESS | AWS::CloudFormation::Stack | amplify-d1iuj894qe9pco-main-branch-a3de5f073e User Initiated
+2026-02-06T09:03:07.720Z [INFO]: amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   0 | 9:03:07 AM | UPDATE_IN_PROGRESS | AWS::CloudFormation::Stack | function.NestedStack/function.NestedStackResource (function1351588B)
+2026-02-06T09:03:09.870Z [INFO]: amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   1 | 9:03:07 AM | UPDATE_COMPLETE | AWS::CloudFormation::Stack | function.NestedStack/function.NestedStackResource (function1351588B)
+2026-02-06T09:03:09.874Z [INFO]: amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   1 | 9:03:08 AM | UPDATE_IN_PROGRESS | AWS::CloudFormation::Stack | keasy-api-stack.NestedStack/keasy-api-stack.NestedStackResource (keasyapistack782E7F89)
+                                 amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   2 | 9:03:09 AM | UPDATE_COMPLETE | AWS::CloudFormation::Stack | keasy-api-stack.NestedStack/keasy-api-stack.NestedStackResource (keasyapistack782E7F89)
+2026-02-06T09:03:12.037Z [INFO]: amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   3 | 9:03:10 AM | UPDATE_COMPLETE_CLEANUP_IN_PROGRESS | AWS::CloudFormation::Stack | amplify-d1iuj894qe9pco-main-branch-a3de5f073e
+2026-02-06T09:03:12.037Z [INFO]: amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   2 | 9:03:11 AM | UPDATE_COMPLETE | AWS::CloudFormation::Stack | keasy-api-stack.NestedStack/keasy-api-stack.NestedStackResource (keasyapistack782E7F89)
+2026-02-06T09:03:13.741Z [INFO]: amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   1 | 9:03:12 AM | UPDATE_COMPLETE | AWS::CloudFormation::Stack | function.NestedStack/function.NestedStackResource (function1351588B)
+2026-02-06T09:03:13.747Z [INFO]: amplify-d1iuj894qe9pco-main-branch-a3de5f073e |   2 | 9:03:12 AM | UPDATE_COMPLETE | AWS::CloudFormation::Stack | amplify-d1iuj894qe9pco-main-branch-a3de5f073e
+                                 9:03:13 AM ✔ Deployment completed in 11.097 seconds
+2026-02-06T09:03:13.987Z [INFO]: 9:03:13 AM File written: amplify_outputs.json
+2026-02-06T09:03:14.277Z [INFO]: # Completed phase: build
+                                 ## Completed Backend Build
+2026-02-06T09:03:14.282Z [INFO]: ## Starting Frontend Build
+                                 # Starting phase: preBuild
+2026-02-06T09:03:14.282Z [INFO]: # Executing command: npm ci --prefix frontend
+2026-02-06T09:03:23.943Z [INFO]: added 461 packages, and audited 462 packages in 10s
+2026-02-06T09:03:23.948Z [INFO]: 182 packages are looking for funding
+                                 run `npm fund` for details
+                                 found 0 vulnerabilities
+2026-02-06T09:03:23.987Z [INFO]: # Completed phase: preBuild
+                                 # Starting phase: build
+                                 # Executing command: npm run build --prefix frontend
+2026-02-06T09:03:24.094Z [INFO]: > frontend_next@0.1.0 build
+                                 > next build
+2026-02-06T09:03:24.966Z [WARNING]: ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+                                    We detected multiple lockfiles and selected the directory of /codebuild/output/src2501465176/src/next-version-keasy/package-lock.json as the root directory.
+                                    To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+                                    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+                                    Detected additional lockfiles:
+                                    * /codebuild/output/src2501465176/src/next-version-keasy/frontend/package-lock.json
+2026-02-06T09:03:24.982Z [INFO]: ▲ Next.js 16.1.6 (Turbopack)
+2026-02-06T09:03:24.983Z [INFO]: 
+2026-02-06T09:03:25.084Z [INFO]: Creating an optimized production build ...
+2026-02-06T09:03:53.088Z [INFO]: ✓ Compiled successfully in 27.5s
+2026-02-06T09:03:53.104Z [INFO]: Running TypeScript ...
+2026-02-06T09:04:00.703Z [INFO]: Collecting page data using 3 workers ...
+2026-02-06T09:04:01.371Z [WARNING]: > Build error occurred
+2026-02-06T09:04:01.374Z [WARNING]: Error: Page "/community/edit/[id]" is missing "generateStaticParams()" so it cannot be used with "output: export" config.
+                                    at ignore-listed frames
+2026-02-06T09:04:01.435Z [ERROR]: !!! Build failed
+2026-02-06T09:04:01.435Z [ERROR]: !!! Error: Command failed with exit code 1
+2026-02-06T09:04:01.435Z [INFO]: # Starting environment caching...
+2026-02-06T09:04:01.435Z [INFO]: # Uploading environment cache artifact...
+2026-02-06T09:04:01.556Z [INFO]: # Uploaded environment cache artifact
+2026-02-06T09:04:01.556Z [INFO]: # Environment caching completed
